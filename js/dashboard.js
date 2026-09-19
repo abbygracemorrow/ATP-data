@@ -1,5 +1,5 @@
 /* dashboard.js - loads data/atp_matches.csv in the browser, filters it, and recomputes every number,
-   chart, leaderboard and table row on each change. No server-side code. */
+   chart, and table row on each change. No server-side code. */
 (function () {
   'use strict';
   const { C, SLAM_COLOR } = Charts, $ = id => document.getElementById(id), int = Charts.int;
@@ -8,10 +8,7 @@
   const TIERS = ['Grand Slam', 'Masters 1000', 'ATP 500', 'ATP 250', 'Tour Finals'];
   const TIER_OF = { 'Grand Slam': 0, 'Masters 1000': 1, 'Masters': 1, 'ATP500': 2, 'International Gold': 2, 'ATP250': 3, 'International': 3, 'Masters Cup': 4 };
   const ROUNDS = ['Round Robin', '1st Round', '2nd Round', '3rd Round', '4th Round', 'Quarterfinals', 'Semifinals', 'The Final'];
-  const SLAM_KEY = { 'Australian Open': 'AO', 'French Open': 'RG', 'Wimbledon': 'W', 'US Open': 'USO' };
   const SLAM_NAMES = { AO: 'Australian Open', RG: 'Roland Garros', W: 'Wimbledon', USO: 'US Open' };
-  const VENUES = [{ slam: 'AO', name: 'Australian Open', city: 'Melbourne', lat: -37.82, lon: 144.98 }, { slam: 'RG', name: 'Roland Garros', city: 'Paris', lat: 48.85, lon: 2.25 },
-    { slam: 'W', name: 'Wimbledon', city: 'London', lat: 51.43, lon: -0.21 }, { slam: 'USO', name: 'US Open', city: 'New York', lat: 40.75, lon: -73.85 }];
   const disp = n => n.replace(/^(.*) ([A-Z.]+)$/, '$2 $1');
 
   /* decorative row of enlarged court icons in the header, purely for looks -- shows immediately,
@@ -43,7 +40,7 @@
 
   /* ---------- data (column arrays) ---------- */
   let N, year, tour, tier, court, surf, round, bo, win, los, rw, rl, series, score, dateStr, tourNames = [], courtNames = [], surfNames = [], plNames = [], plDisp = [], plIndex = new Map(), plMatches;
-  let Y0, Y1, NY, FINAL, GS = 0, countryOf = new Map(), countryPos = new Map();
+  let Y0, Y1, NY, FINAL;
 
   function build(main, aliasMap) {
     const rows = main.rows; N = rows.length;
@@ -150,7 +147,7 @@
   }
 
   /* ---------- update ---------- */
-  let sel = [], scheduled = false, globe;
+  let sel = [], scheduled = false;
   function schedule() { if (!scheduled) { scheduled = true; requestAnimationFrame(() => { scheduled = false; update(); }); } }
 
   function update() {
@@ -193,35 +190,11 @@
       const A2 = agg(sel, topCats.length * NY, (i, p) => { const r = rank.get(dim.player ? p : dim.key(i)); return r === undefined ? -1 : r * NY + (year[i] - Y0); }, ps, need);
       series2 = topCats.map((g, r) => ({ name: dim.name(g), values: xs.map((_, k) => (A2.n[r * NY + k] >= (M.rate ? MIN_CELL : 1) ? M.get(A2, r * NY + k) : null)) }));
     } else series2 = [];
-    Charts.line($('ch-line'), xs, series2, Object.assign({ fmt: M.fmt, label: `${mLabel} by year`, min: 0, empty: `No group has enough matches in a single year to show ${mLabel.toLowerCase()}. Widen the filters or pick another measure.` }, pctAxis));
+    Charts.line($('ch-line'), xs, series2, Object.assign({ fmt: M.fmt, label: `${mLabel} by year`, min: 0, h: 420, empty: `No group has enough matches in a single year to show ${mLabel.toLowerCase()}. Widen the filters or pick another measure.` }, pctAxis));
     $('n-line').textContent = M.rate ? `Rates are shown only when a group played at least ${MIN_CELL} matches in that year; gaps mean fewer.` : 'Gaps mean the group had no matches in that year.';
 
-    // ---- chart 3: scatter
-    const xm = measure === 'matches' ? 'tourns' : 'matches', XM = MEAS[xm];
-    $('t-scatter').textContent = `${XM.label(ps === 'player' ? 'p' : 'm')} against ${mLabel.toLowerCase()}, by ${dim.label.toLowerCase()}`;
-    let sc = cats.filter(g => val(g) != null && XM.get(A, g) != null && (!dim.player || A.n[g] >= MIN_RATE));
-    sc.sort((a, b) => A.n[b] - A.n[a]); sc = sc.slice(0, 400);
-    const labelSet = new Set(sc.slice().sort((a, b) => (M.asc ? val(a) - val(b) : val(b) - val(a))).slice(0, 6).concat(sc.slice(0, 3)));
-    Charts.scatter($('ch-scatter'), sc.map(g => ({ x: XM.get(A, g), y: val(g), label: dim.name(g), show: labelSet.has(g) && sc.length <= 400, color: C.sage, r: 5.5,
-      tip: `<b>${Charts.esc(dim.name(g))}</b><br>${XM.label(ps === 'player' ? 'p' : 'm')}: ${XM.fmt(XM.get(A, g))}<br>${mLabel}: ${M.fmt(val(g))}` })),
-      { xlabel: XM.label(ps === 'player' ? 'p' : 'm'), ylabel: mLabel, xfmt: XM.fmt, yfmt: M.pct ? v => Math.round(v * 100) + '%' : M.fmt, label: 'Scatter plot', ymin: M.pct ? 0 : undefined, ymax: M.pct && measure === 'winrate' ? 1 : undefined });
-    $('n-scatter').textContent = `Each dot is one ${dim.label.toLowerCase()} group${sc.length >= 400 ? ' (the 400 with the most matches)' : ''}. Hover a dot for details.`;
-
-    // ---- chart 4: wins against average opponent ranking, by player (always player-based,
-    // independent of Measure / Break down by -- a fixed companion to the leaderboard above)
-    $('t-rank').textContent = 'Wins against average opponent ranking, by player';
-    const AP = agg(sel, plNames.length, (i, p) => p, 'player', { tn: false });
-    let rankPts = []; for (let p = 0; p < plNames.length; p++) if (AP.n[p] >= MIN_RATE && AP.rc[p]) rankPts.push({ p, wins: AP.w[p], n: AP.n[p], avgrank: AP.rs[p] / AP.rc[p] });
-    rankPts.sort((a, b) => b.wins - a.wins); const rankTotal = rankPts.length; rankPts = rankPts.slice(0, 300);
-    const rankLabelSet = new Set(rankPts.slice(0, 6).map(o => o.p).concat(rankPts.slice().sort((a, b) => a.avgrank - b.avgrank).slice(0, 3).map(o => o.p)));
-    Charts.scatter($('ch-rank'), rankPts.map(o => ({ x: o.wins, y: o.avgrank, label: plDisp[o.p], show: rankLabelSet.has(o.p) && rankPts.length <= 300, color: C.pink, r: 5.5,
-      tip: `<b>${Charts.esc(plDisp[o.p])}</b><br>Wins: ${int(o.wins)}<br>Average opponent ranking: ${o.avgrank.toFixed(1)}<br>${int(o.n)} matches` })),
-      { xlabel: 'Wins', ylabel: 'Average ATP ranking of opponents', xfmt: int, yfmt: v => v.toFixed(1), label: 'Wins against average opponent ranking' });
-    $('n-rank').textContent = `Each dot is one player with at least ${MIN_RATE} matches in this view${rankTotal > 300 ? ' (the 300 with the most wins)' : ''}. Lower on the vertical axis means tougher average opponents. Hover a dot for details.`;
-
-    globeUpdate();
     table(A, cats, ps, dim);
-    wlUpdate(); lbUpdate(); h2hUpdate(); scopeLines();
+    wlUpdate(); h2hUpdate();
   }
 
   /* filter parts shared by the top view-line and every section's "filters applied" caption. */
@@ -229,10 +202,6 @@
     const parts = []; if (F.from !== Y0 || F.to !== Y1) parts.push(`${F.from}\u2013${F.to}`);
     if (F.tour >= 0) parts.push(tourNames[F.tour]);
     return parts;
-  }
-  function scopeLines() {
-    $('lb-scope').textContent = filterParts().join(' \u00b7 ') || 'none';
-    // head to head intentionally ignores every filter above, so it has no scope line to update here
   }
 
   /* ---------- summary numbers ---------- */
@@ -246,25 +215,6 @@
     $('kpis').innerHTML = k.map(([b, s]) => `<div class="kpi"><b${b.length > 9 ? ' style="font-size:1.35rem"' : ''}>${Charts.esc(b)}</b><span>${Charts.esc(s)}</span></div>`).join('');
     const parts = filterParts();
     $('view-line').textContent = `Showing ${int(n)} of ${int(N)} matches` + (parts.length ? ` \u00b7 ${parts.join(' \u00b7 ')}` : ' \u00b7 no filters applied');
-  }
-
-  /* ---------- globe ---------- */
-  function globeUpdate() {
-    const by = new Map(); let total = 0;
-    for (const i of sel) {
-      if (!series[i] || round[i] !== FINAL) continue;
-      const nm = plNames[win[i]], c = countryOf.get(nm), sk = SLAM_KEY[tourNames[tour[i]]]; if (!c || !sk) continue;
-      let o = by.get(c); if (!o) { const pos = countryPos.get(c); o = { country: c, lat: pos[0], lon: pos[1], titles: 0, by_slam: { AO: 0, RG: 0, W: 0, USO: 0 }, champs: new Map() }; by.set(c, o); }
-      o.titles++; o.by_slam[sk]++; o.champs.set(disp(nm), (o.champs.get(disp(nm)) || 0) + 1); total++;
-    }
-    const list = [...by.values()].sort((a, b) => b.titles - a.titles).map(o => Object.assign(o, { champions: [...o.champs].sort((a, b) => b[1] - a[1]).map(([name, titles]) => ({ name, titles })) }));
-    globe.setCountries(list);
-    $('globe-summary').textContent = total ? `${total} Grand Slam title${total > 1 ? 's' : ''} in this view, won by players from ${list.length} countr${list.length > 1 ? 'ies' : 'y'}.` : 'No Grand Slam finals in this view.';
-    $('globe-list').innerHTML = list.map(o => `<li><span>${o.country}</span><b>${o.titles}</b></li>`).join('');
-  }
-  function tipHtml(it) {
-    if (it.venue) return `<b>${it.city}</b><br>${it.name}`;
-    return `<b>${it.country}</b> \u00b7 ${it.titles} titles<br>` + Object.keys(SLAM_NAMES).filter(s => it.by_slam[s]).map(s => `${SLAM_NAMES[s]} ${it.by_slam[s]}`).join(' \u00b7 ') + '<br>' + it.champions.map(c => `${c.name} (${c.titles})`).join(', ');
   }
 
   /* ---------- table ---------- */
@@ -416,43 +366,12 @@
     }
   }
 
-  /* ---------- leaderboard: players ranked on the current filters (the Player filter is ignored) ---------- */
-  let lbMeasure = 'wins', lbTop = 5, lbFull = [];
-  const LB = {
-    wins: { label: 'total wins', get: p => p.w },
-    winrate: { label: 'win rate', get: p => (p.n >= MIN_RATE ? p.w / p.n : null), note: `Win rate needs at least ${MIN_RATE} matches.` },
-    titles: { label: 'titles won', get: p => (p.tit > 0 ? p.tit : null), note: 'Only players with at least one title are ranked. Titles are counted exactly as recorded in the file, which is missing a few Grand Slam matches (see About the data on the report page) — that is why Nadal shows 21 rather than 22.' },
-    matches: { label: 'matches played', get: p => p.n },
-    avgrank: { label: 'average ATP ranking (best first)', get: p => (p.rc >= MIN_RATE ? p.rs / p.rc : null), asc: true, note: `Lower ranking numbers are better. Needs at least ${MIN_RATE} matches with a listed ranking.` }
-  };
-  function lbUpdate() {
-    const rows = select(-1), nP = plNames.length, n = new Uint32Array(nP), w = new Uint32Array(nP), tit = new Uint32Array(nP), rs = new Float64Array(nP), rc = new Uint32Array(nP);
-    for (const i of rows) {
-      const a = win[i], b = los[i], f = round[i] === FINAL ? 1 : 0;
-      n[a]++; w[a]++; tit[a] += f; if (rw[i]) { rs[a] += rw[i]; rc[a]++; } n[b]++; if (rl[i]) { rs[b] += rl[i]; rc[b]++; }
-    }
-    const M = LB[lbMeasure], list = [];
-    for (let q = 0; q < nP; q++) if (n[q]) { const o = { id: q, n: n[q], w: w[q], l: n[q] - w[q], tit: tit[q], rs: rs[q], rc: rc[q] }; o.v = M.get(o); if (o.v != null) list.push(o); }
-    list.sort((a, b) => (M.asc ? a.v - b.v : b.v - a.v) || b.w - a.w || plNames[a.id].localeCompare(plNames[b.id]));   // ties: by surname
-    list.forEach((o, k) => { o.rank = k > 0 && list[k - 1].v === o.v ? list[k - 1].rank : k + 1; });
-    lbFull = list;
-    const shown = list.slice(0, lbTop);
-    const pct = o => (o.n >= MIN_RATE ? ((o.w / o.n) * 100).toFixed(1) + '%' : '\u2013'), ar = o => (o.rc ? (o.rs / o.rc).toFixed(1) : '\u2013');
-    const row = o => `<tr${o.id === wlPlayer ? ' class="me"' : ''}><td>${o.rank}</td><td>${Charts.esc(plDisp[o.id])}</td><td>${int(o.w)}</td><td>${int(o.l)}</td><td>${int(o.n)}</td><td>${pct(o)}</td><td>${int(o.tit)}</td><td>${ar(o)}</td></tr>`;
-    const heads = ['Rank', 'Player', 'Wins', 'Losses', 'Matches', 'Win rate', 'Titles (finals won)', 'Avg. ATP ranking'];
-    $('lb-tbl').innerHTML = `<thead><tr>${heads.map((h, i) => `<th scope="col" style="cursor:default">${h}</th>`).join('')}</tr></thead><tbody>` +
-      (shown.length ? shown.map(row).join('') : `<tr><td colspan="8" style="text-align:center;padding:24px">No players match the current filters.</td></tr>`) + '</tbody>';
-    $('t-lb').textContent = `Player leaderboard: top ${Math.min(lbTop, list.length) || lbTop} by ${M.label}`;
-    $('lb-info').textContent = `${int(list.length)} players ranked. The player shown in Win/Loss averages above, if any, is highlighted. Players with equal values share a rank. ${M.note || ''}`.replace(/\s+/g, ' ');
-  }
-
   /* ---------- controls ---------- */
   function setup() {
     const years = Array.from({ length: NY }, (_, k) => Y0 + k);
     $('f-from').innerHTML = years.map(y => `<option>${y}</option>`).join(''); $('f-to').innerHTML = years.map(y => `<option>${y}</option>`).join('');
     $('dl-players').innerHTML = plNames.map((_, i) => i).sort((a, b) => plMatches[b] - plMatches[a]).map(i => `<option value="${Charts.esc(plDisp[i])}">`).join('');
     $('dl-tours').innerHTML = tourNames.slice().sort().map(t => `<option value="${Charts.esc(t)}">`).join(''); tourNames.forEach((t, i) => tourIndex.set(t.toLowerCase(), i));
-    $('lb-measure').innerHTML = Object.keys(LB).map(k => `<option value="${k}">${LB[k].label.replace(' (best first)', '')}</option>`).join('');
     reset();
     const bind = (id, fn) => { $(id).addEventListener('change', () => { fn($(id).value); schedule(); }); };
     bind('f-from', v => { F.from = +v; if (F.to < F.from) { F.to = F.from; $('f-to').value = F.to; } }); bind('f-to', v => { F.to = +v; if (F.to < F.from) { F.from = F.to; $('f-from').value = F.from; } });
@@ -478,9 +397,9 @@
     let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(schedule, 150); });
   }
   function reset() {
-    F = DEF(); measure = 'winrate'; dimKey = 'player'; sortSpec = null; showAll = false; lbMeasure = 'wins'; lbTop = 5;
+    F = DEF(); measure = 'winrate'; dimKey = 'player'; sortSpec = null; showAll = false;
     wlPlayer = -1; h2hP1 = -1; h2hP2 = -1;
-    $('wl-player').value = ''; $('wl-player').style.borderColor = ''; $('lb-measure').value = lbMeasure; $('lb-top').value = String(lbTop);
+    $('wl-player').value = ''; $('wl-player').style.borderColor = '';
     $('f-from').value = F.from; $('f-to').value = F.to; $('f-tour').value = ''; $('f-tour').style.borderColor = '';
     h2hSetInputs(); $('h2h-p1').style.borderColor = ''; $('h2h-p2').style.borderColor = '';
   }
@@ -488,14 +407,12 @@
   /* ---------- start ---------- */
   (async function () {
     try {
-      const [a, c, al] = await Promise.all([getText('data/atp_matches.csv'), getText('data/champion_countries.csv', true), getText('data/player_name_aliases.csv', true)]);
+      const [a, al] = await Promise.all([getText('data/atp_matches.csv'), getText('data/player_name_aliases.csv', true)]);
       const aliasMap = new Map(); if (al) parseCSV(al).rows.forEach(r => aliasMap.set(r[0], r[1]));
       build(parseCSV(a), aliasMap);
-      if (c) parseCSV(c).rows.forEach(r => { countryOf.set(r[0], r[1]); countryPos.set(r[1], [+r[2], +r[3]]); });
       $('load').hidden = true; $('app').hidden = false; setup();
-      globe = new SlamGlobe($('dash-globe'), { venues: VENUES, countries: [], lon: -30, lat: 30, tip: $('dash-tip'), tipHtml, spin: false, aspect: .94, labelTop: 3 });
       update();
-      window.__dash = { get state() { return { F, measure, dimKey, n: sel.length, N }; }, get wl() { return wlResult; }, get lb() { return lbFull.map(o => ({ rank: o.rank, player: plNames[o.id], wins: o.w, losses: o.l, matches: o.n, titles: o.tit, value: o.v })); },
+      window.__dash = { get state() { return { F, measure, dimKey, n: sel.length, N }; }, get wl() { return wlResult; },
         get h2h() { if (h2hP1 < 0 || h2hP2 < 0 || h2hP1 === h2hP2) return null; const m = h2hMatches(h2hP1, h2hP2); return { p1: plNames[h2hP1], p2: plNames[h2hP2], n: m.length, w1: m.filter(i => win[i] === h2hP1).length, w2: m.filter(i => win[i] === h2hP2).length }; } };
     } catch (e) { $('load').textContent = e.message; }
   })();
