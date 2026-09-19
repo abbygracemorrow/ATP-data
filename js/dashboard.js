@@ -14,6 +14,14 @@
     { slam: 'W', name: 'Wimbledon', city: 'London', lat: 51.43, lon: -0.21 }, { slam: 'USO', name: 'US Open', city: 'New York', lat: 40.75, lon: -73.85 }];
   const disp = n => n.replace(/^(.*) ([A-Z.]+)$/, '$2 $1');
 
+  /* decorative row of enlarged court icons in the header, purely for looks -- shows immediately,
+     doesn't wait on the CSV load */
+  (function courtGallery() {
+    const el = $('court-gallery'); if (!el) return;
+    el.innerHTML = ['AO', 'RG', 'W', 'USO'].map(s =>
+      `<div class="court-gallery-item">${Charts.courtIconSvg(s, 64, { label: SLAM_NAMES[s] })}<span>${SLAM_NAMES[s]}</span></div>`).join('');
+  })();
+
   /* ---------- CSV ---------- */
   function parseCSV(text) {
     const lines = text.split(/\r?\n/), head = lines[0].split(','), out = [];
@@ -232,7 +240,6 @@
   function scopeLines() {
     const noFilters = 'none';
     $('charts-scope').textContent = filterParts(true).join(' \u00b7 ') || noFilters;
-    $('wl-scope').textContent = filterParts(false).join(' \u00b7 ') || noFilters;
     $('lb-scope').textContent = filterParts(false).join(' \u00b7 ') || noFilters;
     // head to head intentionally ignores every filter above, so it has no scope line to update here
   }
@@ -505,10 +512,12 @@
   /* shown by default (and restored by Reset) so the head-to-head visual has something to display
      before anyone has typed anything -- the two players with the most meetings in this data */
   const H2H_DEFAULT = ['Djokovic N.', 'Nadal R.'];
+  const WL_DEFAULT = 'Shelton B.';   // shown by default so the panel isn't empty; anyone can pick another player
   function reset() {
-    F = DEF(); measure = 'matches'; dimKey = 'tier'; sortSpec = null; showAll = false; wlPlayer = -1; lbMeasure = 'wins'; lbTop = 10;
+    F = DEF(); measure = 'matches'; dimKey = 'tier'; sortSpec = null; showAll = false; lbMeasure = 'wins'; lbTop = 10;
+    wlPlayer = plIndex.get(disp(WL_DEFAULT)) ?? -1;
     h2hP1 = plIndex.get(disp(H2H_DEFAULT[0])) ?? -1; h2hP2 = plIndex.get(disp(H2H_DEFAULT[1])) ?? -1;
-    $('wl-player').value = ''; $('wl-player').style.borderColor = ''; $('lb-measure').value = lbMeasure; $('lb-top').value = String(lbTop);
+    $('wl-player').value = wlPlayer >= 0 ? plDisp[wlPlayer] : ''; $('wl-player').style.borderColor = ''; $('lb-measure').value = lbMeasure; $('lb-top').value = String(lbTop);
     $('f-from').value = F.from; $('f-to').value = F.to; $('f-player').value = ''; $('f-tour').value = ''; $('f-player').style.borderColor = ''; $('f-tour').style.borderColor = '';
     ['f-tier', 'f-surface', 'f-court', 'f-round', 'f-bo'].forEach(id => $(id).value = '-1'); $('m-dim').value = dimKey;
     h2hSetInputs(); $('h2h-p1').style.borderColor = ''; $('h2h-p2').style.borderColor = '';
