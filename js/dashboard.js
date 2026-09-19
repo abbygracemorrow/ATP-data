@@ -71,19 +71,18 @@
     plMatches = new Uint32Array(plNames.length); for (let i = 0; i < N; i++) { plMatches[win[i]]++; plMatches[los[i]]++; }
   }
 
-  /* ---------- filters ---------- */
-  const DEF = () => ({ from: Y0, to: Y1, player: -1, tour: -1, tier: -1, surf: -1, court: -1, round: -1, bo: -1 });
-  let F, measure = 'matches', dimKey = 'tier', sortSpec = null, showAll = false;
+  /* ---------- filters ----------
+     The global filters are deliberately limited to Year and Tournament. */
+  const DEF = () => ({ from: Y0, to: Y1, tour: -1 });
+  let F, measure = 'winrate', dimKey = 'player', sortSpec = null, showAll = false;
   const tourIndex = new Map();
 
   function matchesFilters(i) {
     const y = year[i]; if (y < F.from || y > F.to) return false;
-    if (F.tier >= 0 && tier[i] !== F.tier) return false; if (F.tour >= 0 && tour[i] !== F.tour) return false;
-    if (F.surf >= 0 && surf[i] !== F.surf) return false; if (F.court >= 0 && court[i] !== F.court) return false;
-    if (F.round >= 0 && round[i] !== F.round) return false; if (F.bo >= 0 && bo[i] !== F.bo) return false;
+    if (F.tour >= 0 && tour[i] !== F.tour) return false;
     return true;
   }
-  function select(pl = F.player) {
+  function select(pl = -1) {
     const out = [];
     for (let i = 0; i < N; i++) {
       if (!matchesFilters(i)) continue;
@@ -115,15 +114,7 @@
     tournament: { label: 'Tournament', n: () => tourNames.length, name: k => tourNames[k], key: i => tour[i] },
     player: { label: 'Player', n: () => plNames.length, name: k => plDisp[k], key: null, player: true }
   };
-  const perspective = () => (F.player >= 0 || dimKey === 'player' ? 'player' : 'match');
-  /* a breakdown is trivial (every group but one is empty) when its dimension is already pinned to a
-     single value by a global filter -- e.g. "Break down by Tier" while Tier is filtered to Grand Slam */
-  const DIM_FILTER_KEY = { tier: 'tier', surface: 'surf', court: 'court', round: 'round', bo: 'bo', tournament: 'tour', player: 'player' };
-  function dimIsTrivial() {
-    if (dimKey === 'year') return F.from === F.to;
-    const fk = DIM_FILTER_KEY[dimKey];
-    return fk != null && F[fk] >= 0;
-  }
+  const perspective = () => (dimKey === 'player' ? 'player' : 'match');
   const MEAS = {
     matches: { label: () => 'Matches', get: (A, g) => A.n[g], fmt: int, p: 'mp' },
     wins: { label: () => 'Wins', get: (A, g) => A.w[g], fmt: int, p: 'p' },
@@ -149,7 +140,7 @@
         A.n[g]++; A.fin[g] += fin; A.bo5[g] += b5; if (rw[i]) { A.rs[g] += rw[i]; A.rc[g]++; } if (rl[i]) { A.rs[g] += rl[i]; A.rc[g]++; } mark(g, win[i], tour[i]); if (sp && !sp[g * nP + los[i]]) { sp[g * nP + los[i]] = 1; A.pl[g]++; }
       } else {
         for (let s = 0; s < 2; s++) {
-          const pid = s ? los[i] : win[i]; if (F.player >= 0 && pid !== F.player) continue;
+          const pid = s ? los[i] : win[i];
           const g = keyFn(i, pid); if (g < 0) continue; const won = s === 0 ? 1 : 0;
           A.n[g]++; A.w[g] += won; A.fin[g] += fin; A.tit[g] += fin & won; A.bo5[g] += b5; { const rk = won ? rw[i] : rl[i]; if (rk) { A.rs[g] += rk; A.rc[g]++; } } mark(g, -1, tour[i]);
         }
@@ -165,10 +156,9 @@
   function update() {
     sel = select();
     const ps = perspective(), dim = DIMS[dimKey];
-    // keep the measure menu valid for the current perspective
+    // keep the measure valid for the current perspective (guards against an invalid saved state)
     const ok = Object.keys(MEAS).filter(m => measOK(m, ps));
     if (!ok.includes(measure)) measure = ok[0];
-    $('m-measure').innerHTML = ok.map(m => `<option value="${m}"${m === measure ? ' selected' : ''}>${MEAS[m].label(ps === 'player' ? 'p' : 'm')}</option>`).join('');
     const M = MEAS[measure], mLabel = M.label(ps === 'player' ? 'p' : 'm');
     const need = { pl: measure === 'players', tn: true };
 
@@ -234,23 +224,15 @@
     wlUpdate(); lbUpdate(); h2hUpdate(); scopeLines();
   }
 
-  /* filter parts shared by the top view-line and every section's "filters applied" caption.
-     includePlayer=true for sections the Player filter actually reaches (the main view, the charts);
-     false for the ones that ignore it and have their own player picker (win/loss, leaderboard, head-to-head). */
-  function filterParts(includePlayer) {
-    const parts = []; if (F.from !== Y0 || F.to !== Y1) parts.push(`${F.from}\u2013${F.to}`); if (includePlayer && F.player >= 0) parts.push(plDisp[F.player]);
-    if (F.tour >= 0) parts.push(tourNames[F.tour]); if (F.tier >= 0) parts.push(TIERS[F.tier]); if (F.surf >= 0) parts.push(surfNames[F.surf]);
-    if (F.court >= 0) parts.push(courtNames[F.court]); if (F.round >= 0) parts.push(ROUNDS[F.round]); if (F.bo >= 0) parts.push(`best of ${F.bo}`);
+  /* filter parts shared by the top view-line and every section's "filters applied" caption. */
+  function filterParts() {
+    const parts = []; if (F.from !== Y0 || F.to !== Y1) parts.push(`${F.from}\u2013${F.to}`);
+    if (F.tour >= 0) parts.push(tourNames[F.tour]);
     return parts;
   }
   function scopeLines() {
-    const noFilters = 'none';
-    $('charts-scope').textContent = filterParts(true).join(' \u00b7 ') || noFilters;
-    $('lb-scope').textContent = filterParts(false).join(' \u00b7 ') || noFilters;
+    $('lb-scope').textContent = filterParts().join(' \u00b7 ') || 'none';
     // head to head intentionally ignores every filter above, so it has no scope line to update here
-    const note = $('dim-note'), dim = DIMS[dimKey];
-    if (dimIsTrivial()) { note.textContent = `You've filtered to a single ${dim.label.toLowerCase()}, so breaking down by ${dim.label.toLowerCase()} only shows that one group below. Pick a different breakdown to compare groups, or widen this filter.`; note.style.display = ''; }
-    else note.style.display = 'none';
   }
 
   /* ---------- summary numbers ---------- */
@@ -262,7 +244,7 @@
     }
     const k = [[int(n), 'matches in this view'], [int(npl), 'different players'], [int(ntn), 'different tournaments']];
     $('kpis').innerHTML = k.map(([b, s]) => `<div class="kpi"><b${b.length > 9 ? ' style="font-size:1.35rem"' : ''}>${Charts.esc(b)}</b><span>${Charts.esc(s)}</span></div>`).join('');
-    const parts = filterParts(true);
+    const parts = filterParts();
     $('view-line').textContent = `Showing ${int(n)} of ${int(N)} matches` + (parts.length ? ` \u00b7 ${parts.join(' \u00b7 ')}` : ' \u00b7 no filters applied');
   }
 
@@ -454,38 +436,29 @@
     list.sort((a, b) => (M.asc ? a.v - b.v : b.v - a.v) || b.w - a.w || plNames[a.id].localeCompare(plNames[b.id]));   // ties: by surname
     list.forEach((o, k) => { o.rank = k > 0 && list[k - 1].v === o.v ? list[k - 1].rank : k + 1; });
     lbFull = list;
-    const shown = list.slice(0, lbTop), sel = F.player, pinned = sel >= 0 && !shown.some(o => o.id === sel) ? list.find(o => o.id === sel) : null;
+    const shown = list.slice(0, lbTop);
     const pct = o => (o.n >= MIN_RATE ? ((o.w / o.n) * 100).toFixed(1) + '%' : '\u2013'), ar = o => (o.rc ? (o.rs / o.rc).toFixed(1) : '\u2013');
-    const row = o => `<tr${o.id === sel || o.id === wlPlayer ? ' class="me"' : ''}><td>${o.rank}</td><td>${Charts.esc(plDisp[o.id])}</td><td>${int(o.w)}</td><td>${int(o.l)}</td><td>${int(o.n)}</td><td>${pct(o)}</td><td>${int(o.tit)}</td><td>${ar(o)}</td></tr>`;
+    const row = o => `<tr${o.id === wlPlayer ? ' class="me"' : ''}><td>${o.rank}</td><td>${Charts.esc(plDisp[o.id])}</td><td>${int(o.w)}</td><td>${int(o.l)}</td><td>${int(o.n)}</td><td>${pct(o)}</td><td>${int(o.tit)}</td><td>${ar(o)}</td></tr>`;
     const heads = ['Rank', 'Player', 'Wins', 'Losses', 'Matches', 'Win rate', 'Titles (finals won)', 'Avg. ATP ranking'];
     $('lb-tbl').innerHTML = `<thead><tr>${heads.map((h, i) => `<th scope="col" style="cursor:default">${h}</th>`).join('')}</tr></thead><tbody>` +
-      (shown.length ? shown.map(row).join('') + (pinned ? `<tr class="gap-row"><td colspan="8">\u00b7 \u00b7 \u00b7</td></tr>` + row(pinned) : '') : `<tr><td colspan="8" style="text-align:center;padding:24px">No players match the current filters.</td></tr>`) + '</tbody>';
+      (shown.length ? shown.map(row).join('') : `<tr><td colspan="8" style="text-align:center;padding:24px">No players match the current filters.</td></tr>`) + '</tbody>';
     $('t-lb').textContent = `Player leaderboard: top ${Math.min(lbTop, list.length) || lbTop} by ${M.label}`;
-    const missing = sel >= 0 && !list.some(o => o.id === sel) ? ` ${plDisp[sel]} is not ranked on this measure in the current view.` : '';
-    $('lb-info').textContent = `${int(list.length)} players ranked. Uses every filter above except Player, so anyone can appear; the selected player is highlighted. Players with equal values share a rank. ${M.note || ''}${missing}`.replace(/\s+/g, ' ');
+    $('lb-info').textContent = `${int(list.length)} players ranked. The player shown in Win/Loss averages above, if any, is highlighted. Players with equal values share a rank. ${M.note || ''}`.replace(/\s+/g, ' ');
   }
 
   /* ---------- controls ---------- */
-  function fillSelect(el, opts, allLabel) { el.innerHTML = `<option value="-1">${allLabel}</option>` + opts.map((o, i) => `<option value="${i}">${Charts.esc(o)}</option>`).join(''); }
   function setup() {
     const years = Array.from({ length: NY }, (_, k) => Y0 + k);
     $('f-from').innerHTML = years.map(y => `<option>${y}</option>`).join(''); $('f-to').innerHTML = years.map(y => `<option>${y}</option>`).join('');
-    fillSelect($('f-tier'), TIERS, 'All tiers'); fillSelect($('f-surface'), surfNames, 'All surfaces'); fillSelect($('f-court'), courtNames, 'All courts'); fillSelect($('f-round'), ROUNDS, 'All rounds');
-    $('f-bo').innerHTML = '<option value="-1">All</option><option value="3">Best of 3</option><option value="5">Best of 5</option>';
     $('dl-players').innerHTML = plNames.map((_, i) => i).sort((a, b) => plMatches[b] - plMatches[a]).map(i => `<option value="${Charts.esc(plDisp[i])}">`).join('');
     $('dl-tours').innerHTML = tourNames.slice().sort().map(t => `<option value="${Charts.esc(t)}">`).join(''); tourNames.forEach((t, i) => tourIndex.set(t.toLowerCase(), i));
-    $('m-dim').innerHTML = Object.keys(DIMS).map(k => `<option value="${k}">${DIMS[k].label}</option>`).join('');
     $('lb-measure').innerHTML = Object.keys(LB).map(k => `<option value="${k}">${LB[k].label.replace(' (best first)', '')}</option>`).join('');
     reset();
     const bind = (id, fn) => { $(id).addEventListener('change', () => { fn($(id).value); schedule(); }); };
     bind('f-from', v => { F.from = +v; if (F.to < F.from) { F.to = F.from; $('f-to').value = F.to; } }); bind('f-to', v => { F.to = +v; if (F.to < F.from) { F.from = F.to; $('f-from').value = F.from; } });
-    bind('f-tier', v => F.tier = +v); bind('f-surface', v => F.surf = +v); bind('f-court', v => F.court = +v); bind('f-round', v => F.round = +v); bind('f-bo', v => F.bo = +v);
-    bind('m-measure', v => measure = v); bind('m-dim', v => { dimKey = v; sortSpec = null; showAll = false; });
     const typed = (id, lookup, key) => { const el = $(id), apply = () => { const v = el.value.trim(); if (!v) { F[key] = -1; el.style.borderColor = ''; return true; } const k = lookup(v); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } F[key] = k; el.style.borderColor = ''; return true; };
       el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; F[key] = -1; el.style.borderColor = ''; } schedule(); }); };
-    typed('f-player', v => plIndex.get(v), 'player'); typed('f-tour', v => tourIndex.get(v.toLowerCase()), 'tour');
-    // picking a player in the top filter also fills the win/loss panel
-    $('f-player').addEventListener('change', () => { if (F.player >= 0) { wlPlayer = F.player; $('wl-player').value = plDisp[F.player]; $('wl-player').style.borderColor = ''; schedule(); } });
+    typed('f-tour', v => tourIndex.get(v.toLowerCase()), 'tour');
     { const el = $('wl-player'), apply = () => { const v = el.value.trim(); if (!v) { wlPlayer = -1; el.style.borderColor = ''; return true; } const k = plIndex.get(v); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } wlPlayer = k; el.style.borderColor = ''; return true; };
       el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; wlPlayer = -1; el.style.borderColor = ''; } schedule(); }); }
     { const applyH2H = which => { const el = $(which === 1 ? 'h2h-p1' : 'h2h-p2'), other = which === 1 ? h2hP2 : h2hP1, v = el.value.trim();
@@ -498,9 +471,6 @@
         el.addEventListener('change', () => { if (!applyH2H(which)) { el.value = ''; if (which === 1) h2hP1 = -1; else h2hP2 = -1; el.style.borderColor = ''; } schedule(); }); });
       $('h2h-swap').addEventListener('click', () => { const t = h2hP1; h2hP1 = h2hP2; h2hP2 = t; h2hSetInputs(); schedule(); }); }
     $('btn-reset').addEventListener('click', () => { reset(); schedule(); });
-    $('btn-slams').addEventListener('click', () => { F.tier = 0; $('f-tier').value = '0';
-      if (dimKey === 'tier') { dimKey = 'surface'; $('m-dim').value = 'surface'; sortSpec = null; } // Tier is now fixed, so breaking down by Tier would be a single bar
-      schedule(); });
     $('btn-more').addEventListener('click', () => { showAll = !showAll; renderTable(DIMS[dimKey]); });
     $('btn-csv').addEventListener('click', csv);
     $('tbl').addEventListener('click', e => { const th = e.target.closest('th'); if (!th) return; const c = +th.dataset.col; sortSpec = { dim: sortSpec.dim, col: c, dir: sortSpec.col === c ? -sortSpec.dir : (c === 0 ? 1 : -1) }; renderTable(DIMS[dimKey]); });
@@ -508,11 +478,10 @@
     let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(schedule, 150); });
   }
   function reset() {
-    F = DEF(); measure = 'matches'; dimKey = 'tier'; sortSpec = null; showAll = false; lbMeasure = 'wins'; lbTop = 5;
+    F = DEF(); measure = 'winrate'; dimKey = 'player'; sortSpec = null; showAll = false; lbMeasure = 'wins'; lbTop = 5;
     wlPlayer = -1; h2hP1 = -1; h2hP2 = -1;
     $('wl-player').value = ''; $('wl-player').style.borderColor = ''; $('lb-measure').value = lbMeasure; $('lb-top').value = String(lbTop);
-    $('f-from').value = F.from; $('f-to').value = F.to; $('f-player').value = ''; $('f-tour').value = ''; $('f-player').style.borderColor = ''; $('f-tour').style.borderColor = '';
-    ['f-tier', 'f-surface', 'f-court', 'f-round', 'f-bo'].forEach(id => $(id).value = '-1'); $('m-dim').value = dimKey;
+    $('f-from').value = F.from; $('f-to').value = F.to; $('f-tour').value = ''; $('f-tour').style.borderColor = '';
     h2hSetInputs(); $('h2h-p1').style.borderColor = ''; $('h2h-p2').style.borderColor = '';
   }
 
