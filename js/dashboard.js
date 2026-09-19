@@ -217,19 +217,17 @@
       { xlabel: XM.label(ps === 'player' ? 'p' : 'm'), ylabel: mLabel, xfmt: XM.fmt, yfmt: M.pct ? v => Math.round(v * 100) + '%' : M.fmt, label: 'Scatter plot', ymin: M.pct ? 0 : undefined, ymax: M.pct && measure === 'winrate' ? 1 : undefined });
     $('n-scatter').textContent = `Each dot is one ${dim.label.toLowerCase()} group${sc.length >= 400 ? ' (the 400 with the most matches)' : ''}. Hover a dot for details.`;
 
-    // ---- chart 4: heat map
-    $('t-heat').textContent = dimKey === 'year' ? `${mLabel} by period and surface` : `${mLabel} by ${dim.label.toLowerCase()} and period`;
-    let rowLabels, colLabels, cell;
-    if (dimKey === 'year') {
-      rowLabels = PERIODS; colLabels = surfNames.slice(); const ns = surfNames.length;
-      const A4 = agg(sel, 5 * ns, i => period(year[i]) * ns + surf[i], ps, need); cell = (r, c) => (A4.n[r * ns + c] >= (M.rate ? MIN_CELL : 1) ? M.get(A4, r * ns + c) : null);
-    } else {
-      const top = (dim.natural ? cats : ranked).slice(0, 10), rank = new Map(top.map((g, r) => [g, r])); rowLabels = top.map(g => dim.name(g)); colLabels = PERIODS;
-      const A4 = agg(sel, Math.max(1, top.length) * 5, (i, p) => { const r = rank.get(dim.player ? p : dim.key(i)); return r === undefined ? -1 : r * 5 + period(year[i]); }, ps, need);
-      cell = (r, c) => (A4.n[r * 5 + c] >= (M.rate ? MIN_CELL : 1) ? M.get(A4, r * 5 + c) : null);
-    }
-    Charts.heatmap($('ch-heat'), rowLabels, colLabels, rowLabels.map((_, r) => colLabels.map((_, c) => cell(r, c))), { fmt: M.fmt, label: 'Heat map' });
-    $('n-heat').textContent = (M.rate ? `Darker cells are higher values. Dashed cells have fewer than ${MIN_CELL} matches.` : 'Darker cells are higher values. Dashed cells have no matches.') + (M.asc ? ' A higher ranking number is a lower rank.' : '');
+    // ---- chart 4: wins against average opponent ranking, by player (always player-based,
+    // independent of Measure / Break down by -- a fixed companion to the leaderboard above)
+    $('t-rank').textContent = 'Wins against average opponent ranking, by player';
+    const AP = agg(sel, plNames.length, (i, p) => p, 'player', { tn: false });
+    let rankPts = []; for (let p = 0; p < plNames.length; p++) if (AP.n[p] >= MIN_RATE && AP.rc[p]) rankPts.push({ p, wins: AP.w[p], n: AP.n[p], avgrank: AP.rs[p] / AP.rc[p] });
+    rankPts.sort((a, b) => b.wins - a.wins); const rankTotal = rankPts.length; rankPts = rankPts.slice(0, 300);
+    const rankLabelSet = new Set(rankPts.slice(0, 6).map(o => o.p).concat(rankPts.slice().sort((a, b) => a.avgrank - b.avgrank).slice(0, 3).map(o => o.p)));
+    Charts.scatter($('ch-rank'), rankPts.map(o => ({ x: o.wins, y: o.avgrank, label: plDisp[o.p], show: rankLabelSet.has(o.p) && rankPts.length <= 300, color: C.pink, r: 5.5,
+      tip: `<b>${Charts.esc(plDisp[o.p])}</b><br>Wins: ${int(o.wins)}<br>Average opponent ranking: ${o.avgrank.toFixed(1)}<br>${int(o.n)} matches` })),
+      { xlabel: 'Wins', ylabel: 'Average ATP ranking of opponents', xfmt: int, yfmt: v => v.toFixed(1), label: 'Wins against average opponent ranking' });
+    $('n-rank').textContent = `Each dot is one player with at least ${MIN_RATE} matches in this view${rankTotal > 300 ? ' (the 300 with the most wins)' : ''}. Lower on the vertical axis means tougher average opponents. Hover a dot for details.`;
 
     globeUpdate();
     table(A, cats, ps, dim);
@@ -437,7 +435,7 @@
   }
 
   /* ---------- leaderboard: players ranked on the current filters (the Player filter is ignored) ---------- */
-  let lbMeasure = 'wins', lbTop = 10, lbFull = [];
+  let lbMeasure = 'wins', lbTop = 5, lbFull = [];
   const LB = {
     wins: { label: 'total wins', get: p => p.w },
     winrate: { label: 'win rate', get: p => (p.n >= MIN_RATE ? p.w / p.n : null), note: `Win rate needs at least ${MIN_RATE} matches.` },
@@ -509,15 +507,10 @@
     $('tbl').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('th')) e.target.click(); });
     let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(schedule, 150); });
   }
-  /* shown by default (and restored by Reset) so the head-to-head visual has something to display
-     before anyone has typed anything -- the two players with the most meetings in this data */
-  const H2H_DEFAULT = ['Djokovic N.', 'Nadal R.'];
-  const WL_DEFAULT = 'Shelton B.';   // shown by default so the panel isn't empty; anyone can pick another player
   function reset() {
-    F = DEF(); measure = 'matches'; dimKey = 'tier'; sortSpec = null; showAll = false; lbMeasure = 'wins'; lbTop = 10;
-    wlPlayer = plIndex.get(disp(WL_DEFAULT)) ?? -1;
-    h2hP1 = plIndex.get(disp(H2H_DEFAULT[0])) ?? -1; h2hP2 = plIndex.get(disp(H2H_DEFAULT[1])) ?? -1;
-    $('wl-player').value = wlPlayer >= 0 ? plDisp[wlPlayer] : ''; $('wl-player').style.borderColor = ''; $('lb-measure').value = lbMeasure; $('lb-top').value = String(lbTop);
+    F = DEF(); measure = 'matches'; dimKey = 'tier'; sortSpec = null; showAll = false; lbMeasure = 'wins'; lbTop = 5;
+    wlPlayer = -1; h2hP1 = -1; h2hP2 = -1;
+    $('wl-player').value = ''; $('wl-player').style.borderColor = ''; $('lb-measure').value = lbMeasure; $('lb-top').value = String(lbTop);
     $('f-from').value = F.from; $('f-to').value = F.to; $('f-player').value = ''; $('f-tour').value = ''; $('f-player').style.borderColor = ''; $('f-tour').style.borderColor = '';
     ['f-tier', 'f-surface', 'f-court', 'f-round', 'f-bo'].forEach(id => $(id).value = '-1'); $('m-dim').value = dimKey;
     h2hSetInputs(); $('h2h-p1').style.borderColor = ''; $('h2h-p2').style.borderColor = '';
