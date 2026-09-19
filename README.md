@@ -3,7 +3,7 @@
 A two-page data website about men's Grand Slam tennis, built from ATP match results.
 
 * **Report** (`index.html`): eleven findings, each with a chart, plus a globe and an "About the data" section.
-* **Dashboard** (`dashboard.html`): filters, summary numbers, a player win/loss comparison, four charts with measure and breakdown switches, a globe, a player leaderboard, and a table. All calculations run in the browser.
+* **Dashboard** (`dashboard.html`): a head-to-head comparison, a player win/loss comparison, a filter by year and tournament, and win-rate charts, a leaderboard, and a table driven by that filter. All calculations run in the browser.
 
 **Live site:** <https://abbygracemorrow.github.io/ATP-data/>  
 **Author:** Abby Morrow
@@ -29,26 +29,25 @@ The only other files that feed the site are `data/champion_countries.csv` (see b
 | `dashboard.html` | The dashboard page (hand written). |
 | `css/style.css` | One stylesheet and color palette shared by both pages. |
 | `js/charts.js` | Small SVG chart toolkit (bar, lollipop, paired bar, line, scatter, heat map, stacked bar, and checklist grid). No libraries. |
-| `js/globe.js` | Dot-matrix globe drawn on a canvas, with arcs from champion countries to Slam venues. |
-| `js/land.js` | Hand-drawn coarse world outline used only to place the globe's dots (works offline). |
+| `js/globe.js` | Dot-matrix globe drawn on a canvas, with arcs from champion countries to Slam venues. Used by the report page's two globes; the dashboard no longer has one. |
+| `js/land.js` | Hand-drawn coarse world outline used only to place the report page's globe dots (works offline). |
 | `js/report.js` | Draws the report's charts from the JSON embedded in `index.html`. |
 | `js/dashboard.js` | Loads the CSV in the browser, applies filters, and recomputes the numbers, charts, win/loss panel, leaderboard, and table. |
 | `scripts/build_site.py` | Reads the data, computes **every number in the report**, writes `data/report_data.json`, and renders `index.html` from the template. |
 | `scripts/report_template.html` | The report's text with `{{placeholders}}` for numbers. Edit the wording here. |
 | `data/atp_matches.csv` | The match data (see above). |
-| `data/champion_countries.csv` | Champion-to-country table for the globes (see above). |
+| `data/champion_countries.csv` | Champion-to-country table for the report page's globes (see above). |
 | `data/player_name_aliases.csv` | Player-name spelling variant &rarr; canonical name (see above). |
 | `data/report_data.json` | Output of the build script: every figure and chart series in the report. |
 | `.gitignore` | Keeps Python cache files out of the repository. |
 
 ## Dashboard guide
 
-* **Head to head** sits first on the page, above the filters, because it's the one section the filters below don't touch: pick two players (a swap button flips them; the same player can't be picked twice) to see their overall record, their record against each other by surface/tier/round, every match they've played against each other (newest first), and a side-by-side comparison of their career numbers (win rate, wins, losses, Grand Slam titles, win rate by surface) with whichever player is ahead on each row highlighted. It always uses every match in the dataset, deliberately ignoring the global filters, the Player filter, and everything else below it.
-* **Player win/loss averages** comes right after, also above the filters: search for a player to see average wins and average losses per season and per tournament, plus the average ATP ranking of the opponents beaten and lost to. Unlike Head to head, this one *does* use the global filters below (except Player).
-* **Global filters** (Year, Tournament, and Additional Filters for Tier/Surface/Court/Round/Best of) apply to every section from here down. **Reset all filters** clears everything, including the win/loss player, the leaderboard settings, and the head-to-head players.
-* **Player** has its own panel right below the global filters, because it *doesn't* reach everywhere either: it applies to the summary numbers, the four charts, the table, and the globe, but not to Player win/loss averages, the Player leaderboard, or Head to head (picking a player here does fill in the win/loss picker automatically). Every panel that ignores it shows a "Global filters applied" line so it's clear what's actually in effect. **Measure** and **Break down by** only affect the four charts and the table, so they live in their own small control bar directly above that section rather than with the global filters.
-* **Player leaderboard:** ranks players by total wins, win rate, titles, matches played, or average ATP ranking, using the current global filters (the Player filter is ignored so everyone can be ranked, and the selected player is highlighted). Players with equal values share a rank.
-* **Charts and table:** the **Measure** switch includes matches, wins, win rate, titles, finals, distinct players, distinct tournaments, best-of-five share, and average ATP ranking. The **Break down by** switch changes the grouping.
+* **Head to head** sits first on the page, above the filter, because it's the one section the filter below doesn't touch: pick two players (a swap button flips them; the same player can't be picked twice) to see their overall record, their record against each other by surface, every match they've played against each other (newest first), and a side-by-side comparison of their career numbers (win rate, wins, losses, Grand Slam titles, win rate by surface) with whichever player is ahead on each row highlighted. It always uses every match in the dataset, deliberately ignoring the filter below it. Neither player is pre-selected; search to populate it.
+* **Player win/loss averages** comes right after, also above the filter: search for a player to see average wins and average losses per season and per tournament, plus the average ATP ranking of the opponents beaten and lost to. Unlike Head to head, this one *does* use the year/tournament filter below. No player is pre-selected.
+* **Filter by tournament** (Year and Tournament) is the only filter on the page, and it applies to the summary numbers, the win-rate charts, the leaderboard, and the table below. **Reset all filters** clears it, along with the win/loss player, the leaderboard settings, and the head-to-head players.
+* **Player leaderboard:** ranks players by total wins, win rate, titles, matches played, or average ATP ranking, using the year/tournament filter above. Players with equal values share a rank; the player shown in Win/loss averages, if any, is highlighted.
+* **Charts and table:** always a player view -- win rate by player, win rate by year for the top players, matches against win rate, wins against average opponent ranking, and a full table of every player's matches, wins, losses, win rate, titles, finals, tournaments, best-of-five share, and average ATP ranking. There's no separate measure or breakdown switch; the year/tournament filter is the only thing that changes what's shown.
 
 ## Reproducing the report numbers
 

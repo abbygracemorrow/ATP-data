@@ -195,9 +195,6 @@ table.data th:hover{background:var(--lime)}
 table.data th:first-child,table.data td:first-child{text-align:left}
 table.data td{padding:6px 12px;text-align:right;border-bottom:1px solid var(--dust);white-space:nowrap}
 table.data tbody tr:hover{background:var(--cream)}
-table.data.lb th:nth-child(2),table.data.lb td:nth-child(2){text-align:left}
-table.data tr.me td{background:var(--blush);font-weight:600}
-table.data tr.gap-row td{text-align:center;color:var(--ink-soft);padding:2px;letter-spacing:.3em}
 table.data th[aria-sort="descending"]::after{content:" \25BE"}
 table.data th[aria-sort="ascending"]::after{content:" \25B4"}
 .tbl-foot{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-top:12px;font-family:var(--font-display);font-size:.9rem}
@@ -218,8 +215,6 @@ table.data th[aria-sort="ascending"]::after{content:" \25B4"}
 .wl-table th:first-child,.wl-table td:first-child{text-align:left}
 .wl-table th{font-weight:600;background:var(--cream);border-bottom:var(--line)}
 .wl-def{font-size:var(--fs-small);color:var(--ink-soft);margin:12px 0 0;line-height:1.45}
-.rank-ctl{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
-.rank-ctl .field{min-width:180px}
 
 /* head to head */
 .h2h-header{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;column-gap:20px;row-gap:16px;margin:16px 0 4px}
