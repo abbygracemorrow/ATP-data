@@ -193,12 +193,46 @@
     el.innerHTML = wrap(W, H, o.label || 'Heat map', s);
   }
 
+  /* colors for the court icons only, taken directly from the "GRAND SLAM" reference poster the
+     user provided -- deliberately its own palette, not SLAM_COLOR/the site's sage-pink-lime theme */
+  const COURT_COLORS = {
+    AO: { bg: '#4EA0D9', court: '#2D6E8E' },
+    RG: { bg: '#E67E22', court: '#C36A1B' },
+    USO: { bg: '#6FBE44', court: '#3E8FCB' },
+    W: { bg: '#5B9950', a: '#5FA050', b: '#4C8A40' },
+  };
+  /* a small flat top-down court icon for a Slam: colored surround, a differently-colored court
+     rectangle with the sideline/service/center lines, grass-mowing stripes for Wimbledon, a black
+     frame, and a ball dot -- inline SVG, no image assets */
+  function courtIcon(slam, w, h) {
+    const cc = COURT_COLORS[slam], bg = cc.bg, court = cc.court || cc.a;
+    const px = w * .13, py = h * .08, cw = w - px * 2, ch = h - py * 2, singleIn = cw * .09;
+    const netY = py + ch * .42, svcTop = py + ch * .18, svcBot = py + ch * .82;
+    let base = `<rect x="0" y="0" width="${w}" height="${h}" rx="3" fill="${bg}"/>`;
+    if (slam === 'W') { const n = 5, sw = w / n; for (let i = 0; i < n; i++) base += `<rect x="${i * sw}" y="0" width="${sw}" height="${h}" fill="${i % 2 ? cc.b : cc.a}"/>`; }
+    return base +
+      `<rect x="${px}" y="${py}" width="${cw}" height="${ch}" fill="${court}"/>` +
+      `<rect x="${px}" y="${py}" width="${cw}" height="${ch}" fill="none" stroke="#fff" stroke-width="1.3"/>` +
+      `<rect x="${px + singleIn}" y="${py}" width="${cw - singleIn * 2}" height="${ch}" fill="none" stroke="#fff" stroke-width=".9"/>` +
+      `<line x1="${px}" y1="${svcTop}" x2="${px + cw}" y2="${svcTop}" stroke="#fff" stroke-width=".9"/>` +
+      `<line x1="${px}" y1="${svcBot}" x2="${px + cw}" y2="${svcBot}" stroke="#fff" stroke-width=".9"/>` +
+      `<line x1="${px + cw / 2}" y1="${svcTop}" x2="${px + cw / 2}" y2="${svcBot}" stroke="#fff" stroke-width=".9"/>` +
+      `<line x1="${px}" y1="${netY}" x2="${px + cw}" y2="${netY}" stroke="#fff" stroke-width="1.1"/>` +
+      `<circle cx="${px + cw * .74}" cy="${py + ch * .9}" r="${w * .055}" fill="#dde14a" stroke="#000" stroke-width=".6"/>` +
+      `<rect x="1" y="1" width="${w - 2}" height="${h - 2}" rx="2.5" fill="none" stroke="#000" stroke-width="1.6"/>`;
+  }
+  function courtIconSvg(slam, size, o = {}) {
+    const w = size, h = Math.round(size * 1.3);
+    return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${esc(o.label || slam)}" style="vertical-align:-4px;margin-right:6px">${courtIcon(slam, w, h)}</svg>`;
+  }
+
   /* checklist grid: who has won which Slam. rows [{name, AO,RG,W,USO, career}] */
   function titleGrid(el, rows, slams, names) {
-    ensureTip(); const W = width(el), lw = Math.min(150, W * .3), rh = 40, top = 62, H = top + rows.length * rh + 4, cw = (W - lw - 8) / slams.length;
+    ensureTip(); const W = width(el), lw = Math.min(150, W * .3), rh = 40, top = 80, H = top + rows.length * rh + 4, cw = (W - lw - 8) / slams.length;
     let s = '';
+    const iw = Math.min(30, cw * .5), ih = iw * 1.3;
     slams.forEach((k, j) => { const cx = lw + j * cw + cw / 2;
-      s += `<circle cx="${cx}" cy="14" r="7" fill="${SLAM_COLOR[k]}" stroke="${C.ink}" stroke-width="1.2"/><text class="ax" x="${cx}" y="42" text-anchor="middle" style="font-size:12.5px;fill:${C.ink}">${esc(names[k].replace('Australian Open', 'Aus. Open').replace('Roland Garros', 'Roland G.'))}</text>`; });
+      s += `<g transform="translate(${cx - iw / 2},2)">${courtIcon(k, iw, ih)}</g><text class="ax" x="${cx}" y="${ih + 16}" text-anchor="middle" style="font-size:12.5px;fill:${C.ink}">${esc(names[k].replace('Australian Open', 'Aus. Open').replace('Roland Garros', 'Roland G.'))}</text>`; });
     rows.forEach((r, i) => { const y = top + i * rh, cy = y + rh / 2;
       if (r.career) s += `<rect x="0" y="${y + 2}" width="${W}" height="${rh - 4}" rx="2" fill="${C.lime}" stroke="${C.ink}" stroke-width="1"/>`;
       s += `<text class="lbl" x="10" y="${cy + 4.5}" style="font-weight:${r.career ? 600 : 400}">${esc(r.name)}</text>`;
@@ -222,5 +256,5 @@
     el.innerHTML = wrap(size, size, o.label || 'Head-to-head record', s);
   }
 
-  g.Charts = { C, SLAM_COLOR, SERIES, esc, int, pct, clip, niceTicks, mix, legend, barH, barV, stackedH, pairsV, line, scatter, heatmap, titleGrid, vsRing, ensureTip, empty };
+  g.Charts = { C, SLAM_COLOR, SERIES, esc, int, pct, clip, niceTicks, mix, legend, barH, barV, stackedH, pairsV, line, scatter, heatmap, titleGrid, vsRing, courtIcon, courtIconSvg, ensureTip, empty };
 })(window);

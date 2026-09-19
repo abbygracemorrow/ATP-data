@@ -12,7 +12,7 @@
 <body>
 <nav class="site-nav" aria-label="Main">
   <div class="wrap">
-    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="#e5ee9f" stroke="#2b4530" stroke-width="2"/><path d="M4.5 10c6 2 6 10 0 12M27.5 10c-6 2-6 10 0 12" fill="none" stroke="#fdfdfb" stroke-width="2.2" stroke-linecap="round"/></svg><span>Slam Study <span class="long">&middot; ATP 2000&ndash;2026</span></span></a>
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="#e5ee9f" stroke="#2b4530" stroke-width="2"/><path d="M4.5 10c6 2 6 10 0 12M27.5 10c-6 2-6 10 0 12" fill="none" stroke="#fdfdfb" stroke-width="2.2" stroke-linecap="round"/></svg><span>ATP 2000&ndash;2026</span></a>
     <div class="nav-links"><a href="index.html">Report</a><a href="dashboard.html" aria-current="page">Dashboard</a></div>
   </div>
 </nav>
@@ -23,6 +23,7 @@
     <p>Filter the ATP matches, then choose what to measure and how to break it down. All four charts, the globe, the summary numbers, the leaderboard, and the table update together. Start with <b>Grand Slams only</b> to match the report.</p>
   </div>
 </header>
+<div class="court-strip" aria-hidden="true"></div>
 
 <main class="wrap" style="padding-top:26px;padding-bottom:60px">
   <div id="load" class="load-msg">Loading matches&hellip;</div>
@@ -30,17 +31,29 @@
   <div id="app" hidden>
     <section class="dash-grid" aria-label="Head to head" style="margin-bottom:24px">
       <div class="card wide" style="--accent:var(--pink-deep)">
-        <div class="panel-head">
-          <h3>Head to head</h3>
-          <div class="h2h-ctl">
-            <div class="field"><label for="h2h-p1">Player 1 (type to search)</label><input id="h2h-p1" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
-            <button class="btn alt h2h-swap" id="h2h-swap" type="button" title="Swap players" aria-label="Swap the two players">&#8646;</button>
-            <div class="field"><label for="h2h-p2">Player 2 (type to search)</label><input id="h2h-p2" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
-          </div>
-        </div>
+        <h3>Head to head</h3>
         <p class="chart-note" style="margin-top:-6px">Head to head compares two players directly: their record against each other &mdash; by surface, tier, and round, and every match they've played &mdash; plus how their overall careers compare, side by side. Player 1 is always on the left, Player 2 on the right.</p>
         <p class="scope-line">Always uses every match in the dataset &mdash; the filters below don't apply to this section.</p>
+        <div class="h2h-header">
+          <div class="field"><label for="h2h-p1">Player 1 (type to search)</label><input id="h2h-p1" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+          <button class="btn alt h2h-swap" id="h2h-swap" type="button" title="Swap players" aria-label="Swap the two players">&#8646;</button>
+          <div class="field"><label for="h2h-p2">Player 2 (type to search)</label><input id="h2h-p2" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+          <div class="h2h-side" id="h2h-side1"></div>
+          <div class="chart" id="h2h-ring"></div>
+          <div class="h2h-side" id="h2h-side2"></div>
+        </div>
         <div id="h2h-body" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="dash-grid" aria-label="Player win and loss averages" style="margin-bottom:24px">
+      <div class="card wide" style="--accent:var(--sage)">
+        <div class="panel-head">
+          <h3>Player win/loss averages</h3>
+          <div class="field"><label for="wl-player">Choose a player (type to search)</label><input id="wl-player" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+        </div>
+        <p class="scope-line">Global filters applied: <span id="wl-scope"></span></p>
+        <div id="wl-body" aria-live="polite"></div>
       </div>
     </section>
 
@@ -71,17 +84,6 @@
     <p class="view-line" id="view-line" aria-live="polite"></p>
 
     <section class="kpis" id="kpis" aria-label="Summary numbers"></section>
-
-    <section class="dash-grid" aria-label="Player win and loss averages" style="margin-bottom:24px">
-      <div class="card wide" style="--accent:var(--pink)">
-        <div class="panel-head">
-          <h3>Player win/loss averages</h3>
-          <div class="field"><label for="wl-player">Choose a player (type to search)</label><input id="wl-player" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
-        </div>
-        <p class="scope-line">Global filters applied: <span id="wl-scope"></span></p>
-        <div id="wl-body" aria-live="polite"></div>
-      </div>
-    </section>
 
     <section class="controls" aria-label="Chart display controls">
       <p class="scope-cap">Applies to: the four charts and the table below</p>
