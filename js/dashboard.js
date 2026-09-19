@@ -70,15 +70,21 @@
   }
 
   /* ---------- filters ----------
-     The one global filter is Year(s): a set of selected seasons, all selected by default (no filter). */
-  const DEF = () => ({ years: new Set(allYears) });
-  let F, measure = 'winrate', dimKey = 'player', sortSpec = null, showAll = false, allYears = [];
+     Global filters: Year(s) (a set of selected seasons, all selected by default), Player, Tournament,
+     Surface, and Tier. Player is applied via select()'s pl argument rather than matchesFilters, since it
+     depends on which side of the match (winner or loser) a player was on. */
+  const DEF = () => ({ years: new Set(allYears), player: -1, tour: -1, surf: -1, tier: -1 });
+  let F, measure = 'matches', dimKey = 'tier', sortSpec = null, showAll = false, allYears = [];
   const tourIndex = new Map();
 
   function matchesFilters(i) {
-    return F.years.has(year[i]);
+    if (!F.years.has(year[i])) return false;
+    if (F.tour >= 0 && tour[i] !== F.tour) return false;
+    if (F.surf >= 0 && surf[i] !== F.surf) return false;
+    if (F.tier >= 0 && tier[i] !== F.tier) return false;
+    return true;
   }
-  function select(pl = -1) {
+  function select(pl = F.player) {
     const out = [];
     for (let i = 0; i < N; i++) {
       if (!matchesFilters(i)) continue;
@@ -110,7 +116,7 @@
     tournament: { label: 'Tournament', n: () => tourNames.length, name: k => tourNames[k], key: i => tour[i] },
     player: { label: 'Player', n: () => plNames.length, name: k => plDisp[k], key: null, player: true }
   };
-  const perspective = () => (dimKey === 'player' ? 'player' : 'match');
+  const perspective = () => (F.player >= 0 || dimKey === 'player' ? 'player' : 'match');
   const MEAS = {
     matches: { label: () => 'Matches', get: (A, g) => A.n[g], fmt: int, p: 'mp' },
     wins: { label: () => 'Wins', get: (A, g) => A.w[g], fmt: int, p: 'p' },
@@ -156,6 +162,8 @@
     const ok = Object.keys(MEAS).filter(m => measOK(m, ps));
     if (!ok.includes(measure)) measure = ok[0];
     const M = MEAS[measure], mLabel = M.label(ps === 'player' ? 'p' : 'm');
+    $('m-measure').innerHTML = ok.map(m => `<option value="${m}"${m === measure ? ' selected' : ''}>${Charts.esc(MEAS[m].label(ps === 'player' ? 'p' : 'm'))}</option>`).join('');
+    $('m-dim').value = dimKey;
     const need = { pl: measure === 'players', tn: true };
 
     // main aggregate by the chosen breakdown
@@ -199,22 +207,33 @@
 
   /* filter parts shared by the top view-line and every section's "filters applied" caption. */
   function filterParts() {
-    if (F.years.size === NY) return [];
-    const ys = [...F.years].sort((a, b) => a - b);
-    if (!ys.length) return ['no years selected'];
-    let contiguous = true; for (let k = 1; k < ys.length; k++) if (ys[k] !== ys[k - 1] + 1) { contiguous = false; break; }
-    if (contiguous) return ys.length === 1 ? [String(ys[0])] : [`${ys[0]}\u2013${ys[ys.length - 1]}`];
-    return ys.length <= 6 ? [ys.join(', ')] : [`${ys.length} years selected (${ys[0]}\u2013${ys[ys.length - 1]})`];
+    const parts = [];
+    if (F.years.size !== NY) {
+      const ys = [...F.years].sort((a, b) => a - b);
+      if (!ys.length) parts.push('no years selected');
+      else {
+        let contiguous = true; for (let k = 1; k < ys.length; k++) if (ys[k] !== ys[k - 1] + 1) { contiguous = false; break; }
+        if (contiguous) parts.push(ys.length === 1 ? String(ys[0]) : `${ys[0]}\u2013${ys[ys.length - 1]}`);
+        else parts.push(ys.length <= 6 ? ys.join(', ') : `${ys.length} years selected (${ys[0]}\u2013${ys[ys.length - 1]})`);
+      }
+    }
+    if (F.player >= 0) parts.push(plDisp[F.player]);
+    if (F.tour >= 0) parts.push(tourNames[F.tour]);
+    if (F.surf >= 0) parts.push(surfNames[F.surf]);
+    if (F.tier >= 0) parts.push(TIERS[F.tier]);
+    return parts;
   }
 
   /* ---------- summary numbers ---------- */
   function summary(ps) {
     const n = sel.length, pl = new Uint8Array(plNames.length), tn = new Uint8Array(tourNames.length);
-    let npl = 0, ntn = 0;
+    let npl = 0, ntn = 0, rs = 0, rc = 0;
     for (const i of sel) {
       if (!pl[win[i]]) { pl[win[i]] = 1; npl++; } if (!pl[los[i]]) { pl[los[i]] = 1; npl++; } if (!tn[tour[i]]) { tn[tour[i]] = 1; ntn++; }
+      if (rw[i]) { rs += rw[i]; rc++; } if (rl[i]) { rs += rl[i]; rc++; }
     }
-    const k = [[int(n), 'matches in this view'], [int(npl), 'different players'], [int(ntn), 'different tournaments']];
+    const avgRank = rc ? (rs / rc).toFixed(1) : '–';
+    const k = [[int(n), 'matches in this view'], [int(npl), 'different players'], [int(ntn), 'different tournaments'], [avgRank, 'average ATP ranking (both players)']];
     $('kpis').innerHTML = k.map(([b, s]) => `<div class="kpi"><b${b.length > 9 ? ' style="font-size:1.35rem"' : ''}>${Charts.esc(b)}</b><span>${Charts.esc(s)}</span></div>`).join('');
     const parts = filterParts();
     $('view-line').textContent = `Showing ${int(n)} of ${int(N)} matches` + (parts.length ? ` \u00b7 ${parts.join(' \u00b7 ')}` : ' \u00b7 no filters applied');
@@ -448,6 +467,17 @@
     $('f-to').addEventListener('change', () => { const to = +$('f-to').value; setYearRange(Math.min(to, +$('f-from').value), to); schedule(); });
     $('dl-players').innerHTML = plNames.map((_, i) => i).sort((a, b) => plMatches[b] - plMatches[a]).map(i => `<option value="${Charts.esc(plDisp[i])}">`).join('');
     $('dl-tours').innerHTML = tourNames.slice().sort().map(t => `<option value="${Charts.esc(t)}">`).join(''); tourNames.forEach((t, i) => tourIndex.set(t.toLowerCase(), i));
+    $('f-surface').innerHTML = '<option value="-1">All surfaces</option>' + surfNames.map((s, i) => `<option value="${i}">${Charts.esc(s)}</option>`).join('');
+    $('f-tier').innerHTML = '<option value="-1">All tiers</option>' + TIERS.map((t, i) => `<option value="${i}">${Charts.esc(t)}</option>`).join('');
+    $('f-surface').addEventListener('change', () => { F.surf = +$('f-surface').value; schedule(); });
+    $('f-tier').addEventListener('change', () => { F.tier = +$('f-tier').value; schedule(); });
+    { const el = $('f-player'), apply = () => { const v = el.value.trim(); if (!v) { F.player = -1; el.style.borderColor = ''; return true; } const k = plIndex.get(v); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } F.player = k; el.style.borderColor = ''; return true; };
+      el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; F.player = -1; el.style.borderColor = ''; } schedule(); }); }
+    { const el = $('f-tour'), apply = () => { const v = el.value.trim(); if (!v) { F.tour = -1; el.style.borderColor = ''; return true; } const k = tourIndex.get(v.toLowerCase()); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } F.tour = k; el.style.borderColor = ''; return true; };
+      el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; F.tour = -1; el.style.borderColor = ''; } schedule(); }); }
+    $('m-dim').innerHTML = Object.keys(DIMS).map(k => `<option value="${k}">${Charts.esc(DIMS[k].label)}</option>`).join('');
+    $('m-dim').addEventListener('change', () => { dimKey = $('m-dim').value; schedule(); });
+    $('m-measure').addEventListener('change', () => { measure = $('m-measure').value; schedule(); });
     reset();
     { const el = $('dom-tour'), apply = () => { const v = el.value.trim(); if (!v) { domTour = -1; el.style.borderColor = ''; return true; } const k = tourIndex.get(v.toLowerCase()); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } domTour = k; el.style.borderColor = ''; return true; };
       el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; domTour = -1; el.style.borderColor = ''; } schedule(); }); }
@@ -473,6 +503,10 @@
     F = DEF(); measure = 'winrate'; dimKey = 'player'; sortSpec = null; showAll = false;
     wlPlayer = -1; h2hP1 = -1; h2hP2 = -1; domTour = -1;
     setYearRange(Y0, Y1);
+    $('f-player').value = ''; $('f-player').style.borderColor = '';
+    $('f-tour').value = ''; $('f-tour').style.borderColor = '';
+    $('f-surface').value = '-1'; $('f-tier').value = '-1';
+    $('m-dim').value = dimKey;
     $('wl-player').value = ''; $('wl-player').style.borderColor = '';
     $('dom-tour').value = ''; $('dom-tour').style.borderColor = '';
     h2hSetInputs(); $('h2h-p1').style.borderColor = ''; $('h2h-p2').style.borderColor = '';
@@ -486,7 +520,7 @@
       build(parseCSV(a), aliasMap);
       $('load').hidden = true; $('app').hidden = false; setup();
       update();
-      window.__dash = { get state() { return { years: [...F.years].sort((a, b) => a - b), measure, dimKey, n: sel.length, N }; }, get wl() { return wlResult; },
+      window.__dash = { get state() { return { years: [...F.years].sort((a, b) => a - b), player: F.player, tour: F.tour, surf: F.surf, tier: F.tier, measure, dimKey, n: sel.length, N }; }, get wl() { return wlResult; },
         get dom() { return domTour < 0 ? null : { tournament: tourNames[domTour] }; },
         get h2h() { if (h2hP1 < 0 || h2hP2 < 0 || h2hP1 === h2hP2) return null; const m = h2hMatches(h2hP1, h2hP2); return { p1: plNames[h2hP1], p2: plNames[h2hP2], n: m.length, w1: m.filter(i => win[i] === h2hP1).length, w2: m.filter(i => win[i] === h2hP2).length }; } };
     } catch (e) { $('load').textContent = e.message; }

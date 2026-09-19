@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard | Who owns the Grand Slams?</title>
-<meta name="description" content="Filter 68,000+ ATP matches by year and tournament, compare two players head to head, and see a player's average wins and losses.">
+<meta name="description" content="Filter 68,000+ ATP matches by year, player, tournament, surface, and tier, compare two players head to head, and see a player's average wins and losses.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -21,7 +21,7 @@
   <div class="wrap dash-head-row">
     <div class="dash-head-text">
       <h1>Explore every match</h1>
-      <p>Filter the ATP matches by year or tournament, and see how it changes the win rates, the wins-vs-ranking chart, the summary numbers, and the table below, all at once.</p>
+      <p>Filter the ATP matches by year, player, tournament, surface, or tier, then choose what to measure and how to break it down. The summary numbers, charts, and table all update together.</p>
     </div>
     <div class="court-gallery" id="court-gallery" aria-hidden="true"></div>
   </div>
@@ -69,10 +69,16 @@
 
     <section class="dash-band">
      <div class="wrap">
-      <section class="controls filters-box" aria-label="Filter by year">
-      <h3 class="dash-section-h">Filter by year(s)</h3>
-      <p class="scope-line">Pick a year range to narrow every statistic, chart, and table below. Applies everywhere on this page except Head to Head (always the full dataset) and Win/Loss averages (its own player picker, but the year selection still applies to it).</p>
-      <div class="field"><label for="f-from">Year (from &ndash; to)</label><div class="range"><select id="f-from" aria-label="From year" title="Keep only matches played in this range of seasons"></select><select id="f-to" aria-label="To year" title="Keep only matches played in this range of seasons"></select></div></div>
+      <section class="controls filters-box" aria-label="Global filters">
+      <h3 class="dash-section-h">Global filters</h3>
+      <p class="scope-line">Narrow every statistic, chart, and table below by year, player, tournament, surface, and/or tier. Applies everywhere on this page except Head to Head (always the full dataset) and Win/Loss averages (its own player picker, but the other filters still apply to it).</p>
+      <div class="filter-grid-all">
+        <div class="field"><label for="f-from">Year (from &ndash; to)</label><div class="range"><select id="f-from" aria-label="From year" title="Keep only matches played in this range of seasons"></select><select id="f-to" aria-label="To year" title="Keep only matches played in this range of seasons"></select></div></div>
+        <div class="field"><label for="f-player">Player (type to search)</label><input id="f-player" list="dl-players" placeholder="All players" autocomplete="off" title="Keep only matches this player won or lost"></div>
+        <div class="field"><label for="f-tour">Tournament (type to search)</label><input id="f-tour" list="dl-tours" placeholder="All tournaments" autocomplete="off" title="Narrow to one specific tournament"></div>
+        <div class="field"><label for="f-surface">Surface</label><select id="f-surface" title="Hard, Clay, Grass, or Carpet"></select></div>
+        <div class="field"><label for="f-tier">Tier (event level)</label><select id="f-tier" title="Grand Slam, Masters 1000, ATP 500, ATP 250, or Tour Finals"></select></div>
+      </div>
       <div class="filter-actions">
         <button class="btn" id="btn-reset" type="button">Reset all filters</button>
       </div>
@@ -82,6 +88,13 @@
 
     <section class="kpis" id="kpis" aria-label="Summary numbers"></section>
 
+    <section class="controls" aria-label="Chart display controls">
+      <p class="scope-cap">Applies to: the two charts and the table below</p>
+      <div class="ctl-row" style="margin-top:0;padding-top:0;border-top:none">
+        <div class="field" style="min-width:210px"><label for="m-measure">Measure</label><select id="m-measure" title="The statistic charted and tabulated below"></select></div>
+        <div class="field" style="min-width:210px"><label for="m-dim">Break down by</label><select id="m-dim" title="How to group the matches in this view into the bars, lines, and rows below"></select></div>
+      </div>
+    </section>
 
     <section class="dash-grid" aria-label="Charts">
       <div class="card wide"><h3 id="t-bar"></h3><div class="chart" id="ch-bar"></div><p class="chart-note" id="n-bar"></p></div>
