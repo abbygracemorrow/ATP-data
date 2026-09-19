@@ -394,10 +394,8 @@
       resultsHtml = `<div class="empty">${Charts.esc(n1)} and ${Charts.esc(n2)} haven't met in this data.</div>`;
     } else {
       const tblRows = meets.map(i => `<tr><td>${dateStr[i]}</td><td>${Charts.esc(tourNames[tour[i]])}</td><td>${Charts.esc(surfNames[surf[i]])}</td><td>${Charts.esc(ROUNDS[round[i]])}</td><td>${Charts.esc(score[i] || '–')}</td><td>${Charts.esc(plDisp[win[i]])}</td></tr>`).join('');
-      resultsHtml = `<div class="h2h-record">
+      resultsHtml = `<div class="h2h-record" style="grid-template-columns:minmax(0,1fr)">
           <div><h4>By surface</h4><div class="chart" id="h2h-surface"></div></div>
-          <div><h4>By tier</h4><div class="chart" id="h2h-tier"></div></div>
-          <div><h4>By round</h4><div class="chart" id="h2h-round"></div></div>
         </div>
         <h4 style="margin-top:20px">Every match between them</h4>
         <div class="tbl-wrap"><table class="data"><thead><tr><th>Date</th><th>Tournament</th><th>Surface</th><th>Round</th><th>Score</th><th>Winner</th></tr></thead><tbody>${tblRows}</tbody></table></div>`;
@@ -424,8 +422,6 @@
     box.innerHTML = resultsHtml + cmpHtml;
     if (meets.length) {
       Charts.stackedH($('h2h-surface'), h2hBreakdown(meets, p1, p2, n1, n2, surfNames, i => surf[i]), { label: 'Head-to-head record by surface' });
-      Charts.stackedH($('h2h-tier'), h2hBreakdown(meets, p1, p2, n1, n2, TIERS, i => tier[i]), { label: 'Head-to-head record by tier' });
-      Charts.stackedH($('h2h-round'), h2hBreakdown(meets, p1, p2, n1, n2, ROUNDS, i => round[i]), { label: 'Head-to-head record by round' });
     }
   }
 
