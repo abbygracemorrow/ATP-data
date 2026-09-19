@@ -64,20 +64,19 @@
       if (win[i] === p1) { rw[i] = a1; rl[i] = a2; } else { rw[i] = a2; rl[i] = a1; }
     }
     Y0 = Math.min(...year); Y1 = Math.max(...year); NY = Y1 - Y0 + 1; FINAL = ROUNDS.indexOf('The Final');
+    allYears = Array.from({ length: NY }, (_, k) => Y0 + k);
     plDisp = plNames.map(disp); plDisp.forEach((d, i) => plIndex.set(d, i));
     plMatches = new Uint32Array(plNames.length); for (let i = 0; i < N; i++) { plMatches[win[i]]++; plMatches[los[i]]++; }
   }
 
   /* ---------- filters ----------
-     The global filters are deliberately limited to Year and Tournament. */
-  const DEF = () => ({ from: Y0, to: Y1, tour: -1 });
-  let F, measure = 'winrate', dimKey = 'player', sortSpec = null, showAll = false;
+     The one global filter is Year(s): a set of selected seasons, all selected by default (no filter). */
+  const DEF = () => ({ years: new Set(allYears) });
+  let F, measure = 'winrate', dimKey = 'player', sortSpec = null, showAll = false, allYears = [];
   const tourIndex = new Map();
 
   function matchesFilters(i) {
-    const y = year[i]; if (y < F.from || y > F.to) return false;
-    if (F.tour >= 0 && tour[i] !== F.tour) return false;
-    return true;
+    return F.years.has(year[i]);
   }
   function select(pl = -1) {
     const out = [];
@@ -194,14 +193,18 @@
     $('n-line').textContent = M.rate ? `Rates are shown only when a group played at least ${MIN_CELL} matches in that year; gaps mean fewer.` : 'Gaps mean the group had no matches in that year.';
 
     table(A, cats, ps, dim);
+    surfaceUpdate(); yearVolumeUpdate(); upsetUpdate(); domUpdate();
     wlUpdate(); h2hUpdate();
   }
 
   /* filter parts shared by the top view-line and every section's "filters applied" caption. */
   function filterParts() {
-    const parts = []; if (F.from !== Y0 || F.to !== Y1) parts.push(`${F.from}\u2013${F.to}`);
-    if (F.tour >= 0) parts.push(tourNames[F.tour]);
-    return parts;
+    if (F.years.size === NY) return [];
+    const ys = [...F.years].sort((a, b) => a - b);
+    if (!ys.length) return ['no years selected'];
+    let contiguous = true; for (let k = 1; k < ys.length; k++) if (ys[k] !== ys[k - 1] + 1) { contiguous = false; break; }
+    if (contiguous) return ys.length === 1 ? [String(ys[0])] : [`${ys[0]}\u2013${ys[ys.length - 1]}`];
+    return ys.length <= 6 ? [ys.join(', ')] : [`${ys.length} years selected (${ys[0]}\u2013${ys[ys.length - 1]})`];
   }
 
   /* ---------- summary numbers ---------- */
@@ -245,6 +248,92 @@
     const esc = v => { const s = v == null ? '' : String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
     const lines = [tableCols.map(c => esc(c[1])).join(',')].concat(renderTable.rows.map(r => r.cells.map((v, i) => esc(tableCols[i][4] && v != null ? tableCols[i][4](v) : v)).join(',')));
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' })); a.download = `grand-slams-${dimKey}.csv`; a.click(); URL.revokeObjectURL(a.href);
+  }
+
+  /* ---------- surface breakdown: share of matches (in the selected years) on each surface ---------- */
+  function surfaceUpdate() {
+    const counts = new Map();
+    for (const i of sel) { const s = surfNames[surf[i]]; counts.set(s, (counts.get(s) || 0) + 1); }
+    const known = ['Hard', 'Clay', 'Grass', 'Carpet'], colorOf = { Hard: C.teal, Clay: C.pinkDeep, Grass: C.foliage, Carpet: C.olive };
+    const names = known.filter(s => surfNames.includes(s)).concat(surfNames.filter(s => !known.includes(s)));
+    const slices = names.map(s => ({ label: s, value: counts.get(s) || 0, color: colorOf[s] || C.dust }));
+    Charts.donut($('ch-surface'), slices, { centerBottom: 'matches', label: 'Surface breakdown' });
+    $('n-surface').textContent = sel.length ? `${int(sel.length)} matches with a recorded surface in this view.` : 'No matches in this view.';
+  }
+
+  /* ---------- distinct tournaments and matches per year, for the selected years ---------- */
+  function yearVolumeUpdate() {
+    const ys = [...F.years].sort((a, b) => a - b);
+    const tSets = new Map(), mCounts = new Map();
+    for (const i of sel) { const y = year[i]; if (!tSets.has(y)) tSets.set(y, new Set()); tSets.get(y).add(tour[i]); mCounts.set(y, (mCounts.get(y) || 0) + 1); }
+    const tRows = ys.map(y => ({ label: String(y), value: tSets.has(y) ? tSets.get(y).size : 0 }));
+    const mRows = ys.map(y => ({ label: String(y), value: mCounts.get(y) || 0 }));
+    Charts.barV($('ch-yr-tourn'), tRows, { color: C.sage, label: 'Tournaments per year', fmt: int });
+    Charts.barV($('ch-yr-matches'), mRows, { color: C.foliage, label: 'Matches per year', fmt: int });
+    $('n-yr').textContent = `${int(ys.length)} year${ys.length === 1 ? '' : 's'} shown. A tournament counts once per year it appears in, however many rounds it has; about 0.6% of tournament-year combinations in the full dataset share a name with a second, distinct event held the same year (see About the data), which can very slightly undercount unique tournaments for those specific years.`;
+  }
+
+  /* ---------- upset rate: how often the better-ranked (favorite) player loses, by the favorite's rank tier ----------
+     Excludes matches where either player's ranking is unlisted (about 0.04% of matches). */
+  function upsetUpdate() {
+    const bands = [
+      { label: 'Favorite ranked Top 10', test: r => r <= 10 },
+      { label: 'Favorite ranked 11–49', test: r => r >= 11 && r <= 49 },
+      { label: 'Favorite ranked 50+', test: r => r >= 50 }
+    ];
+    const counts = bands.map(() => ({ n: 0, up: 0 }));
+    let excluded = 0;
+    for (const i of sel) {
+      const a = rw[i], b = rl[i]; if (!a || !b) { excluded++; continue; }
+      const favRank = Math.min(a, b), isUpset = a > b;   // winner ranked worse than loser => the favorite lost
+      const idx = bands.findIndex(t => t.test(favRank)); if (idx < 0) continue;
+      counts[idx].n++; if (isUpset) counts[idx].up++;
+    }
+    const rows = bands.map((t, i) => ({ label: t.label, n: counts[i].n, up: counts[i].up })).filter(r => r.n > 0);
+    if (!rows.length) { Charts.empty($('ch-upset'), 'Not enough matches with a listed ranking for both players in this view.'); $('n-upset').textContent = ''; return; }
+    Charts.barH($('ch-upset'), rows.map(r => ({ label: r.label, value: r.up / r.n, valueLabel: ((r.up / r.n) * 100).toFixed(1) + '%', color: C.pink,
+      tip: `<b>${Charts.esc(r.label)}</b><br>${((r.up / r.n) * 100).toFixed(1)}% upset rate<br>${int(r.up)} upsets in ${int(r.n)} matches` })),
+      { dot: true, axis: true, min: 0, max: .5, fmt: v => (v * 100).toFixed(1) + '%', axisFmt: v => Math.round(v * 100) + '%', label: 'Upset rate by ranking gap' });
+    const totalValid = counts.reduce((a, c) => a + c.n, 0);
+    $('n-upset').textContent = `${int(totalValid)} matches with a listed ranking for both players in this view${excluded ? ` (${int(excluded)} excluded for a missing ranking)` : ''}.`;
+  }
+
+  /* ---------- tournament spotlight: the strongest performer at one tournament, in the selected years ----------
+     These 6 tournament names were each used for two distinct ATP events in at least one shared year
+     (found while auditing the CSV -- e.g. two separate "Heineken Open" events, weeks apart, on opposite
+     sides of the world); flagged rather than silently split, since the file gives no way to tell them apart. */
+  const COLLISION_TOURS = new Set(['AAPT Championships', 'BNP Paribas', 'European Open', 'Heineken Open', 'Qatar Open', 'TATA Open']);
+  const DOM_METRICS = {
+    winrate: { label: 'win rate (min. 5 matches here)', get: p => (p.n >= 5 ? p.w / p.n : null), fmt: v => (v * 100).toFixed(1) + '%' },
+    wins: { label: 'match wins', get: p => (p.w > 0 ? p.w : null), fmt: int },
+    matches: { label: 'match appearances', get: p => (p.n > 0 ? p.n : null), fmt: int },
+    finals: { label: 'finals reached', get: p => (p.fin > 0 ? p.fin : null), fmt: int },
+    titles: { label: 'titles', get: p => (p.tit > 0 ? p.tit : null), fmt: int }
+  };
+  let domTour = -1, domMetric = 'winrate';
+  function domUpdate() {
+    const box = $('dom-body');
+    if (domTour < 0) { box.innerHTML = '<div class="empty">Search for a tournament above to see who has performed best there.</div>'; return; }
+    const name = tourNames[domTour], rows = sel.filter(i => tour[i] === domTour);
+    if (!rows.length) { box.innerHTML = `<div class="empty">No matches recorded for ${Charts.esc(name)} in the selected year(s).</div>`; return; }
+    const nP = plNames.length, n = new Uint32Array(nP), w = new Uint32Array(nP), tit = new Uint32Array(nP), fin = new Uint32Array(nP);
+    for (const i of rows) {
+      const a = win[i], b = los[i], isFinal = round[i] === FINAL;
+      n[a]++; w[a]++; n[b]++;
+      if (isFinal) { fin[a]++; fin[b]++; tit[a]++; }
+    }
+    const M = DOM_METRICS[domMetric], list = [];
+    for (let p = 0; p < nP; p++) if (n[p]) { const o = { id: p, n: n[p], w: w[p], tit: tit[p], fin: fin[p] }; o.v = M.get(o); if (o.v != null) list.push(o); }
+    list.sort((a, b) => b.v - a.v || b.w - a.w || plNames[a.id].localeCompare(plNames[b.id]));
+    if (!list.length) { box.innerHTML = `<div class="empty">No player has enough matches to rank by ${M.label} at ${Charts.esc(name)} in this view.</div>`; return; }
+    const ys = rows.map(i => year[i]), yearRange = `${Math.min(...ys)}–${Math.max(...ys)}`;
+    const top = list[0];
+    box.innerHTML = `<p class="view-line" style="margin:0 0 14px"><b>${Charts.esc(name)}</b> · ${int(rows.length)} matches recorded · ${yearRange}</p>
+      <div class="wl-tiles" style="grid-template-columns:1fr"><div class="wl-tile"><b>${Charts.esc(plDisp[top.id])}</b><span>${M.fmt(top.v)} ${M.label}</span></div></div>
+      <table class="wl-table"><thead><tr><th>Rank</th><th>Player</th><th>Matches</th><th>Wins</th><th>Finals reached</th><th>Titles</th></tr></thead><tbody>
+        ${list.slice(0, 10).map((o, k) => `<tr${k === 0 ? ' class="me"' : ''}><td>${k + 1}</td><td>${Charts.esc(plDisp[o.id])}</td><td>${int(o.n)}</td><td>${int(o.w)}</td><td>${int(o.fin)}</td><td>${int(o.tit)}</td></tr>`).join('')}
+      </tbody></table>
+      <p class="wl-def">Finals reached and titles are counted from rows where Round = "The Final"; across the whole dataset about 1.8% of tournament editions are missing a recorded final, so these two columns can undercount slightly. Win rate needs at least 5 matches at this tournament in the selected years.${COLLISION_TOURS.has(name) ? ' Note: this tournament name was used for more than one distinct ATP event in some years (see About the data) -- these figures combine every match recorded under this name.' : ''}</p>`;
   }
 
   /* ---------- win/loss averages for one player ----------
@@ -367,17 +456,21 @@
   }
 
   /* ---------- controls ---------- */
+  function yearChipsRender() {
+    document.querySelectorAll('#year-chips .chip').forEach(b => b.setAttribute('aria-pressed', String(F.years.has(+b.dataset.year))));
+  }
   function setup() {
-    const years = Array.from({ length: NY }, (_, k) => Y0 + k);
-    $('f-from').innerHTML = years.map(y => `<option>${y}</option>`).join(''); $('f-to').innerHTML = years.map(y => `<option>${y}</option>`).join('');
+    $('year-chips').innerHTML = allYears.map(y => `<button type="button" class="chip" data-year="${y}" aria-pressed="true">${y}</button>`).join('');
+    $('year-chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; const y = +b.dataset.year;
+      if (F.years.has(y)) { if (F.years.size > 1) F.years.delete(y); } else F.years.add(y);
+      yearChipsRender(); schedule(); });
     $('dl-players').innerHTML = plNames.map((_, i) => i).sort((a, b) => plMatches[b] - plMatches[a]).map(i => `<option value="${Charts.esc(plDisp[i])}">`).join('');
     $('dl-tours').innerHTML = tourNames.slice().sort().map(t => `<option value="${Charts.esc(t)}">`).join(''); tourNames.forEach((t, i) => tourIndex.set(t.toLowerCase(), i));
+    $('dom-metric').innerHTML = Object.keys(DOM_METRICS).map(k => `<option value="${k}">${DOM_METRICS[k].label.replace(/ \(.*\)/, '')}</option>`).join('');
     reset();
-    const bind = (id, fn) => { $(id).addEventListener('change', () => { fn($(id).value); schedule(); }); };
-    bind('f-from', v => { F.from = +v; if (F.to < F.from) { F.to = F.from; $('f-to').value = F.to; } }); bind('f-to', v => { F.to = +v; if (F.to < F.from) { F.from = F.to; $('f-from').value = F.from; } });
-    const typed = (id, lookup, key) => { const el = $(id), apply = () => { const v = el.value.trim(); if (!v) { F[key] = -1; el.style.borderColor = ''; return true; } const k = lookup(v); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } F[key] = k; el.style.borderColor = ''; return true; };
-      el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; F[key] = -1; el.style.borderColor = ''; } schedule(); }); };
-    typed('f-tour', v => tourIndex.get(v.toLowerCase()), 'tour');
+    $('dom-metric').addEventListener('change', () => { domMetric = $('dom-metric').value; schedule(); });
+    { const el = $('dom-tour'), apply = () => { const v = el.value.trim(); if (!v) { domTour = -1; el.style.borderColor = ''; return true; } const k = tourIndex.get(v.toLowerCase()); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } domTour = k; el.style.borderColor = ''; return true; };
+      el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; domTour = -1; el.style.borderColor = ''; } schedule(); }); }
     { const el = $('wl-player'), apply = () => { const v = el.value.trim(); if (!v) { wlPlayer = -1; el.style.borderColor = ''; return true; } const k = plIndex.get(v); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } wlPlayer = k; el.style.borderColor = ''; return true; };
       el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; wlPlayer = -1; el.style.borderColor = ''; } schedule(); }); }
     { const applyH2H = which => { const el = $(which === 1 ? 'h2h-p1' : 'h2h-p2'), other = which === 1 ? h2hP2 : h2hP1, v = el.value.trim();
@@ -398,9 +491,10 @@
   }
   function reset() {
     F = DEF(); measure = 'winrate'; dimKey = 'player'; sortSpec = null; showAll = false;
-    wlPlayer = -1; h2hP1 = -1; h2hP2 = -1;
+    wlPlayer = -1; h2hP1 = -1; h2hP2 = -1; domTour = -1; domMetric = 'winrate';
+    yearChipsRender();
     $('wl-player').value = ''; $('wl-player').style.borderColor = '';
-    $('f-from').value = F.from; $('f-to').value = F.to; $('f-tour').value = ''; $('f-tour').style.borderColor = '';
+    $('dom-tour').value = ''; $('dom-tour').style.borderColor = ''; $('dom-metric').value = domMetric;
     h2hSetInputs(); $('h2h-p1').style.borderColor = ''; $('h2h-p2').style.borderColor = '';
   }
 
@@ -412,7 +506,8 @@
       build(parseCSV(a), aliasMap);
       $('load').hidden = true; $('app').hidden = false; setup();
       update();
-      window.__dash = { get state() { return { F, measure, dimKey, n: sel.length, N }; }, get wl() { return wlResult; },
+      window.__dash = { get state() { return { years: [...F.years].sort((a, b) => a - b), measure, dimKey, n: sel.length, N }; }, get wl() { return wlResult; },
+        get dom() { return domTour < 0 ? null : { tournament: tourNames[domTour], metric: domMetric }; },
         get h2h() { if (h2hP1 < 0 || h2hP2 < 0 || h2hP1 === h2hP2) return null; const m = h2hMatches(h2hP1, h2hP2); return { p1: plNames[h2hP1], p2: plNames[h2hP2], n: m.length, w1: m.filter(i => win[i] === h2hP1).length, w2: m.filter(i => win[i] === h2hP2).length }; } };
     } catch (e) { $('load').textContent = e.message; }
   })();

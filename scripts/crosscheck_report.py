@@ -150,14 +150,15 @@ for full, key in [("Alcaraz C.", "alcaraz"), ("Murray A.", "murray"), ("Djokovic
     if finals_n:
         check(f"{key}_conv", titles_n / finals_n, T[f"{key}_conv"], fmt=lambda v: pct(v, 0))
 
-# ---------------------------------------------------------------- champion countries (globe totals)
-cc = pd.read_csv(ROOT / "data/champion_countries.csv")
-country_of = dict(zip(cc["Winner"], cc["Country"]))
-fin["Country"] = fin["Winner"].map(country_of)
-country_titles = fin["Country"].value_counts()
-for i, c in enumerate(R["countries"][:4]):
-    check(f"c{i}_name", c["country"], T[f"c{i}_name"])
-    check(f"c{i}_n", int(country_titles.get(c["country"], 0)), T[f"c{i}_n"])
+# ---------------------------------------------------------------- surface split (Grand Slam matches only)
+surf_counts = gs["Surface"].value_counts()
+check("surf_hard_n", int(surf_counts.get("Hard", 0)), T["surf_hard_n"], fmt=lambda v: f"{v:,}")
+check("surf_clay_n", int(surf_counts.get("Clay", 0)), T["surf_clay_n"], fmt=lambda v: f"{v:,}")
+check("surf_grass_n", int(surf_counts.get("Grass", 0)), T["surf_grass_n"], fmt=lambda v: f"{v:,}")
+check("surf_hard_pct", surf_counts.get("Hard", 0) / len(gs), T["surf_hard_pct"], fmt=lambda v: pct(v, 1))
+check("surf_clay_pct", surf_counts.get("Clay", 0) / len(gs), T["surf_clay_pct"], fmt=lambda v: pct(v, 1))
+check("surf_grass_pct", surf_counts.get("Grass", 0) / len(gs), T["surf_grass_pct"], fmt=lambda v: pct(v, 1))
+assert set(gs["Surface"].unique()) == {"Hard", "Clay", "Grass"}, "Grand Slam matches should only ever be Hard, Clay, or Grass"
 
 # ---------------------------------------------------------------- longest Grand Slam win streaks (top 3)
 def longest_streak(player):

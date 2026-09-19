@@ -5,7 +5,6 @@ build_site.py  -  reproduces every number in the report from the raw data.
   python3 scripts/build_site.py
 
 Reads   data/atp_matches.csv          (the match file, never edited)
-        data/champion_countries.csv   (hand-entered: champion -> country, used only for the globe)
         scripts/report_template.html  (the report text, with {{placeholders}})
 Writes  data/report_data.json         (every number and chart series)
         index.html                    (the report page)
@@ -241,28 +240,28 @@ missing_finals = sorted(_all_ed - _fin_ed)
 assert missing_finals == [("US Open", 2019)], f"the template names the missing 2019 US Open final; found {missing_finals}"
 T["missing_finals"] = len(missing_finals)
 
-# ---------------------------------------------------------------- countries (globe)
-cc = pd.read_csv(ROOT / "data/champion_countries.csv")
-unmapped = set(fin.Winner) - set(cc.Winner)
-assert not unmapped, f"champions missing a country: {unmapped}"
-country_of = dict(zip(cc.Winner, cc.Country)); latlon = {r.Country: (r.Lat, r.Lon) for r in cc.itertuples()}
-fin["Country"] = fin.Winner.map(country_of)
-countries = []
-for c, g in fin.groupby("Country"):
-    by = {s: int((g.Slam == s).sum()) for s in SLAM_NAMES}
-    champs = g.groupby("Winner").size().sort_values(ascending=False)
-    countries.append(dict(country=c, lat=latlon[c][0], lon=latlon[c][1], titles=len(g), by_slam=by,
-                          champions=[dict(name=disp(p), titles=int(n)) for p, n in champs.items()]))
-countries.sort(key=lambda c: -c["titles"])
-R["countries"] = countries
+# ---------------------------------------------------------------- surface split (Grand Slam matches only)
+# Two of the four Slams share a surface (AO and USO are both Hard), so this is grouped by surface,
+# not by tournament. Every Grand Slam surface value maps to exactly one or two tournaments -- verified
+# below -- so no match is invented, dropped, or double-counted.
+SURFACE_SLAMS = {"Hard": ["Australian Open", "US Open"], "Clay": ["French Open"], "Grass": ["Wimbledon"]}
+assert set(gs["Surface"].unique()) == set(SURFACE_SLAMS), f"unexpected Grand Slam surface values: {set(gs['Surface'].unique())}"
+for s, tours in SURFACE_SLAMS.items():
+    assert set(gs.loc[gs.Surface == s, "Tournament"].unique()) == set(tours), f"{s} does not map 1:1 to {tours}"
+surfaces = []
+for s, tours in SURFACE_SLAMS.items():
+    n = int((gs["Surface"] == s).sum())
+    surfaces.append(dict(surface=s, matches=n, pct=round(n / len(gs), 4), tournaments=tours))
+assert sum(s["matches"] for s in surfaces) == len(gs), "surface split must cover every Grand Slam match"
+R["surfaces"] = surfaces
 R["venues"] = [dict(slam="AO", name="Australian Open", city="Melbourne", lat=-37.82, lon=144.98),
                dict(slam="RG", name="Roland Garros", city="Paris", lat=48.85, lon=2.25),
                dict(slam="W", name="Wimbledon", city="London", lat=51.43, lon=-0.21),
                dict(slam="USO", name="US Open", city="New York", lat=40.75, lon=-73.85)]
 R["slam_names"] = SLAM_NAMES
-top3c = countries[:3]
-T["top3c_titles"] = sum(c["titles"] for c in top3c); T["top3c_pct"] = pct(T["top3c_titles"] / len(fin), 0)
-T["n_countries"] = len(countries)
+T["surf_hard_n"] = f"{surfaces[0]['matches']:,}"; T["surf_hard_pct"] = pct(surfaces[0]["pct"], 1)
+T["surf_clay_n"] = f"{surfaces[1]['matches']:,}"; T["surf_clay_pct"] = pct(surfaces[1]["pct"], 1)
+T["surf_grass_n"] = f"{surfaces[2]['matches']:,}"; T["surf_grass_pct"] = pct(surfaces[2]["pct"], 1)
 
 # ---------------------------------------------------------------- template text
 def nm(p): return disp(p)
@@ -307,9 +306,6 @@ for k in ["Alcaraz C.", "Murray A.", "Djokovic N.", "Nadal R.", "Federer R.", "M
     key = k.split()[0].lower()
     T[f"{key}_finals"] = F[k]["finals"]; T[f"{key}_ftitles"] = F[k]["titles"]; T[f"{key}_flost"] = F[k]["lost"]
     T[f"{key}_conv"] = pct(F[k]["conv"], 0)
-for i, c in enumerate(countries[:4]):
-    T[f"c{i}_name"] = c["country"]; T[f"c{i}_n"] = c["titles"]
-sp = countries[0]; T["c0_champs"] = len(sp["champions"])
 T["sinner_streak_end"] = sin["end"]; T["sinner_streak_start"] = sin["start"]
 alc = next(s for s in streaks if s["player"] == "Alcaraz C."); assert sin["length"] > alc["length"], "template says Sinner has the best run of the two newest champions"
 

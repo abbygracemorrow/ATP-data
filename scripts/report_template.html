@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Who owns the Grand Slams? Men's tennis, {{first_year}} to {{last_year}}</title>
-<meta name="description" content="A data report on men's Grand Slam tennis since 2000: career Grand Slams, most titles, best-of-3 versus best-of-5 win rates, and a globe of where champions come from.">
+<meta name="description" content="A data report on men's Grand Slam tennis since 2000: career Grand Slams, most titles, best-of-3 versus best-of-5 win rates, and how Grand Slam matches split across hard, clay, and grass courts.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -23,7 +23,7 @@
     <div>
       <h1>Who owns the Grand Slams?</h1>
       <p class="byline">Men's tennis, {{first_year}} to {{last_year}} &nbsp;|&nbsp; by {{author}}</p>
-      <p class="summary">This report follows {{rows_total}} ATP men's tour matches played between {{first_year}} and {{last_date}}, then zooms in on the {{slam_matches}} played at the four Grand Slams: the Australian Open, Roland Garros, Wimbledon, and the US Open. Djokovic, Nadal, and Federer won {{top3_titles}} of the {{slam_titles}} titles decided in that time, {{career_n_word}} players have won all four Slams, and the best win rate in best-of-five matches belongs to Djokovic at {{b5_0_r}}. A globe near the end shows which countries the champions come from. The <a href="dashboard.html">dashboard</a> lets you explore the same data with your own filters.</p>
+      <p class="summary">This report follows {{rows_total}} ATP men's tour matches played between {{first_year}} and {{last_date}}, then zooms in on the {{slam_matches}} played at the four Grand Slams: the Australian Open, Roland Garros, Wimbledon, and the US Open. Djokovic, Nadal, and Federer won {{top3_titles}} of the {{slam_titles}} titles decided in that time, {{career_n_word}} players have won all four Slams, and the best win rate in best-of-five matches belongs to Djokovic at {{b5_0_r}}. Near the end, a court diagram shows how those matches split across hard, clay, and grass courts. The <a href="dashboard.html">dashboard</a> lets you explore the same data with your own filters.</p>
     </div>
     <div class="hero-globe">
       <div class="globe-box"><canvas id="hero-globe" width="600" height="600" aria-label="Globe showing the four Grand Slam venues: Melbourne, Paris, London and New York"></canvas></div>
@@ -186,21 +186,16 @@
 <section class="finding" aria-labelledby="f10">
   <div class="wrap">
     <div class="kicker">Finding 11</div>
-    <h2 id="f10">{{c0_name}}, {{c1_name}}, and {{c2_name}} produced {{top3c_titles}} of the {{slam_titles}} Slam titles</h2>
+    <h2 id="f10">Hard courts have decided the most Grand Slam matches</h2>
     <div class="finding-body">
       <div class="finding-text">
-        <p>The globe draws an arc from each champion's home country to the Slam where the title was won, and thicker arcs mean more titles. {{c0_name}} leads with {{c0_n}} titles from {{c0_champs}} different champions, then {{c1_name}} with {{c1_n}}, and {{c2_name}} with {{c2_n}}, together {{top3c_pct}} of everything decided. In all, {{n_countries}} countries have produced a Slam champion in this period.</p>
-        <p>Drag the globe to spin it, hover a marker for the champions behind it, or use the buttons to jump to a venue and switch Slams on and off. The arcs into Melbourne are the longest, because almost every Australian Open champion has travelled from the other side of the world.</p>
+        <p>Two of the four majors &mdash; the Australian Open and the US Open &mdash; are played on hard courts, so hard courts account for {{surf_hard_pct}} of every Grand Slam match in this data ({{surf_hard_n}} of {{slam_matches}}). Roland Garros' clay accounts for {{surf_clay_pct}} ({{surf_clay_n}}), and Wimbledon's grass for {{surf_grass_pct}} ({{surf_grass_n}}). No Grand Slam match in this file was played on carpet &mdash; that surface only shows up at smaller tour events, which this report doesn't cover.</p>
+        <p>Each band below is sized to its share of matches; hover or tap one for the exact count and which major(s) it covers.</p>
       </div>
       <div class="card">
-        <h3>Where the Grand Slam champions come from</h3>
-        <div class="globe-layout">
-          <div class="globe-box"><canvas id="story-globe" width="700" height="700" aria-label="Globe with arcs from each champion's home country to the Grand Slam venue where the titles were won"></canvas><div class="globe-tip" id="story-tip"></div></div>
-          <div class="globe-ctl" id="slam-chips" role="group" aria-label="Show Slams"></div>
-          <div class="globe-ctl" id="venue-btns" role="group" aria-label="Jump to a venue"></div>
-          <ul class="country-list" id="country-list"></ul>
-        </div>
-        <p class="chart-note">Arc color = Slam, arc thickness = titles. Marker size = titles won by players from that country. Marker positions are approximate. Each champion&rsquo;s country comes from a small table typed in by hand, not from the match file.</p>
+        <h3>Grand Slam matches by surface</h3>
+        <div class="surface-split" id="surface-split"></div>
+        <p class="chart-note">Counted directly from the Surface column for every row where Series is &ldquo;Grand Slam&rdquo;; nothing here is estimated or drawn from outside the file.</p>
       </div>
     </div>
   </div>
@@ -239,7 +234,7 @@
         <ul>
           <li>Best-of-five rates need at least {{min_bo5}} matches ({{n_q5}} players qualify). Best-of-three rates need at least {{min_bo3}} ({{n_q3}} qualify). The gap chart needs {{min_bo5}} best-of-five and {{min_bo3_gap}} best-of-three matches ({{gap_n}} qualify).</li>
           <li><b>Streak:</b> Grand Slam matches won in a row, in date order and across tournaments. A loss resets it, and round order breaks ties on the same date.</li>
-          <li><b>Champion countries:</b> a small table typed in by hand, one row per champion. It is used only for the globe and is not in the match file.</li>
+          <li><b>Surface split:</b> counted only for Grand Slam matches (Series = &ldquo;Grand Slam&rdquo;); every value in the Surface column at that tier is Hard, Clay, or Grass, mapping one-to-one to the Australian Open/US Open, French Open, and Wimbledon respectively &mdash; verified when the report is built, not assumed. The file has no player nationality or location data of any kind, which is why this report and the dashboard show no geographic information.</li>
           <li><b>Dashboard tiers:</b> International = ATP 250, International Gold = ATP 500, Masters = Masters 1000, and Masters Cup = Tour Finals.</li>
         </ul>
       </div>
