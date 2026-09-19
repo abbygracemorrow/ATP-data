@@ -44,6 +44,14 @@ def oxford(items):
 # ---------------------------------------------------------------- load
 raw = pd.read_csv(ROOT / "data/atp_matches.csv")
 df = raw.copy()
+
+# fold Player-name spelling variants (whitespace, punctuation, hyphenation) into one identity;
+# see data/player_name_aliases.csv for the variant -> canonical mapping.
+aliases = pd.read_csv(ROOT / "data/player_name_aliases.csv", keep_default_na=False)
+alias_map = dict(zip(aliases["variant"], aliases["canonical"]))
+for col in ["Player_1", "Player_2", "Winner"]:
+    df[col] = df[col].replace(alias_map)
+
 df["Date"] = pd.to_datetime(df["Date"])
 df["Year"] = df["Date"].dt.year
 df["Loser"] = df["Player_2"].where(df["Winner"] == df["Player_1"], df["Player_1"])

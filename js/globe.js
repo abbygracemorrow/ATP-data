@@ -4,8 +4,10 @@
 (function (g) {
   'use strict';
   const D = Math.PI / 180;
-  const COL = { ink: '#2b4530', sea: '#eef4e8', grid: '#d5e1cb', land: '#86a882', white: '#fdfdfb', blush: '#f8e3e7', pink: '#ea96a4' };
+  const COL = { ink: '#2b4530', sea: '#eef4e8', seaLit: '#fbfdf7', seaShadow: '#d7e3cd', grid: '#d5e1cb',
+    land: '#86a882', landLit: '#a8c2a0', landShadow: '#5d7d63', white: '#fdfdfb', blush: '#f8e3e7', pink: '#ea96a4' };
   const SLAM_COLOR = { AO: '#6fa8b0', RG: '#ea96a4', W: '#6f9a5f', USO: '#c6d445' };
+  const hexToRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
   let DOTS = null;
 
   function inRing(x, y, ring) {
@@ -92,21 +94,35 @@
     }
     draw() {
       const ctx = this.ctx, W = this.W, R = this.R, cx = this.cx, cy = this.cy; ctx.clearRect(0, 0, W, this.H); this.hits = []; this.boxes = [];
-      // sticker shadow + sea
-      ctx.fillStyle = COL.ink; ctx.beginPath(); ctx.arc(cx + 7, cy + 7, R, 0, 7); ctx.fill();
-      ctx.fillStyle = COL.sea; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.fill();
+      // light source (screen space, upper-left) used for the sphere shading and the land-dot tinting below
+      const lx = cx - R * .42, ly = cy - R * .42;
+      // soft atmosphere glow just beyond the limb
+      const atmo = ctx.createRadialGradient(cx, cy, R * .92, cx, cy, R * 1.16);
+      atmo.addColorStop(0, 'rgba(111,168,176,.28)'); atmo.addColorStop(1, 'rgba(111,168,176,0)');
+      ctx.fillStyle = atmo; ctx.beginPath(); ctx.arc(cx, cy, R * 1.16, 0, 7); ctx.fill();
+      // sphere: a lit-to-shadow radial gradient standing in for the flat sea fill
+      const sea = ctx.createRadialGradient(lx, ly, R * .05, cx, cy, R * 1.05);
+      sea.addColorStop(0, COL.seaLit); sea.addColorStop(.6, COL.sea); sea.addColorStop(1, COL.seaShadow);
+      ctx.fillStyle = sea; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.fill();
       // graticule
       ctx.strokeStyle = COL.grid; ctx.lineWidth = 1;
       for (let lon = -180; lon < 180; lon += 30) this._poly(i => this.proj(lon, -90 + i * 3), 61);
       for (let lat = -60; lat <= 60; lat += 30) this._poly(i => this.proj(-180 + i * 3, lat), 121);
-      // land dots
-      ctx.fillStyle = COL.land; const p0 = this.lat0 * D, sp0 = Math.sin(p0), cp0 = Math.cos(p0), sz = this.R0 * .0165 * Math.sqrt(this.zoom);
+      // land dots, tinted lighter near the light source and darker toward the limb for a rounded, lit-sphere feel
+      const p0 = this.lat0 * D, sp0 = Math.sin(p0), cp0 = Math.cos(p0), sz = this.R0 * .0165 * Math.sqrt(this.zoom);
+      const lit = hexToRgb(COL.landLit), shadow = hexToRgb(COL.landShadow), maxD = R * 1.5;
       for (const [lon, lat] of DOTS) {
         const l = (lon - this.lon0) * D, p = lat * D, cp = Math.cos(p), cosc = sp0 * Math.sin(p) + cp0 * cp * Math.cos(l);
         if (cosc < .03) continue;
         const x = cx + R * cp * Math.sin(l), y = cy - R * (cp0 * Math.sin(p) - sp0 * cp * Math.cos(l));
+        const t = Math.max(0, Math.min(1, 1 - Math.hypot(x - lx, y - ly) / maxD)) * (.4 + .6 * cosc);
+        ctx.fillStyle = `rgb(${Math.round(shadow[0] + (lit[0] - shadow[0]) * t)},${Math.round(shadow[1] + (lit[1] - shadow[1]) * t)},${Math.round(shadow[2] + (lit[2] - shadow[2]) * t)})`;
         ctx.beginPath(); ctx.arc(x, y, sz * (.55 + .5 * cosc), 0, 7); ctx.fill();
       }
+      // specular highlight, low-opacity so the graticule and dots still read through it
+      const spec = ctx.createRadialGradient(lx, ly, 0, lx, ly, R * .85);
+      spec.addColorStop(0, 'rgba(255,255,255,.35)'); spec.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = spec; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.fill();
       // arcs
       const vmap = {}; this.venues.forEach(v => vmap[v.slam] = v);
       const arcs = []; for (const c of this.countries) for (const s in c.by_slam) if (c.by_slam[s] > 0 && this.slams.has(s)) arcs.push({ c, s, n: c.by_slam[s] });
@@ -116,7 +132,7 @@
           let open = false; ctx.beginPath(); for (const p of pts) { if (!p.vis) { open = false; continue; } if (open) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); open = true; } ctx.stroke(); }
         ctx.globalAlpha = 1; }
       // outline
-      ctx.strokeStyle = COL.ink; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.stroke();
+      ctx.strokeStyle = COL.ink; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.stroke();
       // country markers (circles first, labels afterwards so they do not collide)
       const shown = this.countries.filter(c => Object.keys(c.by_slam).some(s => this.slams.has(s) && c.by_slam[s] > 0));
       const many = this.zoom > 1.6, vis = [];
@@ -124,7 +140,7 @@
         const n = Object.keys(c.by_slam).reduce((a, s) => a + (this.slams.has(s) ? c.by_slam[s] : 0), 0), r = (4.5 + Math.sqrt(n) * 2.3) * Math.min(1.6, Math.sqrt(this.zoom)), hot = this.hover && this.hover.country === c.country;
         ctx.fillStyle = hot ? COL.white : COL.blush; ctx.strokeStyle = COL.ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 7); ctx.fill(); ctx.stroke();
         vis.push({ c, p, r, n, hot }); this.hits.push({ x: p.x, y: p.y, r, item: c }); }
-      ctx.font = '600 13px Fredoka, "Trebuchet MS", sans-serif';
+      ctx.font = '600 13px Inter, "Segoe UI", sans-serif';
       const vp = []; for (const v of this.venues) { if (!this.slams.has(v.slam)) continue; const p = this.proj(v.lon, v.lat); if (p.c < .05) continue; vp.push({ v, p }); }
       for (const { v, p } of vp) this._label(v.city, p.x + 14, p.y - 9, true);
       vis.sort((a, b) => (b.hot - a.hot) || (b.n - a.n));

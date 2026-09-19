@@ -6,7 +6,7 @@
 <title>Dashboard | Who owns the Grand Slams?</title>
 <meta name="description" content="Filter 68,000+ ATP matches by year, player, tournament, tier, surface, court, round, and best-of, compare a player's average wins and losses, see a leaderboard, and switch the charts between measures and breakdowns.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -28,12 +28,13 @@
   <div id="load" class="load-msg">Loading matches&hellip;</div>
 
   <div id="app" hidden>
-    <section class="controls" aria-label="Filters">
+    <section class="controls" aria-label="Global filters">
+      <p class="scope-cap">Global filters &mdash; apply to every section on this page</p>
       <div class="filter-grid">
         <div class="field"><label for="f-from">Year (from &ndash; to)</label><div class="range"><select id="f-from" aria-label="From year"></select><select id="f-to" aria-label="To year"></select></div></div>
-        <div class="field"><label for="f-player">Player (type to search)</label><input id="f-player" list="dl-players" placeholder="All players" autocomplete="off"><datalist id="dl-players"></datalist></div>
         <div class="field"><label for="f-tour">Tournament (type to search)</label><input id="f-tour" list="dl-tours" placeholder="All tournaments" autocomplete="off"><datalist id="dl-tours"></datalist></div>
         <div class="field more-wrap"><button type="button" class="more-btn" id="more-btn" aria-expanded="false" aria-controls="more-panel"><span>Additional Filters<span class="badge" id="more-badge" aria-live="polite"></span></span><span class="caret" aria-hidden="true">&#9662;</span></button></div>
+        <button class="btn" id="btn-reset" type="button">Reset all filters</button>
       </div>
       <div class="more-panel" id="more-panel" hidden>
         <div class="field"><label for="f-tier">Tier</label><select id="f-tier"></select></div>
@@ -42,12 +43,14 @@
         <div class="field"><label for="f-round">Round</label><select id="f-round"></select></div>
         <div class="field"><label for="f-bo">Best of</label><select id="f-bo"></select></div>
       </div>
-      <div class="ctl-row">
-        <div class="field" style="min-width:210px"><label for="m-measure">Measure</label><select id="m-measure"></select></div>
-        <div class="field" style="min-width:210px"><label for="m-dim">Break down by</label><select id="m-dim"></select></div>
+    </section>
+
+    <section class="controls scope-player" aria-label="Player filter">
+      <div class="scope-player-row">
+        <div class="field"><label for="f-player">Player (type to search)</label><input id="f-player" list="dl-players" placeholder="All players" autocomplete="off"><datalist id="dl-players"></datalist></div>
         <button class="btn" id="btn-slams" type="button">Grand Slams only</button>
-        <button class="btn alt" id="btn-reset" type="button">Reset all filters</button>
       </div>
+      <p class="scope-cap">Applies to: the summary numbers, the four charts, the table, and the globe below &mdash; <b>not</b> Win/Loss averages, the Leaderboard, or Head to Head, which each have their own player picker.</p>
     </section>
     <p class="view-line" id="view-line" aria-live="polite"></p>
 
@@ -59,6 +62,7 @@
           <h3>Player win/loss averages</h3>
           <div class="field"><label for="wl-player">Choose a player (type to search)</label><input id="wl-player" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
         </div>
+        <p class="scope-line">Global filters applied: <span id="wl-scope"></span></p>
         <div id="wl-body" aria-live="polite"></div>
       </div>
     </section>
@@ -74,8 +78,18 @@
           </div>
         </div>
         <p class="chart-note" style="margin-top:-6px">Head to head compares two players directly: their record against each other &mdash; by surface, tier, and round, and every match they've played &mdash; plus how their overall careers compare, side by side. Player 1 is always on the left, Player 2 on the right.</p>
+        <p class="scope-line">Global filters applied: <span id="h2h-scope"></span></p>
         <div id="h2h-body" aria-live="polite"></div>
       </div>
+    </section>
+
+    <section class="controls" aria-label="Chart display controls">
+      <p class="scope-cap">Applies to: the four charts and the table below</p>
+      <div class="ctl-row" style="margin-top:0;padding-top:0;border-top:none">
+        <div class="field" style="min-width:210px"><label for="m-measure">Measure</label><select id="m-measure"></select></div>
+        <div class="field" style="min-width:210px"><label for="m-dim">Break down by</label><select id="m-dim"></select></div>
+      </div>
+      <p class="scope-line" style="margin-top:10px">Filters applied: <span id="charts-scope"></span></p>
     </section>
 
     <section class="dash-grid" aria-label="Charts">
@@ -98,6 +112,7 @@
             <div class="field"><label for="lb-top">Show</label><select id="lb-top"><option value="10">Top 10</option><option value="25">Top 25</option><option value="50">Top 50</option><option value="100">Top 100</option></select></div>
           </div>
         </div>
+        <p class="scope-line">Global filters applied: <span id="lb-scope"></span> (the Player filter above doesn't apply here, so every player can be ranked)</p>
         <div class="tbl-wrap"><table class="data lb" id="lb-tbl"></table></div>
         <p class="chart-note" id="lb-info"></p>
       </div>

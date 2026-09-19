@@ -17,7 +17,9 @@ It has 68,635 rows (one main-draw ATP match each) from January 3, 2000 to August
 `Tournament, Date, Series, Court, Surface, Round, Best of, Player_1, Player_2, Winner, Rank_1, Rank_2, Score`.
 `Rank_1` and `Rank_2` are the two players' ATP rankings (1 is the best; 0 or -1 means not listed). I did not change any value in this file, and every number on both pages is computed from it.
 
-The only other file that feeds the site is `data/champion_countries.csv`, a small table typed by hand that says which country each Grand Slam champion is from. It is used only to place champions on the globes and is not part of the match data.
+The only other files that feed the site are `data/champion_countries.csv` (see below) and `data/player_name_aliases.csv`, which are not part of the match data.
+
+**Player-name cleanup.** The same player is sometimes spelled multiple ways in the source file &mdash; trailing spaces (`"Nadal R. "`), inconsistent capitalization, punctuation (`"Herbert P.H"` vs. `"Herbert P-H."`), or a compound surname used only some of the time (`"Nadal-Parera R."` next to `"Nadal R."`). Left alone, this silently splits one player's matches across two or more entries everywhere &mdash; the player list, the leaderboard, win/loss averages, and head-to-head. `data/player_name_aliases.csv` maps every such spelling variant to one canonical form; `scripts/build_site.py` and `js/dashboard.js` both apply it when the data loads, so `data/atp_matches.csv` itself is never touched (the "changed no values" promise above is about that file specifically). Only variants I could confirm were the same real person were merged; cases where a shared surname and initial could plausibly be two different players (for example, two different Kuznetsovs, or two different Zhangs, who really are distinct ATP players) were left alone.
 
 ## Files
 
@@ -35,14 +37,16 @@ The only other file that feeds the site is `data/champion_countries.csv`, a smal
 | `scripts/report_template.html` | The report's text with `{{placeholders}}` for numbers. Edit the wording here. |
 | `data/atp_matches.csv` | The match data (see above). |
 | `data/champion_countries.csv` | Champion-to-country table for the globes (see above). |
+| `data/player_name_aliases.csv` | Player-name spelling variant &rarr; canonical name (see above). |
 | `data/report_data.json` | Output of the build script: every figure and chart series in the report. |
 | `.gitignore` | Keeps Python cache files out of the repository. |
 
 ## Dashboard guide
 
-* **Always visible:** Year (from and to), Player, and Tournament. **Additional Filters** opens Tier, Surface, Court, Round, and Best of. A badge on the button shows how many of those are set. **Reset all filters** clears everything, including the win/loss player and the leaderboard settings.
-* **Player win/loss averages:** search for a player to see average wins and average losses per season and per tournament, plus the average ATP ranking of the opponents beaten and lost to. It uses every filter except Player. Picking a player in the top filter fills it in automatically.
-* **Player leaderboard:** ranks players by total wins, win rate, titles, matches played, or average ATP ranking, using the current filters (the Player filter is ignored so everyone can be ranked, and the selected player is highlighted). Players with equal values share a rank.
+* **Global filters** (Year, Tournament, and Additional Filters for Tier/Surface/Court/Round/Best of) apply to every section on the page and live in their own panel at the top. **Reset all filters** clears everything, including the win/loss player, the leaderboard settings, and the head-to-head players.
+* **Player** has its own panel right below the global filters, because it *doesn't* reach everywhere: it applies to the summary numbers, the four charts, the table, and the globe, but not to Player win/loss averages, the Player leaderboard, or Head to head, which each have their own player picker (picking a player here does fill in the win/loss picker automatically). Every panel that ignores it shows a "Global filters applied" line so it's clear what's actually in effect. **Measure** and **Break down by** only affect the four charts and the table, so they live in their own small control bar directly above that section rather than with the global filters.
+* **Player win/loss averages:** search for a player to see average wins and average losses per season and per tournament, plus the average ATP ranking of the opponents beaten and lost to. It uses every global filter except Player.
+* **Player leaderboard:** ranks players by total wins, win rate, titles, matches played, or average ATP ranking, using the current global filters (the Player filter is ignored so everyone can be ranked, and the selected player is highlighted). Players with equal values share a rank.
 * **Head to head:** pick two players (a swap button flips them; the same player can't be picked twice) to see their overall record, their record against each other by surface/tier/round, every match they've played against each other (newest first), and a side-by-side comparison of their career numbers (win rate, wins, losses, Grand Slam titles, win rate by surface) with whichever player is ahead on each row highlighted. Uses every filter above, so you can look at just their Grand Slam meetings or just their matches on clay.
 * **Charts and table:** the **Measure** switch includes matches, wins, win rate, titles, finals, distinct players, distinct tournaments, best-of-five share, and average ATP ranking. The **Break down by** switch changes the grouping.
 
