@@ -5,7 +5,7 @@ A two-page data website about men's Grand Slam tennis, built from ATP match resu
 * **Report** (`index.html`): eleven findings, each with a chart, plus a globe and an "About the data" section.
 * **Dashboard** (`dashboard.html`): filters, summary numbers, a player win/loss comparison, four charts with measure and breakdown switches, a globe, a player leaderboard, and a table. All calculations run in the browser.
 
-**Live site:** <https://abbygracemorrow.github.io/tennis-data/atp-grand-slams/index.html>  
+**Live site:** <https://abbygracemorrow.github.io/ATP-data/>  
 **Author:** Abby Morrow
 
 ## Where the data came from
@@ -73,12 +73,12 @@ Repository settings > Pages > "Deploy from a branch" > branch `main`, folder `/ 
 * **Streak:** consecutive Grand Slam match wins in date order; a loss resets it.
 * **Higher-ranked player:** the player with the smaller ranking number. **Ranking gap:** the difference between the two ranking numbers. Matches with an unlisted ranking, or with equal rankings, are left out of the ranking statistics.
 * **Average ATP ranking:** the sum of the listed rankings divided by how many are listed (lower is better).
-* **Average wins (or losses) per season:** total wins (or losses) divided by the number of seasons with at least one match in the current view. **Per tournament:** divided by the number of tournaments played, where one tournament in one year counts once.
+* **Average wins (or losses) per season:** total wins (or losses) divided by the number of seasons with at least one match in the current view. **Per tournament:** divided by the number of tournament entries (one tournament in one year counts once) &mdash; not the same thing as the dashboard's "different tournaments" count, which counts each tournament name only once no matter how many years it appears.
 * **Tier (dashboard):** `Series` names changed in 2009, so International = ATP 250, International Gold = ATP 500, Masters = Masters 1000, and Masters Cup = Tour Finals.
 
 ## Known data limits
 
-* A full Slam draw has 127 matches, but the file is missing about 4.4% of Grand Slam matches, including the 2019 US Open final. Because of that, Nadal shows 21 titles here instead of 22, and win rates and streaks are "as recorded".
+* A full Slam draw has 127 matches, but the file is missing about 4.4% of Grand Slam matches, including the 2019 US Open final. Because of that, Nadal shows 21 titles here instead of 22. **I chose to leave the source file exactly as downloaded rather than add a correction row for the missing final**, so every title count, win rate, and streak on the report, the dashboard, and in `data/atp_matches.csv` itself is "as recorded" &mdash; not adjusted for this or any other known gap.
 * Wimbledon 2020 was cancelled, and the 2026 US Open had not started when the data ends.
 * The order of `Player_1` and `Player_2` carries no information (Player_1 wins 50.0% of matches).
 * The `Score` column is not used.

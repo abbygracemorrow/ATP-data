@@ -307,10 +307,10 @@
         <table class="wl-table"><thead><tr><th></th><th>Wins</th><th>Losses</th></tr></thead><tbody>
           <tr><td>Total</td><td>${int(W)}</td><td>${int(L)}</td></tr>
           <tr><td>Average per season (${S} season${S > 1 ? 's' : ''})</td><td>${f1(R.avgWinsSeason)}</td><td>${f1(R.avgLossesSeason)}</td></tr>
-          <tr><td>Average per tournament (${int(T)} played)</td><td>${f1(R.avgWinsTournament)}</td><td>${f1(R.avgLossesTournament)}</td></tr>
+          <tr><td>Average per tournament (${int(T)} tournament entries, one per year)</td><td>${f1(R.avgWinsTournament)}</td><td>${f1(R.avgLossesTournament)}</td></tr>
           <tr><td>Average ATP ranking of the opponent</td><td>${rk(R.oppRankInWins)}</td><td>${rk(R.oppRankInLosses)}</td></tr>
         </tbody></table>
-        <p class="wl-def">Average per season = total \u00f7 seasons with at least one match in this view. Average per tournament = total \u00f7 tournaments played (one tournament in one year counts once). The last row is the mean ATP ranking of the players beaten (Wins column) and of the players lost to (Losses column); lower numbers mean stronger opponents.${R.ownRank != null ? ` ${Charts.esc(name)}'s own average ranking in these matches is ${f1(R.ownRank)}.` : ''}</p>
+        <p class="wl-def">Average per season = total \u00f7 seasons with at least one match in this view. Average per tournament = total \u00f7 tournament entries (one tournament in one year counts once, so this is not the same as the "different tournaments" count in the summary numbers above). The last row is the mean ATP ranking of the players beaten (Wins column) and of the players lost to (Losses column); lower numbers mean stronger opponents.${R.ownRank != null ? ` ${Charts.esc(name)}'s own average ranking in these matches is ${f1(R.ownRank)}.` : ''}</p>
       </div><div><div class="chart" id="wl-chart"></div><p class="chart-note">Wins and losses in each season played. Dashed lines mark the two averages (${f1(R.avgWinsSeason)} wins and ${f1(R.avgLossesSeason)} losses per season).</p></div></div>`;
     Charts.pairsV($('wl-chart'), seasons.map(y => String(Y0 + y)), seasons.map(y => yw[y]), seasons.map(y => yl[y]), { nameA: 'Wins', nameB: 'Losses', colorA: C.sage, colorB: C.pink, avgA: R.avgWinsSeason, avgB: R.avgLossesSeason, label: `${name}: wins and losses per season` });
   }
@@ -320,7 +320,7 @@
   const LB = {
     wins: { label: 'total wins', get: p => p.w },
     winrate: { label: 'win rate', get: p => (p.n >= MIN_RATE ? p.w / p.n : null), note: `Win rate needs at least ${MIN_RATE} matches.` },
-    titles: { label: 'titles won', get: p => (p.tit > 0 ? p.tit : null), note: 'Only players with at least one title are ranked.' },
+    titles: { label: 'titles won', get: p => (p.tit > 0 ? p.tit : null), note: 'Only players with at least one title are ranked. Titles are counted exactly as recorded in the file, which is missing a few Grand Slam matches (see About the data on the report page) — that is why Nadal shows 21 rather than 22.' },
     matches: { label: 'matches played', get: p => p.n },
     avgrank: { label: 'average ATP ranking (best first)', get: p => (p.rc >= MIN_RATE ? p.rs / p.rc : null), asc: true, note: `Lower ranking numbers are better. Needs at least ${MIN_RATE} matches with a listed ranking.` }
   };
