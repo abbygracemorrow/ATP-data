@@ -209,5 +209,18 @@
     el.innerHTML = wrap(W, H, 'Which Grand Slams each player has won', s);
   }
 
-  g.Charts = { C, SLAM_COLOR, SERIES, esc, int, pct, clip, niceTicks, mix, legend, barH, barV, stackedH, pairsV, line, scatter, heatmap, titleGrid, ensureTip, empty };
+  /* a ring split by share between two values (e.g. a head-to-head win split), with two lines of text in the middle */
+  function vsRing(el, a, b, o = {}) {
+    const size = o.size || 148, rad = size / 2 - 9, cx = size / 2, cy = size / 2, circ = 2 * Math.PI * rad;
+    const total = a + b, ca = o.colorA || C.sage, cb = o.colorB || C.pink;
+    const lenA = total ? circ * (a / total) : 0;
+    const ring = total
+      ? `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="${cb}" stroke-width="13"/><circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="${ca}" stroke-width="13" stroke-dasharray="${lenA} ${circ - lenA}" transform="rotate(-90 ${cx} ${cy})"/>`
+      : `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="${C.grid}" stroke-width="13"/>`;
+    const s = ring + `<text x="${cx}" y="${cy - 5}" text-anchor="middle" style="font-weight:700;font-size:15px">${esc(o.centerTop || '')}</text>` +
+      `<text x="${cx}" y="${cy + 15}" text-anchor="middle" style="font-size:12px;fill:${C.soft}">${esc(o.centerBottom || '')}</text>`;
+    el.innerHTML = wrap(size, size, o.label || 'Head-to-head record', s);
+  }
+
+  g.Charts = { C, SLAM_COLOR, SERIES, esc, int, pct, clip, niceTicks, mix, legend, barH, barV, stackedH, pairsV, line, scatter, heatmap, titleGrid, vsRing, ensureTip, empty };
 })(window);
