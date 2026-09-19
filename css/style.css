@@ -65,6 +65,8 @@ a{color:var(--ink);text-decoration-color:var(--pink);text-decoration-thickness:2
 .summary{font-size:1.1rem;max-width:62ch}
 .hero-globe{position:relative}
 .court-strip{height:32px;background:var(--sage);position:relative;border-top:var(--line);border-bottom:var(--line)}
+.court-strip.pink{background:var(--pink)}
+.court-strip.section-divider{margin:24px 0;border-radius:var(--r-sm);overflow:hidden}
 .court-strip::before{content:"";position:absolute;left:0;right:0;top:9px;height:3px;background:var(--white)}
 .court-strip::after{content:"";position:absolute;left:0;right:0;bottom:9px;height:3px;background:var(--white)}
 
