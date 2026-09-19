@@ -69,21 +69,15 @@
 
     <section class="dash-band">
      <div class="wrap">
-      <section class="controls filters-box" aria-label="Global filters">
-      <h3 class="dash-section-h">Global filters</h3>
-      <p class="scope-line">Combine any of these to narrow down the matches analyzed everywhere below &mdash; for example, Tier = Grand Slam and Surface = Grass isolates every Wimbledon-era match. Applies to the summary numbers, charts, table, and globe below; Head to Head always uses the full dataset, and Win/Loss averages and the Leaderboard use their own player picker instead.</p>
+      <section class="controls filters-box" aria-label="Filter by tournament">
+      <h3 class="dash-section-h">Filter by tournament</h3>
+      <p class="scope-line">Narrow every match analyzed below to a year range and/or one tournament. Applies to the summary numbers, charts, table, and globe below; Head to Head always uses the full dataset, and Win/Loss averages and the Leaderboard use their own player picker instead. Use "Break down by" further down to split the view by tier, surface, court, round, best of, tournament, or player instead of filtering to just one.</p>
       <div class="filter-grid-all">
         <div class="field"><label for="f-from">Year (from &ndash; to)</label><div class="range"><select id="f-from" aria-label="From year" title="Keep only matches played in this range of seasons"></select><select id="f-to" aria-label="To year" title="Keep only matches played in this range of seasons"></select></div></div>
-        <div class="field"><label for="f-tour">Tournament (type to search)</label><input id="f-tour" list="dl-tours" placeholder="All tournaments" autocomplete="off" title="Narrow to one specific tournament, e.g. only the Australian Open"><datalist id="dl-tours"></datalist></div>
-        <div class="field"><label for="f-tier">Tier (event level)</label><select id="f-tier" title="Event level, from the four Grand Slams down to smaller regular-season events"></select></div>
-        <div class="field"><label for="f-surface">Surface</label><select id="f-surface" title="Court surface the match was played on: hard, clay, grass, or carpet"></select></div>
-        <div class="field"><label for="f-court">Court (indoor/outdoor)</label><select id="f-court" title="Whether the match was played indoors or outdoors"></select></div>
-        <div class="field"><label for="f-round">Round</label><select id="f-round" title="Stage of the tournament, from the first round to the final"></select></div>
-        <div class="field"><label for="f-bo">Best of</label><select id="f-bo" title="Best-of-3 or best-of-5 sets — most men's Grand Slam and Davis Cup matches are best-of-5, almost everything else is best-of-3"></select></div>
-        <div class="field"><label for="f-player">Player (type to search)</label><input id="f-player" list="dl-players" placeholder="All players" autocomplete="off" title="Keep only matches this player won or lost"><datalist id="dl-players"></datalist></div>
+        <div class="field"><label for="f-tour">Tournament (type to search)</label><input id="f-tour" list="dl-tours" placeholder="All tournaments" autocomplete="off" title="Narrow to one specific tournament, e.g. only the Australian Open"><datalist id="dl-tours"></datalist><datalist id="dl-players"></datalist></div>
       </div>
       <div class="filter-actions">
-        <button class="btn" id="btn-slams" type="button" title="Shortcut for Tier = Grand Slam">Grand Slams only</button>
+        <button class="btn" id="btn-slams" type="button" title="Shortcut for only Grand Slam matches">Grand Slams only</button>
         <button class="btn" id="btn-reset" type="button">Reset all filters</button>
       </div>
     </section>
@@ -111,7 +105,7 @@
             <div class="field"><label for="lb-top">Show</label><select id="lb-top"><option value="5">Top 5</option><option value="10">Top 10</option><option value="25">Top 25</option><option value="50">Top 50</option><option value="100">Top 100</option></select></div>
           </div>
         </div>
-        <p class="scope-line">Global filters applied: <span id="lb-scope"></span> (the Player filter above doesn't apply here, so every player can be ranked)</p>
+        <p class="scope-line">Filters applied: <span id="lb-scope"></span></p>
         <div class="tbl-wrap"><table class="data lb" id="lb-tbl"></table></div>
         <p class="chart-note" id="lb-info"></p>
       </div>

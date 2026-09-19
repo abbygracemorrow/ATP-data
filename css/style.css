@@ -163,7 +163,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;bac
 .scope-line{font-family:var(--font-display);font-size:var(--fs-small);color:var(--ink-soft);margin:0 0 12px}
 .scope-line span{color:var(--ink);font-weight:600}
 .filters-box{background:#fbe9ee;border-color:var(--pink)}
-.filter-grid-all{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 16px;align-items:end;margin-top:14px}
+.filter-grid-all{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,300px));gap:14px 16px;align-items:end;margin-top:14px}
 .filter-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid rgba(43,69,48,.15)}
 .field label{display:block;font-family:var(--font-display);font-weight:500;font-size:var(--fs-label);margin-bottom:4px;color:var(--ink-soft)}
 .field select,.field input{width:100%;font-family:var(--font-display);font-size:.96rem;color:var(--ink);background:var(--white);border:var(--line);border-radius:var(--r-sm);padding:7px 10px;height:40px;transition:border-color var(--ease),box-shadow var(--ease)}
@@ -248,10 +248,6 @@ table.data th[aria-sort="ascending"]::after{content:" \25B4"}
   .small-multiples{grid-template-columns:minmax(0,1fr)}
   .dash-head-row{flex-direction:column;align-items:flex-start}
   .court-gallery{justify-content:flex-start}
-  .filter-grid-all{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-}
-@media (max-width:560px){
-  .filter-grid-all{grid-template-columns:minmax(0,1fr)}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 h3.dash-section-h{font-size:clamp(1.3rem,2.4vw,1.65rem);font-weight:700;font-variant-caps:normal;letter-spacing:0;text-transform:none;border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:16px}
