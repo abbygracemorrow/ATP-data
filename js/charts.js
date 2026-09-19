@@ -256,5 +256,23 @@
     el.innerHTML = wrap(size, size, o.label || 'Head-to-head record', s);
   }
 
-  g.Charts = { C, SLAM_COLOR, SERIES, esc, int, pct, clip, niceTicks, mix, legend, barH, barV, stackedH, pairsV, line, scatter, heatmap, titleGrid, vsRing, courtIcon, courtIconSvg, ensureTip, empty };
+  /* donut chart with any number of slices. slices: [{label, value, color}] */
+  function donut(el, slices, o = {}) {
+    ensureTip();
+    const size = o.size || 220, rad = size / 2 - 16, cx = size / 2, cy = size / 2, circ = 2 * Math.PI * rad, sw = o.strokeWidth || 28;
+    const total = slices.reduce((a, s) => a + s.value, 0);
+    let ring, offset = 0;
+    if (!total) ring = `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="${C.grid}" stroke-width="${sw}"/>`;
+    else ring = slices.filter(s => s.value > 0).map(s => {
+      const len = circ * (s.value / total);
+      const seg = `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="${s.color}" stroke-width="${sw}" stroke-dasharray="${len} ${circ - len}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})"${tipAttr(`<b>${esc(s.label)}</b><br>${int(s.value)} (${pct(s.value / total)})`)}/>`;
+      offset += len; return seg;
+    }).join('');
+    const centerText = `<text x="${cx}" y="${cy - 4}" text-anchor="middle" style="font-weight:700;font-size:22px">${esc(o.centerTop != null ? o.centerTop : int(total))}</text>` +
+      `<text x="${cx}" y="${cy + 17}" text-anchor="middle" style="font-size:12.5px;fill:${C.soft}">${esc(o.centerBottom || '')}</text>`;
+    el.innerHTML = wrap(size, size, o.label || 'Donut chart', ring + centerText);
+    if (o.legend !== false) legend(el, slices.map(s => ({ label: `${s.label} — ${int(s.value)} (${total ? pct(s.value / total) : '0%'})`, color: s.color })));
+  }
+
+  g.Charts = { C, SLAM_COLOR, SERIES, esc, int, pct, clip, niceTicks, mix, legend, barH, barV, stackedH, pairsV, line, scatter, heatmap, titleGrid, vsRing, donut, courtIcon, courtIconSvg, ensureTip, empty };
 })(window);
