@@ -7,7 +7,7 @@
   "last_year": 2026,
   "last_date": "2026-08-29",
   "seasons": 27,
-  "players": 1830,
+  "players": 1713,
   "tournaments": 268,
   "slam_matches": 12871,
   "slam_titles": 105,
@@ -1082,8 +1082,8 @@
    "n5": 445,
    "w5": 394,
    "r5": 0.8854,
-   "n3": 834,
-   "r3": 0.8129
+   "n3": 842,
+   "r3": 0.8124
   },
   {
    "player": "Nadal R.",
@@ -1091,8 +1091,8 @@
    "n5": 352,
    "w5": 310,
    "r5": 0.8807,
-   "n3": 862,
-   "r3": 0.8086
+   "n3": 867,
+   "r3": 0.8074
   },
   {
    "player": "Alcaraz C.",
@@ -1109,8 +1109,8 @@
    "n5": 445,
    "w5": 379,
    "r5": 0.8517,
-   "n3": 948,
-   "r3": 0.8143
+   "n3": 957,
+   "r3": 0.813
   },
   {
    "player": "Sinner J.",
@@ -1145,8 +1145,8 @@
    "n5": 249,
    "w5": 192,
    "r5": 0.7711,
-   "n3": 675,
-   "r3": 0.7081
+   "n3": 680,
+   "r3": 0.7103
   },
   {
    "player": "Zverev A.",
@@ -1154,8 +1154,8 @@
    "n5": 168,
    "w5": 128,
    "r5": 0.7619,
-   "n3": 560,
-   "r3": 0.6911
+   "n3": 564,
+   "r3": 0.6897
   },
   {
    "player": "Roddick A.",
@@ -1167,15 +1167,6 @@
    "r3": 0.7565
   },
   {
-   "player": "Del Potro J.M.",
-   "name": "J.M. Del Potro",
-   "n5": 126,
-   "w5": 93,
-   "r5": 0.7381,
-   "n3": 426,
-   "r3": 0.7183
-  },
-  {
    "player": "Tsonga J.W.",
    "name": "J.W. Tsonga",
    "n5": 163,
@@ -1183,33 +1174,42 @@
    "r5": 0.7362,
    "n3": 478,
    "r3": 0.6444
+  },
+  {
+   "player": "Del Potro J.M.",
+   "name": "J.M. Del Potro",
+   "n5": 128,
+   "w5": 94,
+   "r5": 0.7344,
+   "n3": 426,
+   "r3": 0.7183
   }
  ],
  "bo3_top": [
   {
    "player": "Federer R.",
    "name": "R. Federer",
-   "n3": 948,
-   "w3": 772,
-   "r3": 0.8143,
+   "n3": 957,
+   "w3": 778,
+   "r3": 0.813,
    "n5": 445,
    "r5": 0.8517
   },
   {
    "player": "Djokovic N.",
    "name": "N. Djokovic",
-   "n3": 834,
-   "w3": 678,
-   "r3": 0.8129,
+   "n3": 842,
+   "w3": 684,
+   "r3": 0.8124,
    "n5": 445,
    "r5": 0.8854
   },
   {
    "player": "Nadal R.",
    "name": "R. Nadal",
-   "n3": 862,
-   "w3": 697,
-   "r3": 0.8086,
+   "n3": 867,
+   "w3": 700,
+   "r3": 0.8074,
    "n5": 352,
    "r5": 0.8807
   },
@@ -1255,8 +1255,8 @@
    "n3": 426,
    "w3": 306,
    "r3": 0.7183,
-   "n5": 126,
-   "r5": 0.7381
+   "n5": 128,
+   "r5": 0.7344
   },
   {
    "player": "Hewitt L.",
@@ -1270,27 +1270,27 @@
   {
    "player": "Murray A.",
    "name": "A. Murray",
-   "n3": 675,
-   "w3": 478,
-   "r3": 0.7081,
+   "n3": 680,
+   "w3": 483,
+   "r3": 0.7103,
    "n5": 249,
    "r5": 0.7711
   },
   {
    "player": "Medvedev D.",
    "name": "D. Medvedev",
-   "n3": 466,
+   "n3": 469,
    "w3": 325,
-   "r3": 0.6974,
+   "r3": 0.693,
    "n5": 122,
    "r5": 0.7213
   },
   {
    "player": "Zverev A.",
    "name": "A. Zverev",
-   "n3": 560,
-   "w3": 387,
-   "r3": 0.6911,
+   "n3": 564,
+   "w3": 389,
+   "r3": 0.6897,
    "n5": 168,
    "r5": 0.7619
   }
@@ -1333,6 +1333,15 @@
    "gap": 0.105
   },
   {
+   "player": "Berrettini M.",
+   "name": "M. Berrettini",
+   "n3": 237,
+   "r3": 0.616,
+   "n5": 78,
+   "r5": 0.7179,
+   "gap": 0.1019
+  },
+  {
    "player": "Grosjean S.",
    "name": "S. Grosjean",
    "n3": 336,
@@ -1344,38 +1353,29 @@
   {
    "player": "Wawrinka S.",
    "name": "S. Wawrinka",
-   "n3": 676,
-   "r3": 0.5769,
+   "n3": 679,
+   "r3": 0.5773,
    "n5": 224,
    "r5": 0.6786,
-   "gap": 0.1016
+   "gap": 0.1013
   },
   {
    "player": "Cilic M.",
    "name": "M. Cilic",
-   "n3": 691,
-   "r3": 0.5977,
+   "n3": 694,
+   "r3": 0.598,
    "n5": 198,
    "r5": 0.697,
-   "gap": 0.0993
-  },
-  {
-   "player": "Berrettini M.",
-   "name": "M. Berrettini",
-   "n3": 234,
-   "r3": 0.6197,
-   "n5": 78,
-   "r5": 0.7179,
-   "gap": 0.0983
+   "gap": 0.099
   },
   {
    "player": "Thiem D.",
    "name": "D. Thiem",
-   "n3": 408,
+   "n3": 413,
    "r3": 0.6005,
    "n5": 105,
    "r5": 0.6952,
-   "gap": 0.0947
+   "gap": 0.0948
   },
   {
    "player": "Schwartzman D.",
@@ -1434,47 +1434,47 @@
   {
    "player": "Berdych T.",
    "name": "T. Berdych",
-   "n3": 682,
-   "r3": 0.632,
+   "n3": 684,
+   "r3": 0.6316,
    "n5": 203,
    "r5": 0.7094,
-   "gap": 0.0774
-  },
-  {
-   "player": "Carreno Busta P.",
-   "name": "P. Carreno Busta",
-   "n3": 303,
-   "r3": 0.5677,
-   "n5": 81,
-   "r5": 0.642,
-   "gap": 0.0743
-  },
-  {
-   "player": "Verdasco F.",
-   "name": "F. Verdasco",
-   "n3": 774,
-   "r3": 0.5349,
-   "n5": 181,
-   "r5": 0.6077,
-   "gap": 0.0729
-  },
-  {
-   "player": "Djokovic N.",
-   "name": "N. Djokovic",
-   "n3": 834,
-   "r3": 0.8129,
-   "n5": 445,
-   "r5": 0.8854,
-   "gap": 0.0724
+   "gap": 0.0778
   },
   {
    "player": "Nadal R.",
    "name": "R. Nadal",
-   "n3": 862,
-   "r3": 0.8086,
+   "n3": 867,
+   "r3": 0.8074,
    "n5": 352,
    "r5": 0.8807,
-   "gap": 0.0721
+   "gap": 0.0733
+  },
+  {
+   "player": "Djokovic N.",
+   "name": "N. Djokovic",
+   "n3": 842,
+   "r3": 0.8124,
+   "n5": 445,
+   "r5": 0.8854,
+   "gap": 0.073
+  },
+  {
+   "player": "Verdasco F.",
+   "name": "F. Verdasco",
+   "n3": 777,
+   "r3": 0.5354,
+   "n5": 181,
+   "r5": 0.6077,
+   "gap": 0.0723
+  },
+  {
+   "player": "Zverev A.",
+   "name": "A. Zverev",
+   "n3": 564,
+   "r3": 0.6897,
+   "n5": 168,
+   "r5": 0.7619,
+   "gap": 0.0722
   },
   {
    "player": "Philippoussis M.",
@@ -1504,15 +1504,6 @@
    "gap": 0.0708
   },
   {
-   "player": "Zverev A.",
-   "name": "A. Zverev",
-   "n3": 560,
-   "r3": 0.6911,
-   "n5": 168,
-   "r5": 0.7619,
-   "gap": 0.0708
-  },
-  {
    "player": "Bjorkman J.",
    "name": "J. Bjorkman",
    "n3": 279,
@@ -1524,16 +1515,16 @@
   {
    "player": "Youzhny M.",
    "name": "M. Youzhny",
-   "n3": 672,
-   "r3": 0.5342,
+   "n3": 676,
+   "r3": 0.5355,
    "n5": 161,
    "r5": 0.6025,
-   "gap": 0.0683
+   "gap": 0.067
   },
   {
    "player": "Troicki V.",
    "name": "V. Troicki",
-   "n3": 414,
+   "n3": 416,
    "r3": 0.5,
    "n5": 83,
    "r5": 0.5663,
@@ -1558,13 +1549,22 @@
    "gap": 0.0638
   },
   {
+   "player": "Carreno Busta P.",
+   "name": "P. Carreno Busta",
+   "n3": 393,
+   "r3": 0.5267,
+   "n5": 95,
+   "r5": 0.5895,
+   "gap": 0.0628
+  },
+  {
    "player": "Murray A.",
    "name": "A. Murray",
-   "n3": 675,
-   "r3": 0.7081,
+   "n3": 680,
+   "r3": 0.7103,
    "n5": 249,
    "r5": 0.7711,
-   "gap": 0.0629
+   "gap": 0.0608
   },
   {
    "player": "Dimitrov G.",
@@ -1603,6 +1603,15 @@
    "gap": 0.0491
   },
   {
+   "player": "Monfils G.",
+   "name": "G. Monfils",
+   "n3": 692,
+   "r3": 0.6228,
+   "n5": 189,
+   "r5": 0.672,
+   "gap": 0.0491
+  },
+  {
    "player": "Raonic M.",
    "name": "M. Raonic",
    "n3": 398,
@@ -1612,22 +1621,13 @@
    "gap": 0.0489
   },
   {
-   "player": "Monfils G.",
-   "name": "G. Monfils",
-   "n3": 690,
-   "r3": 0.6232,
-   "n5": 189,
-   "r5": 0.672,
-   "gap": 0.0488
-  },
-  {
    "player": "Ferrer D.",
    "name": "D. Ferrer",
-   "n3": 833,
-   "r3": 0.6447,
+   "n3": 834,
+   "r3": 0.6451,
    "n5": 202,
    "r5": 0.6931,
-   "gap": 0.0484
+   "gap": 0.048
   },
   {
    "player": "De Minaur A.",
@@ -1639,21 +1639,21 @@
    "gap": 0.044
   },
   {
-   "player": "Robredo T.",
-   "name": "T. Robredo",
-   "n3": 674,
-   "r3": 0.592,
-   "n5": 162,
-   "r5": 0.6358,
-   "gap": 0.0438
-  },
-  {
    "player": "Agassi A.",
    "name": "A. Agassi",
    "n3": 231,
    "r3": 0.7489,
    "n5": 106,
    "r5": 0.7925,
+   "gap": 0.0435
+  },
+  {
+   "player": "Robredo T.",
+   "name": "T. Robredo",
+   "n3": 677,
+   "r3": 0.5923,
+   "n5": 162,
+   "r5": 0.6358,
    "gap": 0.0435
   },
   {
@@ -1677,20 +1677,11 @@
   {
    "player": "Lopez F.",
    "name": "F. Lopez",
-   "n3": 762,
+   "n3": 764,
    "r3": 0.4974,
    "n5": 171,
    "r5": 0.538,
    "gap": 0.0406
-  },
-  {
-   "player": "Simon G.",
-   "name": "G. Simon",
-   "n3": 697,
-   "r3": 0.561,
-   "n5": 143,
-   "r5": 0.6014,
-   "gap": 0.0404
   },
   {
    "player": "Henman T.",
@@ -1702,6 +1693,24 @@
    "gap": 0.0402
   },
   {
+   "player": "Simon G.",
+   "name": "G. Simon",
+   "n3": 700,
+   "r3": 0.5614,
+   "n5": 143,
+   "r5": 0.6014,
+   "gap": 0.04
+  },
+  {
+   "player": "Federer R.",
+   "name": "R. Federer",
+   "n3": 957,
+   "r3": 0.813,
+   "n5": 445,
+   "r5": 0.8517,
+   "gap": 0.0387
+  },
+  {
    "player": "Evans D.",
    "name": "D. Evans",
    "n3": 229,
@@ -1709,15 +1718,6 @@
    "n5": 63,
    "r5": 0.4921,
    "gap": 0.0379
-  },
-  {
-   "player": "Federer R.",
-   "name": "R. Federer",
-   "n3": 948,
-   "r3": 0.8143,
-   "n5": 445,
-   "r5": 0.8517,
-   "gap": 0.0373
   },
   {
    "player": "Tomic B.",
@@ -1776,11 +1776,11 @@
   {
    "player": "Ferrero J.C.",
    "name": "J.C. Ferrero",
-   "n3": 510,
-   "r3": 0.6373,
+   "n3": 511,
+   "r3": 0.636,
    "n5": 145,
    "r5": 0.669,
-   "gap": 0.0317
+   "gap": 0.033
   },
   {
    "player": "Kecmanovic M.",
@@ -1801,49 +1801,49 @@
    "gap": 0.0302
   },
   {
+   "player": "Medvedev D.",
+   "name": "D. Medvedev",
+   "n3": 469,
+   "r3": 0.693,
+   "n5": 122,
+   "r5": 0.7213,
+   "gap": 0.0283
+  },
+  {
    "player": "Andreev I.",
    "name": "I. Andreev",
-   "n3": 352,
-   "r3": 0.5028,
+   "n3": 353,
+   "r3": 0.5014,
    "n5": 68,
    "r5": 0.5294,
-   "gap": 0.0266
+   "gap": 0.028
   },
   {
    "player": "Davydenko N.",
    "name": "N. Davydenko",
-   "n3": 626,
-   "r3": 0.6038,
+   "n3": 630,
+   "r3": 0.6048,
    "n5": 127,
    "r5": 0.6299,
-   "gap": 0.0261
-  },
-  {
-   "player": "Medvedev D.",
-   "name": "D. Medvedev",
-   "n3": 466,
-   "r3": 0.6974,
-   "n5": 122,
-   "r5": 0.7213,
-   "gap": 0.0239
+   "gap": 0.0252
   },
   {
    "player": "Falla A.",
    "name": "A. Falla",
-   "n3": 188,
-   "r3": 0.367,
+   "n3": 189,
+   "r3": 0.3651,
    "n5": 54,
    "r5": 0.3889,
-   "gap": 0.0219
+   "gap": 0.0238
   },
   {
    "player": "Tipsarevic J.",
    "name": "J. Tipsarevic",
-   "n3": 355,
-   "r3": 0.5183,
+   "n3": 357,
+   "r3": 0.5182,
    "n5": 91,
    "r5": 0.5385,
-   "gap": 0.0202
+   "gap": 0.0203
   },
   {
    "player": "Fognini F.",
@@ -1853,15 +1853,6 @@
    "n5": 129,
    "r5": 0.5271,
    "gap": 0.0199
-  },
-  {
-   "player": "Del Potro J.M.",
-   "name": "J.M. Del Potro",
-   "n3": 426,
-   "r3": 0.7183,
-   "n5": 126,
-   "r5": 0.7381,
-   "gap": 0.0198
   },
   {
    "player": "Fritz T.",
@@ -1891,6 +1882,15 @@
    "gap": 0.0191
   },
   {
+   "player": "Bautista Agut R.",
+   "name": "R. Bautista Agut",
+   "n3": 552,
+   "r3": 0.5797,
+   "n5": 127,
+   "r5": 0.5984,
+   "gap": 0.0187
+  },
+  {
    "player": "Haas T.",
    "name": "T. Haas",
    "n3": 514,
@@ -1918,13 +1918,13 @@
    "gap": 0.0161
   },
   {
-   "player": "Tsitsipas S.",
-   "name": "S. Tsitsipas",
-   "n3": 425,
-   "r3": 0.6447,
-   "n5": 103,
-   "r5": 0.6602,
-   "gap": 0.0155
+   "player": "Del Potro J.M.",
+   "name": "J.M. Del Potro",
+   "n3": 426,
+   "r3": 0.7183,
+   "n5": 128,
+   "r5": 0.7344,
+   "gap": 0.0161
   },
   {
    "player": "Istomin D.",
@@ -1945,6 +1945,15 @@
    "gap": 0.0139
   },
   {
+   "player": "Tsitsipas S.",
+   "name": "S. Tsitsipas",
+   "n3": 430,
+   "r3": 0.6465,
+   "n5": 103,
+   "r5": 0.6602,
+   "gap": 0.0137
+  },
+  {
    "player": "Moutet C.",
    "name": "C. Moutet",
    "n3": 170,
@@ -1952,15 +1961,6 @@
    "n5": 52,
    "r5": 0.4423,
    "gap": 0.0129
-  },
-  {
-   "player": "Bautista Agut R.",
-   "name": "R. Bautista Agut",
-   "n3": 378,
-   "r3": 0.5714,
-   "n5": 89,
-   "r5": 0.5843,
-   "gap": 0.0128
   },
   {
    "player": "Kiefer N.",
@@ -1974,11 +1974,20 @@
   {
    "player": "Gasquet R.",
    "name": "R. Gasquet",
-   "n3": 769,
-   "r3": 0.6021,
+   "n3": 772,
+   "r3": 0.6023,
    "n5": 183,
    "r5": 0.612,
-   "gap": 0.0099
+   "gap": 0.0097
+  },
+  {
+   "player": "Bolelli S.",
+   "name": "S. Bolelli",
+   "n3": 200,
+   "r3": 0.42,
+   "n5": 56,
+   "r5": 0.4286,
+   "gap": 0.0086
   },
   {
    "player": "Enqvist T.",
@@ -2026,49 +2035,40 @@
    "gap": 0.0067
   },
   {
-   "player": "Bolelli S.",
-   "name": "S. Bolelli",
-   "n3": 199,
-   "r3": 0.4221,
-   "n5": 56,
-   "r5": 0.4286,
-   "gap": 0.0065
+   "player": "Hanescu V.",
+   "name": "V. Hanescu",
+   "n3": 326,
+   "r3": 0.4479,
+   "n5": 64,
+   "r5": 0.4531,
+   "gap": 0.0053
   },
   {
    "player": "Seppi A.",
    "name": "A. Seppi",
-   "n3": 609,
-   "r3": 0.468,
+   "n3": 611,
+   "r3": 0.4681,
    "n5": 129,
    "r5": 0.4729,
-   "gap": 0.0049
-  },
-  {
-   "player": "Hanescu V.",
-   "name": "V. Hanescu",
-   "n3": 325,
-   "r3": 0.4492,
-   "n5": 64,
-   "r5": 0.4531,
-   "gap": 0.0039
-  },
-  {
-   "player": "Chardy J.",
-   "name": "J. Chardy",
-   "n3": 469,
-   "r3": 0.4819,
-   "n5": 105,
-   "r5": 0.4857,
-   "gap": 0.0038
+   "gap": 0.0048
   },
   {
    "player": "Mathieu P.H.",
    "name": "P.H. Mathieu",
-   "n3": 436,
-   "r3": 0.4908,
+   "n3": 437,
+   "r3": 0.4897,
    "n5": 89,
    "r5": 0.4944,
-   "gap": 0.0036
+   "gap": 0.0047
+  },
+  {
+   "player": "Chardy J.",
+   "name": "J. Chardy",
+   "n3": 471,
+   "r3": 0.482,
+   "n5": 105,
+   "r5": 0.4857,
+   "gap": 0.0038
   },
   {
    "player": "Roddick A.",
@@ -2100,11 +2100,20 @@
   {
    "player": "Mayer L.",
    "name": "L. Mayer",
-   "n3": 275,
-   "r3": 0.4691,
+   "n3": 277,
+   "r3": 0.4693,
    "n5": 71,
    "r5": 0.4648,
-   "gap": -0.0043
+   "gap": -0.0045
+  },
+  {
+   "player": "Gonzalez F.",
+   "name": "F. Gonzalez",
+   "n3": 384,
+   "r3": 0.6354,
+   "n5": 116,
+   "r5": 0.6293,
+   "gap": -0.0061
   },
   {
    "player": "Baghdatis M.",
@@ -2116,13 +2125,13 @@
    "gap": -0.0073
   },
   {
-   "player": "Gonzalez F.",
-   "name": "F. Gonzalez",
-   "n3": 383,
-   "r3": 0.6371,
-   "n5": 116,
-   "r5": 0.6293,
-   "gap": -0.0078
+   "player": "Schuettler R.",
+   "name": "R. Schuettler",
+   "n3": 444,
+   "r3": 0.4955,
+   "n5": 84,
+   "r5": 0.4881,
+   "gap": -0.0074
   },
   {
    "player": "Ruud C.",
@@ -2134,13 +2143,22 @@
    "gap": -0.0082
   },
   {
-   "player": "Schuettler R.",
-   "name": "R. Schuettler",
-   "n3": 443,
-   "r3": 0.4966,
-   "n5": 84,
-   "r5": 0.4881,
-   "gap": -0.0085
+   "player": "Granollers M.",
+   "name": "M. Granollers",
+   "n3": 349,
+   "r3": 0.4441,
+   "n5": 74,
+   "r5": 0.4324,
+   "gap": -0.0117
+  },
+  {
+   "player": "Almagro N.",
+   "name": "N. Almagro",
+   "n3": 521,
+   "r3": 0.5912,
+   "n5": 107,
+   "r5": 0.5794,
+   "gap": -0.0117
   },
   {
    "player": "Fucsovics M.",
@@ -2152,22 +2170,13 @@
    "gap": -0.0128
   },
   {
-   "player": "Almagro N.",
-   "name": "N. Almagro",
-   "n3": 520,
-   "r3": 0.5923,
-   "n5": 107,
-   "r5": 0.5794,
-   "gap": -0.0129
-  },
-  {
    "player": "Isner J.",
    "name": "J. Isner",
-   "n3": 608,
-   "r3": 0.6234,
+   "n3": 610,
+   "r3": 0.623,
    "n5": 141,
    "r5": 0.6099,
-   "gap": -0.0134
+   "gap": -0.013
   },
   {
    "player": "Gulbis E.",
@@ -2188,15 +2197,6 @@
    "gap": -0.014
   },
   {
-   "player": "Granollers M.",
-   "name": "M. Granollers",
-   "n3": 347,
-   "r3": 0.4467,
-   "n5": 74,
-   "r5": 0.4324,
-   "gap": -0.0143
-  },
-  {
    "player": "Mannarino A.",
    "name": "A. Mannarino",
    "n3": 567,
@@ -2208,8 +2208,8 @@
   {
    "player": "Nieminen J.",
    "name": "J. Nieminen",
-   "n3": 561,
-   "r3": 0.5223,
+   "n3": 563,
+   "r3": 0.5222,
    "n5": 101,
    "r5": 0.505,
    "gap": -0.0173
@@ -2296,6 +2296,15 @@
    "gap": -0.0256
   },
   {
+   "player": "Blake J.",
+   "name": "J. Blake",
+   "n3": 459,
+   "r3": 0.5969,
+   "n5": 100,
+   "r5": 0.57,
+   "gap": -0.0269
+  },
+  {
    "player": "Bublik A.",
    "name": "A. Bublik",
    "n3": 302,
@@ -2303,15 +2312,6 @@
    "n5": 64,
    "r5": 0.5156,
    "gap": -0.0274
-  },
-  {
-   "player": "Blake J.",
-   "name": "J. Blake",
-   "n3": 458,
-   "r3": 0.5983,
-   "n5": 100,
-   "r5": 0.57,
-   "gap": -0.0283
   },
   {
    "player": "Santoro F.",
@@ -2350,6 +2350,24 @@
    "gap": -0.034
   },
   {
+   "player": "Struff J.L.",
+   "name": "J.L. Struff",
+   "n3": 399,
+   "r3": 0.4612,
+   "n5": 82,
+   "r5": 0.4268,
+   "gap": -0.0343
+  },
+  {
+   "player": "Kohlschreiber P.",
+   "name": "P. Kohlschreiber",
+   "n3": 639,
+   "r3": 0.5571,
+   "n5": 134,
+   "r5": 0.5224,
+   "gap": -0.0347
+  },
+  {
    "player": "Sousa J.",
    "name": "J. Sousa",
    "n3": 369,
@@ -2357,24 +2375,6 @@
    "n5": 61,
    "r5": 0.3934,
    "gap": -0.0347
-  },
-  {
-   "player": "Kohlschreiber P.",
-   "name": "P. Kohlschreiber",
-   "n3": 637,
-   "r3": 0.5573,
-   "n5": 134,
-   "r5": 0.5224,
-   "gap": -0.0349
-  },
-  {
-   "player": "Struff J.L.",
-   "name": "J.L. Struff",
-   "n3": 398,
-   "r3": 0.4623,
-   "n5": 82,
-   "r5": 0.4268,
-   "gap": -0.0355
   },
   {
    "player": "Sock J.",
@@ -2388,11 +2388,20 @@
   {
    "player": "Rochus O.",
    "name": "O. Rochus",
-   "n3": 376,
-   "r3": 0.4601,
+   "n3": 377,
+   "r3": 0.4589,
    "n5": 83,
    "r5": 0.4217,
-   "gap": -0.0384
+   "gap": -0.0372
+  },
+  {
+   "player": "Benneteau J.",
+   "name": "J. Benneteau",
+   "n3": 447,
+   "r3": 0.4832,
+   "n5": 99,
+   "r5": 0.4444,
+   "gap": -0.0388
   },
   {
    "player": "Querrey S.",
@@ -2404,15 +2413,6 @@
    "gap": -0.0395
   },
   {
-   "player": "Benneteau J.",
-   "name": "J. Benneteau",
-   "n3": 446,
-   "r3": 0.4843,
-   "n5": 99,
-   "r5": 0.4444,
-   "gap": -0.0399
-  },
-  {
    "player": "Johnson S.",
    "name": "S. Johnson",
    "n3": 313,
@@ -2422,15 +2422,6 @@
    "gap": -0.04
   },
   {
-   "player": "Garcia-Lopez G.",
-   "name": "G. Garcia-Lopez",
-   "n3": 534,
-   "r3": 0.4569,
-   "n5": 96,
-   "r5": 0.4167,
-   "gap": -0.0403
-  },
-  {
    "player": "Mirnyi M.",
    "name": "M. Mirnyi",
    "n3": 330,
@@ -2438,6 +2429,15 @@
    "n5": 60,
    "r5": 0.45,
    "gap": -0.0409
+  },
+  {
+   "player": "Garcia-Lopez G.",
+   "name": "G. Garcia-Lopez",
+   "n3": 537,
+   "r3": 0.4581,
+   "n5": 96,
+   "r5": 0.4167,
+   "gap": -0.0414
   },
   {
    "player": "Pavel A.",
@@ -2478,11 +2478,11 @@
   {
    "player": "Stepanek R.",
    "name": "R. Stepanek",
-   "n3": 498,
-   "r3": 0.5783,
+   "n3": 502,
+   "r3": 0.5797,
    "n5": 109,
    "r5": 0.5229,
-   "gap": -0.0554
+   "gap": -0.0567
   },
   {
    "player": "Coric B.",
@@ -2512,6 +2512,15 @@
    "gap": -0.0585
   },
   {
+   "player": "Becker B.",
+   "name": "B. Becker",
+   "n3": 303,
+   "r3": 0.4125,
+   "n5": 54,
+   "r5": 0.3519,
+   "gap": -0.0607
+  },
+  {
    "player": "Sela D.",
    "name": "D. Sela",
    "n3": 218,
@@ -2521,22 +2530,13 @@
    "gap": -0.0615
   },
   {
-   "player": "Becker B.",
-   "name": "B. Becker",
-   "n3": 302,
-   "r3": 0.4139,
-   "n5": 54,
-   "r5": 0.3519,
-   "gap": -0.0621
-  },
-  {
-   "player": "Serra F.",
-   "name": "F. Serra",
-   "n3": 230,
-   "r3": 0.4174,
-   "n5": 51,
-   "r5": 0.3529,
-   "gap": -0.0645
+   "player": "Karlovic I.",
+   "name": "I. Karlovic",
+   "n3": 557,
+   "r3": 0.5332,
+   "n5": 113,
+   "r5": 0.469,
+   "gap": -0.0642
   },
   {
    "player": "Muller G.",
@@ -2548,13 +2548,13 @@
    "gap": -0.0648
   },
   {
-   "player": "Karlovic I.",
-   "name": "I. Karlovic",
-   "n3": 556,
-   "r3": 0.5342,
-   "n5": 113,
-   "r5": 0.469,
-   "gap": -0.0651
+   "player": "Serra F.",
+   "name": "F. Serra",
+   "n3": 232,
+   "r3": 0.4181,
+   "n5": 51,
+   "r5": 0.3529,
+   "gap": -0.0652
   },
   {
    "player": "Vesely J.",
@@ -2649,20 +2649,11 @@
   {
    "player": "Martin A.",
    "name": "A. Martin",
-   "n3": 385,
-   "r3": 0.4442,
+   "n3": 386,
+   "r3": 0.443,
    "n5": 57,
    "r5": 0.3509,
-   "gap": -0.0933
-  },
-  {
-   "player": "Ramos-Vinolas A.",
-   "name": "A. Ramos-Vinolas",
-   "n3": 387,
-   "r3": 0.4651,
-   "n5": 60,
-   "r5": 0.3667,
-   "gap": -0.0984
+   "gap": -0.0921
   },
   {
    "player": "Srichaphan P.",
@@ -2703,11 +2694,11 @@
   {
    "player": "Ljubicic I.",
    "name": "I. Ljubicic",
-   "n3": 538,
-   "r3": 0.6208,
+   "n3": 539,
+   "r3": 0.6197,
    "n5": 97,
    "r5": 0.4948,
-   "gap": -0.126
+   "gap": -0.1248
   },
   {
    "player": "Haase R.",
@@ -2721,11 +2712,11 @@
   {
    "player": "Cuevas P.",
    "name": "P. Cuevas",
-   "n3": 345,
-   "r3": 0.5188,
+   "n3": 347,
+   "r3": 0.5187,
    "n5": 63,
    "r5": 0.381,
-   "gap": -0.1379
+   "gap": -0.1378
   },
   {
    "player": "Bedene A.",
@@ -2737,10 +2728,19 @@
    "gap": -0.1441
   },
   {
+   "player": "Ramos-Vinolas A.",
+   "name": "A. Ramos-Vinolas",
+   "n3": 517,
+   "r3": 0.4662,
+   "n5": 75,
+   "r5": 0.32,
+   "gap": -0.1462
+  },
+  {
    "player": "Montanes A.",
    "name": "A. Montanes",
-   "n3": 440,
-   "r3": 0.4886,
+   "n3": 442,
+   "r3": 0.4887,
    "n5": 77,
    "r5": 0.3377,
    "gap": -0.151
@@ -2766,11 +2766,11 @@
   {
    "player": "Monaco J.",
    "name": "J. Monaco",
-   "n3": 472,
-   "r3": 0.5826,
+   "n3": 474,
+   "r3": 0.5823,
    "n5": 73,
    "r5": 0.411,
-   "gap": -0.1717
+   "gap": -0.1713
   },
   {
    "player": "Duckworth J.",
@@ -2820,6 +2820,15 @@
    "gap": 0.105
   },
   {
+   "player": "Berrettini M.",
+   "name": "M. Berrettini",
+   "n3": 237,
+   "r3": 0.616,
+   "n5": 78,
+   "r5": 0.7179,
+   "gap": 0.1019
+  },
+  {
    "player": "Grosjean S.",
    "name": "S. Grosjean",
    "n3": 336,
@@ -2831,29 +2840,20 @@
   {
    "player": "Wawrinka S.",
    "name": "S. Wawrinka",
-   "n3": 676,
-   "r3": 0.5769,
+   "n3": 679,
+   "r3": 0.5773,
    "n5": 224,
    "r5": 0.6786,
-   "gap": 0.1016
+   "gap": 0.1013
   },
   {
    "player": "Cilic M.",
    "name": "M. Cilic",
-   "n3": 691,
-   "r3": 0.5977,
+   "n3": 694,
+   "r3": 0.598,
    "n5": 198,
    "r5": 0.697,
-   "gap": 0.0993
-  },
-  {
-   "player": "Berrettini M.",
-   "name": "M. Berrettini",
-   "n3": 234,
-   "r3": 0.6197,
-   "n5": 78,
-   "r5": 0.7179,
-   "gap": 0.0983
+   "gap": 0.099
   }
  ],
  "gap_down": [
@@ -2869,11 +2869,11 @@
   {
    "player": "Monaco J.",
    "name": "J. Monaco",
-   "n3": 472,
-   "r3": 0.5826,
+   "n3": 474,
+   "r3": 0.5823,
    "n5": 73,
    "r5": 0.411,
-   "gap": -0.1717
+   "gap": -0.1713
   },
   {
    "player": "Nishioka Y.",
@@ -2896,20 +2896,20 @@
   {
    "player": "Montanes A.",
    "name": "A. Montanes",
-   "n3": 440,
-   "r3": 0.4886,
+   "n3": 442,
+   "r3": 0.4887,
    "n5": 77,
    "r5": 0.3377,
    "gap": -0.151
   },
   {
-   "player": "Bedene A.",
-   "name": "A. Bedene",
-   "n3": 222,
-   "r3": 0.4775,
-   "n5": 51,
-   "r5": 0.3333,
-   "gap": -0.1441
+   "player": "Ramos-Vinolas A.",
+   "name": "A. Ramos-Vinolas",
+   "n3": 517,
+   "r3": 0.4662,
+   "n5": 75,
+   "r5": 0.32,
+   "gap": -0.1462
   }
  ],
  "streaks": [
@@ -3483,11 +3483,11 @@
   "gap_pos": 86,
   "gap_neg": 79,
   "gap_median": "+0.5",
-  "gap_up_champs": 3,
+  "gap_up_champs": 2,
   "bo5_share": "18.9%",
   "bo5_slam_share": "99.3%",
   "n_q5": 166,
-  "n_q3": 190,
+  "n_q3": 192,
   "rk_n": "68,608",
   "rk_excluded": 27,
   "rk_all": "65.3%",
@@ -3512,7 +3512,7 @@
   "last_year": 2026,
   "last_date": "August 29, 2026",
   "seasons": 27,
-  "players": "1,830",
+  "players": "1,713",
   "tournaments": 268,
   "career_n": 4,
   "top3_titles": 65,
@@ -3569,20 +3569,20 @@
   "b5_0_r": "88.5%",
   "b5_0_n": 445,
   "b3_0_name": "R. Federer",
-  "b3_0_r": "81.4%",
-  "b3_0_n": 948,
+  "b3_0_r": "81.3%",
+  "b3_0_n": 957,
   "b5_1_name": "R. Nadal",
   "b5_1_r": "88.1%",
   "b5_1_n": 352,
   "b3_1_name": "N. Djokovic",
-  "b3_1_r": "81.3%",
-  "b3_1_n": 834,
+  "b3_1_r": "81.2%",
+  "b3_1_n": 842,
   "b5_2_name": "C. Alcaraz",
   "b5_2_r": "87.8%",
   "b5_2_n": 98,
   "b3_2_name": "R. Nadal",
-  "b3_2_r": "80.9%",
-  "b3_2_n": 862,
+  "b3_2_r": "80.7%",
+  "b3_2_n": 867,
   "gu0_name": "S. Schalken",
   "gu0_gap": "13.6",
   "gu0_r3": "54.3%",
@@ -3604,8 +3604,8 @@
   "gd0_r3": "43.3%",
   "gd0_r5": "24.1%",
   "gd1_name": "J. Monaco",
-  "gd1_gap": "17.2",
-  "gd1_r3": "58.3%",
+  "gd1_gap": "17.1",
+  "gd1_r3": "58.2%",
   "gd1_r5": "41.1%",
   "dj_bo5_n": 445,
   "st0_name": "N. Djokovic",
@@ -3665,7 +3665,7 @@
   "min_bo3_gap": 100,
   "b3_gap_pts": "0.6",
   "gu2_gap_floor": 12,
-  "gu_champ_list": "Safin, Wawrinka, and Cilic",
+  "gu_champ_list": "Safin and Wawrinka",
   "slam_editions": 106,
   "slam_expected": "13,462",
   "slam_missing": "591",

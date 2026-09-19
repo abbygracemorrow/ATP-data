@@ -17,7 +17,9 @@ It has 68,635 rows (one main-draw ATP match each) from January 3, 2000 to August
 `Tournament, Date, Series, Court, Surface, Round, Best of, Player_1, Player_2, Winner, Rank_1, Rank_2, Score`.
 `Rank_1` and `Rank_2` are the two players' ATP rankings (1 is the best; 0 or -1 means not listed). I did not change any value in this file, and every number on both pages is computed from it.
 
-The only other file that feeds the site is `data/champion_countries.csv`, a small table typed by hand that says which country each Grand Slam champion is from. It is used only to place champions on the globes and is not part of the match data.
+The only other files that feed the site are `data/champion_countries.csv` (see below) and `data/player_name_aliases.csv`, which are not part of the match data.
+
+**Player-name cleanup.** The same player is sometimes spelled multiple ways in the source file &mdash; trailing spaces (`"Nadal R. "`), inconsistent capitalization, punctuation (`"Herbert P.H"` vs. `"Herbert P-H."`), or a compound surname used only some of the time (`"Nadal-Parera R."` next to `"Nadal R."`). Left alone, this silently splits one player's matches across two or more entries everywhere &mdash; the player list, the leaderboard, win/loss averages, and head-to-head. `data/player_name_aliases.csv` maps every such spelling variant to one canonical form; `scripts/build_site.py` and `js/dashboard.js` both apply it when the data loads, so `data/atp_matches.csv` itself is never touched (the "changed no values" promise above is about that file specifically). Only variants I could confirm were the same real person were merged; cases where a shared surname and initial could plausibly be two different players (for example, two different Kuznetsovs, or two different Zhangs, who really are distinct ATP players) were left alone.
 
 ## Files
 
@@ -35,6 +37,7 @@ The only other file that feeds the site is `data/champion_countries.csv`, a smal
 | `scripts/report_template.html` | The report's text with `{{placeholders}}` for numbers. Edit the wording here. |
 | `data/atp_matches.csv` | The match data (see above). |
 | `data/champion_countries.csv` | Champion-to-country table for the globes (see above). |
+| `data/player_name_aliases.csv` | Player-name spelling variant &rarr; canonical name (see above). |
 | `data/report_data.json` | Output of the build script: every figure and chart series in the report. |
 | `.gitignore` | Keeps Python cache files out of the repository. |
 

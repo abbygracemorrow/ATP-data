@@ -37,8 +37,9 @@
   let N, year, tour, tier, court, surf, round, bo, win, los, rw, rl, series, score, dateStr, tourNames = [], courtNames = [], surfNames = [], plNames = [], plDisp = [], plIndex = new Map(), plMatches;
   let Y0, Y1, NY, FINAL, GS = 0, countryOf = new Map(), countryPos = new Map();
 
-  function build(main) {
+  function build(main, aliasMap) {
     const rows = main.rows; N = rows.length;
+    const canon = v => aliasMap.get(v) || v;   // fold Player-name spelling variants (whitespace, punctuation, hyphenation) into one identity
     const h = {}; main.head.forEach((c, i) => h[c] = i);
     year = new Uint16Array(N); tour = new Uint16Array(N); tier = new Uint8Array(N); court = new Uint8Array(N); surf = new Uint8Array(N); round = new Uint8Array(N);
     bo = new Uint8Array(N); win = new Uint16Array(N); los = new Uint16Array(N); series = new Uint8Array(N);
@@ -52,7 +53,7 @@
       tour[i] = id(tMap, tourNames, r[h.Tournament]); tier[i] = TIER_OF[r[h.Series]] ?? 3;
       court[i] = id(cMap, courtNames, r[h.Court]); surf[i] = id(sMap, surfNames, r[h.Surface]);
       let rk = rMap.get(r[h.Round]); if (rk === undefined) { rk = ROUNDS.length; ROUNDS.push(r[h.Round]); rMap.set(r[h.Round], rk); } round[i] = rk;
-      bo[i] = +r[h['Best of']]; const p1 = id(pMap, plNames, r[h.Player_1]), p2 = id(pMap, plNames, r[h.Player_2]);
+      bo[i] = +r[h['Best of']]; const p1 = id(pMap, plNames, canon(r[h.Player_1])), p2 = id(pMap, plNames, canon(r[h.Player_2]));
       win[i] = r[h.Winner] === r[h.Player_1] ? p1 : p2; los[i] = win[i] === p1 ? p2 : p1; series[i] = r[h.Series] === 'Grand Slam' ? 1 : 0;
       const k1 = +r[h.Rank_1], k2 = +r[h.Rank_2], a1 = k1 > 0 ? k1 : 0, a2 = k2 > 0 ? k2 : 0;   // 0 or -1 in the file means not listed
       if (win[i] === p1) { rw[i] = a1; rl[i] = a2; } else { rw[i] = a2; rl[i] = a1; }
@@ -221,19 +222,12 @@
 
   /* ---------- summary numbers ---------- */
   function summary(ps) {
-    const n = sel.length, pl = new Uint8Array(plNames.length), tn = new Uint8Array(tourNames.length), wins = new Uint32Array(plNames.length);
-    let fin = 0, b5 = 0, npl = 0, ntn = 0, w = 0, l = 0, rs = 0, rc = 0;
+    const n = sel.length, pl = new Uint8Array(plNames.length), tn = new Uint8Array(tourNames.length);
+    let npl = 0, ntn = 0;
     for (const i of sel) {
       if (!pl[win[i]]) { pl[win[i]] = 1; npl++; } if (!pl[los[i]]) { pl[los[i]] = 1; npl++; } if (!tn[tour[i]]) { tn[tour[i]] = 1; ntn++; }
-      if (round[i] === FINAL) fin++; if (bo[i] === 5) b5++; wins[win[i]]++;
-      if (F.player >= 0) { if (win[i] === F.player) { w++; if (rw[i]) { rs += rw[i]; rc++; } } else { l++; if (rl[i]) { rs += rl[i]; rc++; } } }
-      else { if (rw[i]) { rs += rw[i]; rc++; } if (rl[i]) { rs += rl[i]; rc++; } }
     }
-    let last;
-    if (F.player >= 0) last = [n ? ((w / n) * 100).toFixed(1) + '%' : '\u2013', `${plDisp[F.player]}'s win rate (${w} wins, ${l} losses)`];
-    else { let bi = -1, bv = 0; for (let p = 0; p < wins.length; p++) if (wins[p] > bv) { bv = wins[p]; bi = p; } last = [bi >= 0 ? plDisp[bi] : '\u2013', bi >= 0 ? `most wins in this view (${bv})` : 'most wins in this view']; }
-    const k = [[int(n), 'matches in this view'], [int(npl), 'different players'], [int(ntn), 'different tournaments'], [int(fin), 'finals played (titles awarded)'], [n ? ((b5 / n) * 100).toFixed(1) + '%' : '\u2013', 'of matches were best-of-five'], last,
-      [rc ? (rs / rc).toFixed(1) : '\u2013', F.player >= 0 ? `${plDisp[F.player]}'s average ATP ranking (lower is better)` : 'average ATP ranking of the players (lower is better)']];
+    const k = [[int(n), 'matches in this view'], [int(npl), 'different players'], [int(ntn), 'different tournaments']];
     $('kpis').innerHTML = k.map(([b, s]) => `<div class="kpi"><b${b.length > 9 ? ' style="font-size:1.35rem"' : ''}>${Charts.esc(b)}</b><span>${Charts.esc(s)}</span></div>`).join('');
     const parts = []; if (F.from !== Y0 || F.to !== Y1) parts.push(`${F.from}\u2013${F.to}`); if (F.player >= 0) parts.push(plDisp[F.player]); if (F.tour >= 0) parts.push(tourNames[F.tour]);
     if (F.tier >= 0) parts.push(TIERS[F.tier]); if (F.surf >= 0) parts.push(surfNames[F.surf]); if (F.court >= 0) parts.push(courtNames[F.court]); if (F.round >= 0) parts.push(ROUNDS[F.round]); if (F.bo >= 0) parts.push(`best of ${F.bo}`);
@@ -497,8 +491,9 @@
   /* ---------- start ---------- */
   (async function () {
     try {
-      const [a, c] = await Promise.all([getText('data/atp_matches.csv'), getText('data/champion_countries.csv', true)]);
-      build(parseCSV(a));
+      const [a, c, al] = await Promise.all([getText('data/atp_matches.csv'), getText('data/champion_countries.csv', true), getText('data/player_name_aliases.csv', true)]);
+      const aliasMap = new Map(); if (al) parseCSV(al).rows.forEach(r => aliasMap.set(r[0], r[1]));
+      build(parseCSV(a), aliasMap);
       if (c) parseCSV(c).rows.forEach(r => { countryOf.set(r[0], r[1]); countryPos.set(r[1], [+r[2], +r[3]]); });
       $('load').hidden = true; $('app').hidden = false; setup();
       globe = new SlamGlobe($('dash-globe'), { venues: VENUES, countries: [], lon: -30, lat: 30, tip: $('dash-tip'), tipHtml, spin: false, aspect: .94, labelTop: 3 });
