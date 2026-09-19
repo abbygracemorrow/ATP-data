@@ -152,7 +152,12 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;bac
 .dash-head h1{font-size:clamp(1.75rem,3.6vw,2.5rem);font-weight:700;padding-bottom:14px;position:relative}
 .dash-head h1::after{content:"";position:absolute;left:0;bottom:0;width:48px;height:4px;border-radius:2px;background:var(--pink)}
 .dash-head p{max-width:70ch;margin:14px 0 0}
-.controls{background:var(--white);border:var(--line);border-radius:var(--r);box-shadow:var(--shadow-sm);padding:20px}
+.controls{background:var(--white);border:var(--line);border-radius:var(--r);box-shadow:var(--shadow-sm);padding:20px;margin-bottom:14px}
+.scope-cap{font-family:var(--font-display);font-size:var(--fs-label);font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em;margin:0 0 14px}
+.scope-line{font-family:var(--font-display);font-size:var(--fs-small);color:var(--ink-soft);margin:0 0 12px}
+.scope-line span{color:var(--ink);font-weight:600}
+.scope-player-row{display:flex;flex-wrap:wrap;gap:14px 16px;align-items:end;margin-bottom:12px}
+.scope-player-row .field{flex:1 1 260px;min-width:200px}
 .filter-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr) auto;gap:14px 16px;align-items:end}
 .field label{display:block;font-family:var(--font-display);font-weight:500;font-size:var(--fs-label);margin-bottom:4px;color:var(--ink-soft)}
 .field select,.field input{width:100%;font-family:var(--font-display);font-size:.96rem;color:var(--ink);background:var(--white);border:var(--line);border-radius:var(--r-sm);padding:7px 10px;height:40px;transition:border-color var(--ease),box-shadow var(--ease)}

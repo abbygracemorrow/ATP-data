@@ -217,7 +217,24 @@
 
     globeUpdate();
     table(A, cats, ps, dim);
-    badge(); wlUpdate(); lbUpdate(); h2hUpdate();
+    badge(); wlUpdate(); lbUpdate(); h2hUpdate(); scopeLines();
+  }
+
+  /* filter parts shared by the top view-line and every section's "filters applied" caption.
+     includePlayer=true for sections the Player filter actually reaches (the main view, the charts);
+     false for the ones that ignore it and have their own player picker (win/loss, leaderboard, head-to-head). */
+  function filterParts(includePlayer) {
+    const parts = []; if (F.from !== Y0 || F.to !== Y1) parts.push(`${F.from}\u2013${F.to}`); if (includePlayer && F.player >= 0) parts.push(plDisp[F.player]);
+    if (F.tour >= 0) parts.push(tourNames[F.tour]); if (F.tier >= 0) parts.push(TIERS[F.tier]); if (F.surf >= 0) parts.push(surfNames[F.surf]);
+    if (F.court >= 0) parts.push(courtNames[F.court]); if (F.round >= 0) parts.push(ROUNDS[F.round]); if (F.bo >= 0) parts.push(`best of ${F.bo}`);
+    return parts;
+  }
+  function scopeLines() {
+    const noFilters = 'none';
+    $('charts-scope').textContent = filterParts(true).join(' \u00b7 ') || noFilters;
+    $('wl-scope').textContent = filterParts(false).join(' \u00b7 ') || noFilters;
+    $('lb-scope').textContent = filterParts(false).join(' \u00b7 ') || noFilters;
+    $('h2h-scope').textContent = filterParts(false).join(' \u00b7 ') || noFilters;
   }
 
   /* ---------- summary numbers ---------- */
@@ -229,8 +246,7 @@
     }
     const k = [[int(n), 'matches in this view'], [int(npl), 'different players'], [int(ntn), 'different tournaments']];
     $('kpis').innerHTML = k.map(([b, s]) => `<div class="kpi"><b${b.length > 9 ? ' style="font-size:1.35rem"' : ''}>${Charts.esc(b)}</b><span>${Charts.esc(s)}</span></div>`).join('');
-    const parts = []; if (F.from !== Y0 || F.to !== Y1) parts.push(`${F.from}\u2013${F.to}`); if (F.player >= 0) parts.push(plDisp[F.player]); if (F.tour >= 0) parts.push(tourNames[F.tour]);
-    if (F.tier >= 0) parts.push(TIERS[F.tier]); if (F.surf >= 0) parts.push(surfNames[F.surf]); if (F.court >= 0) parts.push(courtNames[F.court]); if (F.round >= 0) parts.push(ROUNDS[F.round]); if (F.bo >= 0) parts.push(`best of ${F.bo}`);
+    const parts = filterParts(true);
     $('view-line').textContent = `Showing ${int(n)} of ${int(N)} matches` + (parts.length ? ` \u00b7 ${parts.join(' \u00b7 ')}` : ' \u00b7 no filters applied');
   }
 
