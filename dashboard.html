@@ -30,16 +30,17 @@
   <div id="app" hidden>
     <section class="dash-grid" aria-label="Head to head" style="margin-bottom:24px">
       <div class="card wide" style="--accent:var(--pink-deep)">
-        <div class="panel-head">
-          <h3>Head to head</h3>
-          <div class="h2h-ctl">
-            <div class="field"><label for="h2h-p1">Player 1 (type to search)</label><input id="h2h-p1" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
-            <button class="btn alt h2h-swap" id="h2h-swap" type="button" title="Swap players" aria-label="Swap the two players">&#8646;</button>
-            <div class="field"><label for="h2h-p2">Player 2 (type to search)</label><input id="h2h-p2" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
-          </div>
-        </div>
+        <h3>Head to head</h3>
         <p class="chart-note" style="margin-top:-6px">Head to head compares two players directly: their record against each other &mdash; by surface, tier, and round, and every match they've played &mdash; plus how their overall careers compare, side by side. Player 1 is always on the left, Player 2 on the right.</p>
         <p class="scope-line">Always uses every match in the dataset &mdash; the filters below don't apply to this section.</p>
+        <div class="h2h-header">
+          <div class="field"><label for="h2h-p1">Player 1 (type to search)</label><input id="h2h-p1" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+          <button class="btn alt h2h-swap" id="h2h-swap" type="button" title="Swap players" aria-label="Swap the two players">&#8646;</button>
+          <div class="field"><label for="h2h-p2">Player 2 (type to search)</label><input id="h2h-p2" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+          <div class="h2h-side" id="h2h-side1"></div>
+          <div class="chart" id="h2h-ring"></div>
+          <div class="h2h-side" id="h2h-side2"></div>
+        </div>
         <div id="h2h-body" aria-live="polite"></div>
       </div>
     </section>

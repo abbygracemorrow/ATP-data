@@ -369,25 +369,31 @@
     }
     return { n, w, l, pct: n ? w / n : null, gs, bySurf };
   }
+  function h2hClearHeader() {
+    $('h2h-side1').innerHTML = ''; $('h2h-side2').innerHTML = '';
+    Charts.vsRing($('h2h-ring'), 0, 0, { colorA: C.sage, colorB: C.pink, centerTop: 'H2H', centerBottom: 'pick two players', label: 'Head-to-head record' });
+  }
   function h2hUpdate() {
     const box = $('h2h-body');
-    if (h2hP1 < 0 || h2hP2 < 0) { box.innerHTML = '<div class="empty">Search for two players above to see their comparison.</div>'; return; }
-    if (h2hP1 === h2hP2) { box.innerHTML = '<div class="empty">Pick two different players to compare.</div>'; return; }
+    if (h2hP1 < 0 || h2hP2 < 0) { h2hClearHeader(); box.innerHTML = '<div class="empty">Search for two players above to see their comparison.</div>'; return; }
+    if (h2hP1 === h2hP2) { h2hClearHeader(); box.innerHTML = '<div class="empty">Pick two different players to compare.</div>'; return; }
     const p1 = h2hP1, p2 = h2hP2, n1 = plDisp[p1], n2 = plDisp[p2];
     const meets = h2hMatches(p1, p2).slice().sort((a, b) => dateStr[b].localeCompare(dateStr[a])); // newest first
     const w1 = meets.filter(i => win[i] === p1).length, w2 = meets.length - w1;
+
+    // the win-share ring and the two side stats are always shown, even with zero meetings, so the
+    // visual is populated as soon as two players are picked instead of only after they've played
+    $('h2h-side1').innerHTML = `<b>${int(w1)}</b><span class="h2h-chip p1">${Charts.esc(n1)}</span>`;
+    $('h2h-side2').innerHTML = `<b>${int(w2)}</b><span class="h2h-chip p2">${Charts.esc(n2)}</span>`;
+    Charts.vsRing($('h2h-ring'), w1, w2, { colorA: C.sage, colorB: C.pink, centerTop: 'H2H', centerBottom: `${int(meets.length)} match${meets.length === 1 ? '' : 'es'}`,
+      label: `Head-to-head record: ${Charts.esc(n1)} ${w1}, ${Charts.esc(n2)} ${w2}` });
 
     let resultsHtml;
     if (!meets.length) {
       resultsHtml = `<div class="empty">${Charts.esc(n1)} and ${Charts.esc(n2)} haven't met in this data.</div>`;
     } else {
       const tblRows = meets.map(i => `<tr><td>${dateStr[i]}</td><td>${Charts.esc(tourNames[tour[i]])}</td><td>${Charts.esc(surfNames[surf[i]])}</td><td>${Charts.esc(ROUNDS[round[i]])}</td><td>${Charts.esc(score[i] || '–')}</td><td>${Charts.esc(plDisp[win[i]])}</td></tr>`).join('');
-      resultsHtml = `<div class="h2h-vs">
-          <div class="h2h-side"><b>${int(w1)}</b><span class="h2h-chip p1">${Charts.esc(n1)}</span></div>
-          <div class="chart" id="h2h-ring"></div>
-          <div class="h2h-side"><b>${int(w2)}</b><span class="h2h-chip p2">${Charts.esc(n2)}</span></div>
-        </div>
-        <div class="h2h-record">
+      resultsHtml = `<div class="h2h-record">
           <div><h4>By surface</h4><div class="chart" id="h2h-surface"></div></div>
           <div><h4>By tier</h4><div class="chart" id="h2h-tier"></div></div>
           <div><h4>By round</h4><div class="chart" id="h2h-round"></div></div>
@@ -416,8 +422,6 @@
 
     box.innerHTML = resultsHtml + cmpHtml;
     if (meets.length) {
-      Charts.vsRing($('h2h-ring'), w1, w2, { colorA: C.sage, colorB: C.pink, centerTop: 'H2H', centerBottom: `${int(meets.length)} match${meets.length > 1 ? 'es' : ''}`,
-        label: `Head-to-head record: ${Charts.esc(n1)} ${w1}, ${Charts.esc(n2)} ${w2}` });
       Charts.stackedH($('h2h-surface'), h2hBreakdown(meets, p1, p2, n1, n2, surfNames, i => surf[i]), { label: 'Head-to-head record by surface' });
       Charts.stackedH($('h2h-tier'), h2hBreakdown(meets, p1, p2, n1, n2, TIERS, i => tier[i]), { label: 'Head-to-head record by tier' });
       Charts.stackedH($('h2h-round'), h2hBreakdown(meets, p1, p2, n1, n2, ROUNDS, i => round[i]), { label: 'Head-to-head record by round' });
@@ -498,8 +502,12 @@
     $('tbl').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('th')) e.target.click(); });
     let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(schedule, 150); });
   }
+  /* shown by default (and restored by Reset) so the head-to-head visual has something to display
+     before anyone has typed anything -- the two players with the most meetings in this data */
+  const H2H_DEFAULT = ['Djokovic N.', 'Nadal R.'];
   function reset() {
-    F = DEF(); measure = 'matches'; dimKey = 'tier'; sortSpec = null; showAll = false; wlPlayer = -1; lbMeasure = 'wins'; lbTop = 10; h2hP1 = -1; h2hP2 = -1;
+    F = DEF(); measure = 'matches'; dimKey = 'tier'; sortSpec = null; showAll = false; wlPlayer = -1; lbMeasure = 'wins'; lbTop = 10;
+    h2hP1 = plIndex.get(disp(H2H_DEFAULT[0])) ?? -1; h2hP2 = plIndex.get(disp(H2H_DEFAULT[1])) ?? -1;
     $('wl-player').value = ''; $('wl-player').style.borderColor = ''; $('lb-measure').value = lbMeasure; $('lb-top').value = String(lbTop);
     $('f-from').value = F.from; $('f-to').value = F.to; $('f-player').value = ''; $('f-tour').value = ''; $('f-player').style.borderColor = ''; $('f-tour').style.borderColor = '';
     ['f-tier', 'f-surface', 'f-court', 'f-round', 'f-bo'].forEach(id => $(id).value = '-1'); $('m-dim').value = dimKey;

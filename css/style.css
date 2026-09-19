@@ -229,13 +229,12 @@ table.data th[aria-sort="ascending"]::after{content:" \25B4"}
 .rank-ctl .field{min-width:180px}
 
 /* head to head */
-.h2h-ctl{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
-.h2h-ctl .field{flex:1 1 200px;min-width:160px}
-.h2h-swap{flex:0 0 auto;width:40px;height:40px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem;line-height:1;border-radius:var(--r-pill);background:var(--white)}
+.h2h-header{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;column-gap:20px;row-gap:16px;margin:16px 0 4px}
+.h2h-header .field{min-width:0}
+.h2h-swap{flex:0 0 auto;width:40px;height:40px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem;line-height:1;border-radius:var(--r-pill);background:var(--white);justify-self:center}
 .h2h-swap:hover{border-color:var(--sage);background:var(--cream)}
-.h2h-vs{display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap;margin:14px 0 4px}
-.h2h-vs .chart{width:148px;flex:0 0 auto}
-.h2h-side{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:110px}
+.h2h-header .chart{width:148px;justify-self:center;align-self:start}
+.h2h-side{display:flex;flex-direction:column;align-items:center;gap:9px;justify-self:center}
 .h2h-side b{font-family:var(--font-display);font-size:2.4rem;font-weight:700;line-height:1}
 .h2h-chip{display:inline-block;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-display);font-weight:600;font-size:.9rem;padding:5px 14px;border-radius:var(--r-pill)}
 .h2h-chip.p1{background:var(--sage);color:var(--white)}
@@ -251,6 +250,7 @@ table.data th[aria-sort="ascending"]::after{content:" \25B4"}
 
 @media (max-width:900px){
   .hero-grid,.finding-body,.data-grid,.dash-grid,.wl,.h2h-record{grid-template-columns:minmax(0,1fr)}
+  .h2h-header{grid-template-columns:minmax(0,1fr);justify-items:center}
   .finding{padding:52px 0}
   .small-multiples{grid-template-columns:minmax(0,1fr)}
   .brand span.long{display:none}
