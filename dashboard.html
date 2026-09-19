@@ -44,6 +44,17 @@
       </div>
     </section>
 
+    <section class="dash-grid" aria-label="Player win and loss averages" style="margin-bottom:24px">
+      <div class="card wide" style="--accent:var(--pink)">
+        <div class="panel-head">
+          <h3>Player win/loss averages</h3>
+          <div class="field"><label for="wl-player">Choose a player (type to search)</label><input id="wl-player" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+        </div>
+        <p class="scope-line">Global filters applied: <span id="wl-scope"></span></p>
+        <div id="wl-body" aria-live="polite"></div>
+      </div>
+    </section>
+
     <section class="controls" aria-label="Global filters">
       <p class="scope-cap">Global filters &mdash; apply everywhere below except Head to Head, which always uses the full dataset</p>
       <div class="filter-grid">
@@ -71,17 +82,6 @@
     <p class="view-line" id="view-line" aria-live="polite"></p>
 
     <section class="kpis" id="kpis" aria-label="Summary numbers"></section>
-
-    <section class="dash-grid" aria-label="Player win and loss averages" style="margin-bottom:24px">
-      <div class="card wide" style="--accent:var(--pink)">
-        <div class="panel-head">
-          <h3>Player win/loss averages</h3>
-          <div class="field"><label for="wl-player">Choose a player (type to search)</label><input id="wl-player" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
-        </div>
-        <p class="scope-line">Global filters applied: <span id="wl-scope"></span></p>
-        <div id="wl-body" aria-live="polite"></div>
-      </div>
-    </section>
 
     <section class="controls" aria-label="Chart display controls">
       <p class="scope-cap">Applies to: the four charts and the table below</p>
