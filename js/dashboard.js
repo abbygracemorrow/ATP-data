@@ -70,15 +70,21 @@
   }
 
   /* ---------- filters ----------
-     The one global filter is Year(s): a set of selected seasons, all selected by default (no filter). */
-  const DEF = () => ({ years: new Set(allYears) });
-  let F, measure = 'winrate', dimKey = 'player', sortSpec = null, showAll = false, allYears = [];
+     Global filters: Year(s) (a set of selected seasons, all selected by default), Player, Tournament,
+     Surface, and Tier. Player is applied via select()'s pl argument rather than matchesFilters, since it
+     depends on which side of the match (winner or loser) a player was on. */
+  const DEF = () => ({ years: new Set(allYears), player: -1, tour: -1, surf: -1, tier: -1 });
+  let F, measure = 'matches', dimKey = 'tier', sortSpec = null, showAll = false, allYears = [];
   const tourIndex = new Map();
 
   function matchesFilters(i) {
-    return F.years.has(year[i]);
+    if (!F.years.has(year[i])) return false;
+    if (F.tour >= 0 && tour[i] !== F.tour) return false;
+    if (F.surf >= 0 && surf[i] !== F.surf) return false;
+    if (F.tier >= 0 && tier[i] !== F.tier) return false;
+    return true;
   }
-  function select(pl = -1) {
+  function select(pl = F.player) {
     const out = [];
     for (let i = 0; i < N; i++) {
       if (!matchesFilters(i)) continue;
@@ -110,7 +116,7 @@
     tournament: { label: 'Tournament', n: () => tourNames.length, name: k => tourNames[k], key: i => tour[i] },
     player: { label: 'Player', n: () => plNames.length, name: k => plDisp[k], key: null, player: true }
   };
-  const perspective = () => (dimKey === 'player' ? 'player' : 'match');
+  const perspective = () => (F.player >= 0 || dimKey === 'player' ? 'player' : 'match');
   const MEAS = {
     matches: { label: () => 'Matches', get: (A, g) => A.n[g], fmt: int, p: 'mp' },
     wins: { label: () => 'Wins', get: (A, g) => A.w[g], fmt: int, p: 'p' },
@@ -156,6 +162,8 @@
     const ok = Object.keys(MEAS).filter(m => measOK(m, ps));
     if (!ok.includes(measure)) measure = ok[0];
     const M = MEAS[measure], mLabel = M.label(ps === 'player' ? 'p' : 'm');
+    $('m-measure').innerHTML = ok.map(m => `<option value="${m}"${m === measure ? ' selected' : ''}>${Charts.esc(MEAS[m].label(ps === 'player' ? 'p' : 'm'))}</option>`).join('');
+    $('m-dim').value = dimKey;
     const need = { pl: measure === 'players', tn: true };
 
     // main aggregate by the chosen breakdown
@@ -193,28 +201,39 @@
     $('n-line').textContent = M.rate ? `Rates are shown only when a group played at least ${MIN_CELL} matches in that year; gaps mean fewer.` : 'Gaps mean the group had no matches in that year.';
 
     table(A, cats, ps, dim);
-    surfaceUpdate(); yearVolumeUpdate(); upsetUpdate(); domUpdate();
+    surfaceUpdate(); upsetUpdate(); domUpdate();
     wlUpdate(); h2hUpdate();
   }
 
   /* filter parts shared by the top view-line and every section's "filters applied" caption. */
   function filterParts() {
-    if (F.years.size === NY) return [];
-    const ys = [...F.years].sort((a, b) => a - b);
-    if (!ys.length) return ['no years selected'];
-    let contiguous = true; for (let k = 1; k < ys.length; k++) if (ys[k] !== ys[k - 1] + 1) { contiguous = false; break; }
-    if (contiguous) return ys.length === 1 ? [String(ys[0])] : [`${ys[0]}\u2013${ys[ys.length - 1]}`];
-    return ys.length <= 6 ? [ys.join(', ')] : [`${ys.length} years selected (${ys[0]}\u2013${ys[ys.length - 1]})`];
+    const parts = [];
+    if (F.years.size !== NY) {
+      const ys = [...F.years].sort((a, b) => a - b);
+      if (!ys.length) parts.push('no years selected');
+      else {
+        let contiguous = true; for (let k = 1; k < ys.length; k++) if (ys[k] !== ys[k - 1] + 1) { contiguous = false; break; }
+        if (contiguous) parts.push(ys.length === 1 ? String(ys[0]) : `${ys[0]}\u2013${ys[ys.length - 1]}`);
+        else parts.push(ys.length <= 6 ? ys.join(', ') : `${ys.length} years selected (${ys[0]}\u2013${ys[ys.length - 1]})`);
+      }
+    }
+    if (F.player >= 0) parts.push(plDisp[F.player]);
+    if (F.tour >= 0) parts.push(tourNames[F.tour]);
+    if (F.surf >= 0) parts.push(surfNames[F.surf]);
+    if (F.tier >= 0) parts.push(TIERS[F.tier]);
+    return parts;
   }
 
   /* ---------- summary numbers ---------- */
   function summary(ps) {
     const n = sel.length, pl = new Uint8Array(plNames.length), tn = new Uint8Array(tourNames.length);
-    let npl = 0, ntn = 0;
+    let npl = 0, ntn = 0, rs = 0, rc = 0;
     for (const i of sel) {
       if (!pl[win[i]]) { pl[win[i]] = 1; npl++; } if (!pl[los[i]]) { pl[los[i]] = 1; npl++; } if (!tn[tour[i]]) { tn[tour[i]] = 1; ntn++; }
+      if (rw[i]) { rs += rw[i]; rc++; } if (rl[i]) { rs += rl[i]; rc++; }
     }
-    const k = [[int(n), 'matches in this view'], [int(npl), 'different players'], [int(ntn), 'different tournaments']];
+    const avgRank = rc ? (rs / rc).toFixed(1) : '–';
+    const k = [[int(n), 'matches in this view'], [int(npl), 'different players'], [int(ntn), 'different tournaments'], [avgRank, 'average ATP ranking (both players)']];
     $('kpis').innerHTML = k.map(([b, s]) => `<div class="kpi"><b${b.length > 9 ? ' style="font-size:1.35rem"' : ''}>${Charts.esc(b)}</b><span>${Charts.esc(s)}</span></div>`).join('');
     const parts = filterParts();
     $('view-line').textContent = `Showing ${int(n)} of ${int(N)} matches` + (parts.length ? ` \u00b7 ${parts.join(' \u00b7 ')}` : ' \u00b7 no filters applied');
@@ -261,18 +280,6 @@
     $('n-surface').textContent = sel.length ? `${int(sel.length)} matches with a recorded surface in this view.` : 'No matches in this view.';
   }
 
-  /* ---------- distinct tournaments and matches per year, for the selected years ---------- */
-  function yearVolumeUpdate() {
-    const ys = [...F.years].sort((a, b) => a - b);
-    const tSets = new Map(), mCounts = new Map();
-    for (const i of sel) { const y = year[i]; if (!tSets.has(y)) tSets.set(y, new Set()); tSets.get(y).add(tour[i]); mCounts.set(y, (mCounts.get(y) || 0) + 1); }
-    const tRows = ys.map(y => ({ label: String(y), value: tSets.has(y) ? tSets.get(y).size : 0 }));
-    const mRows = ys.map(y => ({ label: String(y), value: mCounts.get(y) || 0 }));
-    Charts.barV($('ch-yr-tourn'), tRows, { color: C.sage, label: 'Tournaments per year', fmt: int });
-    Charts.barV($('ch-yr-matches'), mRows, { color: C.foliage, label: 'Matches per year', fmt: int });
-    $('n-yr').textContent = `${int(ys.length)} year${ys.length === 1 ? '' : 's'} shown. A tournament counts once per year it appears in, however many rounds it has; about 0.6% of tournament-year combinations in the full dataset share a name with a second, distinct event held the same year (see About the data), which can very slightly undercount unique tournaments for those specific years.`;
-  }
-
   /* ---------- upset rate: how often the better-ranked (favorite) player loses, by the favorite's rank tier ----------
      Excludes matches where either player's ranking is unlisted (about 0.04% of matches). */
   function upsetUpdate() {
@@ -303,14 +310,8 @@
      (found while auditing the CSV -- e.g. two separate "Heineken Open" events, weeks apart, on opposite
      sides of the world); flagged rather than silently split, since the file gives no way to tell them apart. */
   const COLLISION_TOURS = new Set(['AAPT Championships', 'BNP Paribas', 'European Open', 'Heineken Open', 'Qatar Open', 'TATA Open']);
-  const DOM_METRICS = {
-    winrate: { label: 'win rate (min. 5 matches here)', get: p => (p.n >= 5 ? p.w / p.n : null), fmt: v => (v * 100).toFixed(1) + '%' },
-    wins: { label: 'match wins', get: p => (p.w > 0 ? p.w : null), fmt: int },
-    matches: { label: 'match appearances', get: p => (p.n > 0 ? p.n : null), fmt: int },
-    finals: { label: 'finals reached', get: p => (p.fin > 0 ? p.fin : null), fmt: int },
-    titles: { label: 'titles', get: p => (p.tit > 0 ? p.tit : null), fmt: int }
-  };
-  let domTour = -1, domMetric = 'winrate';
+  const DOM_METRIC = { label: 'win rate (min. 5 matches here)', get: p => (p.n >= 5 ? p.w / p.n : null), fmt: v => (v * 100).toFixed(1) + '%' };
+  let domTour = -1;
   function domUpdate() {
     const box = $('dom-body');
     if (domTour < 0) { box.innerHTML = '<div class="empty">Search for a tournament above to see who has performed best there.</div>'; return; }
@@ -322,7 +323,7 @@
       n[a]++; w[a]++; n[b]++;
       if (isFinal) { fin[a]++; fin[b]++; tit[a]++; }
     }
-    const M = DOM_METRICS[domMetric], list = [];
+    const M = DOM_METRIC, list = [];
     for (let p = 0; p < nP; p++) if (n[p]) { const o = { id: p, n: n[p], w: w[p], tit: tit[p], fin: fin[p] }; o.v = M.get(o); if (o.v != null) list.push(o); }
     list.sort((a, b) => b.v - a.v || b.w - a.w || plNames[a.id].localeCompare(plNames[b.id]));
     if (!list.length) { box.innerHTML = `<div class="empty">No player has enough matches to rank by ${M.label} at ${Charts.esc(name)} in this view.</div>`; return; }
@@ -456,19 +457,28 @@
   }
 
   /* ---------- controls ---------- */
-  function yearChipsRender() {
-    document.querySelectorAll('#year-chips .chip').forEach(b => b.setAttribute('aria-pressed', String(F.years.has(+b.dataset.year))));
+  function setYearRange(from, to) {
+    F.years = new Set(Array.from({ length: to - from + 1 }, (_, k) => from + k));
+    $('f-from').value = from; $('f-to').value = to;
   }
   function setup() {
-    $('year-chips').innerHTML = allYears.map(y => `<button type="button" class="chip" data-year="${y}" aria-pressed="true">${y}</button>`).join('');
-    $('year-chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; const y = +b.dataset.year;
-      if (F.years.has(y)) { if (F.years.size > 1) F.years.delete(y); } else F.years.add(y);
-      yearChipsRender(); schedule(); });
+    $('f-from').innerHTML = allYears.map(y => `<option>${y}</option>`).join(''); $('f-to').innerHTML = allYears.map(y => `<option>${y}</option>`).join('');
+    $('f-from').addEventListener('change', () => { const from = +$('f-from').value; setYearRange(from, Math.max(from, +$('f-to').value)); schedule(); });
+    $('f-to').addEventListener('change', () => { const to = +$('f-to').value; setYearRange(Math.min(to, +$('f-from').value), to); schedule(); });
     $('dl-players').innerHTML = plNames.map((_, i) => i).sort((a, b) => plMatches[b] - plMatches[a]).map(i => `<option value="${Charts.esc(plDisp[i])}">`).join('');
     $('dl-tours').innerHTML = tourNames.slice().sort().map(t => `<option value="${Charts.esc(t)}">`).join(''); tourNames.forEach((t, i) => tourIndex.set(t.toLowerCase(), i));
-    $('dom-metric').innerHTML = Object.keys(DOM_METRICS).map(k => `<option value="${k}">${DOM_METRICS[k].label.replace(/ \(.*\)/, '')}</option>`).join('');
+    $('f-surface').innerHTML = '<option value="-1">All surfaces</option>' + surfNames.map((s, i) => `<option value="${i}">${Charts.esc(s)}</option>`).join('');
+    $('f-tier').innerHTML = '<option value="-1">All tiers</option>' + TIERS.map((t, i) => `<option value="${i}">${Charts.esc(t)}</option>`).join('');
+    $('f-surface').addEventListener('change', () => { F.surf = +$('f-surface').value; schedule(); });
+    $('f-tier').addEventListener('change', () => { F.tier = +$('f-tier').value; schedule(); });
+    { const el = $('f-player'), apply = () => { const v = el.value.trim(); if (!v) { F.player = -1; el.style.borderColor = ''; return true; } const k = plIndex.get(v); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } F.player = k; el.style.borderColor = ''; return true; };
+      el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; F.player = -1; el.style.borderColor = ''; } schedule(); }); }
+    { const el = $('f-tour'), apply = () => { const v = el.value.trim(); if (!v) { F.tour = -1; el.style.borderColor = ''; return true; } const k = tourIndex.get(v.toLowerCase()); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } F.tour = k; el.style.borderColor = ''; return true; };
+      el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; F.tour = -1; el.style.borderColor = ''; } schedule(); }); }
+    $('m-dim').innerHTML = Object.keys(DIMS).map(k => `<option value="${k}">${Charts.esc(DIMS[k].label)}</option>`).join('');
+    $('m-dim').addEventListener('change', () => { dimKey = $('m-dim').value; schedule(); });
+    $('m-measure').addEventListener('change', () => { measure = $('m-measure').value; schedule(); });
     reset();
-    $('dom-metric').addEventListener('change', () => { domMetric = $('dom-metric').value; schedule(); });
     { const el = $('dom-tour'), apply = () => { const v = el.value.trim(); if (!v) { domTour = -1; el.style.borderColor = ''; return true; } const k = tourIndex.get(v.toLowerCase()); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } domTour = k; el.style.borderColor = ''; return true; };
       el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; domTour = -1; el.style.borderColor = ''; } schedule(); }); }
     { const el = $('wl-player'), apply = () => { const v = el.value.trim(); if (!v) { wlPlayer = -1; el.style.borderColor = ''; return true; } const k = plIndex.get(v); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } wlPlayer = k; el.style.borderColor = ''; return true; };
@@ -491,10 +501,14 @@
   }
   function reset() {
     F = DEF(); measure = 'winrate'; dimKey = 'player'; sortSpec = null; showAll = false;
-    wlPlayer = -1; h2hP1 = -1; h2hP2 = -1; domTour = -1; domMetric = 'winrate';
-    yearChipsRender();
+    wlPlayer = -1; h2hP1 = -1; h2hP2 = -1; domTour = -1;
+    setYearRange(Y0, Y1);
+    $('f-player').value = ''; $('f-player').style.borderColor = '';
+    $('f-tour').value = ''; $('f-tour').style.borderColor = '';
+    $('f-surface').value = '-1'; $('f-tier').value = '-1';
+    $('m-dim').value = dimKey;
     $('wl-player').value = ''; $('wl-player').style.borderColor = '';
-    $('dom-tour').value = ''; $('dom-tour').style.borderColor = ''; $('dom-metric').value = domMetric;
+    $('dom-tour').value = ''; $('dom-tour').style.borderColor = '';
     h2hSetInputs(); $('h2h-p1').style.borderColor = ''; $('h2h-p2').style.borderColor = '';
   }
 
@@ -506,8 +520,8 @@
       build(parseCSV(a), aliasMap);
       $('load').hidden = true; $('app').hidden = false; setup();
       update();
-      window.__dash = { get state() { return { years: [...F.years].sort((a, b) => a - b), measure, dimKey, n: sel.length, N }; }, get wl() { return wlResult; },
-        get dom() { return domTour < 0 ? null : { tournament: tourNames[domTour], metric: domMetric }; },
+      window.__dash = { get state() { return { years: [...F.years].sort((a, b) => a - b), player: F.player, tour: F.tour, surf: F.surf, tier: F.tier, measure, dimKey, n: sel.length, N }; }, get wl() { return wlResult; },
+        get dom() { return domTour < 0 ? null : { tournament: tourNames[domTour] }; },
         get h2h() { if (h2hP1 < 0 || h2hP2 < 0 || h2hP1 === h2hP2) return null; const m = h2hMatches(h2hP1, h2hP2); return { p1: plNames[h2hP1], p2: plNames[h2hP2], n: m.length, w1: m.filter(i => win[i] === h2hP1).length, w2: m.filter(i => win[i] === h2hP2).length }; } };
     } catch (e) { $('load').textContent = e.message; }
   })();

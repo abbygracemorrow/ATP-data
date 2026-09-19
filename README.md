@@ -3,7 +3,7 @@
 A two-page data website about men's Grand Slam tennis, built from ATP match results.
 
 * **Report** (`index.html`): eleven findings, each with a chart, plus an "About the data" section. A decorative globe in the header shows the four real Grand Slam venues; a stylized court diagram near the end shows how Grand Slam matches split across hard, clay, and grass courts.
-* **Dashboard** (`dashboard.html`): a head-to-head comparison, a player win/loss comparison, a filter by year(s), and a set of win-rate, surface, volume, upset-rate, and tournament-spotlight visualizations driven by that filter. All calculations run in the browser.
+* **Dashboard** (`dashboard.html`): a head-to-head comparison, a player win/loss comparison, global filters by year, player, tournament, surface, and tier, a measure and break-down-by switch, and a set of win-rate, surface, upset-rate, and tournament-spotlight visualizations driven by those filters. All calculations run in the browser.
 
 Neither page shows or claims any player nationality or geographic origin: the source data has no such column, so none is invented.
 
@@ -34,7 +34,7 @@ The only other file that feeds the site is `data/player_name_aliases.csv` (see b
 | `js/globe.js` | Dot-matrix globe drawn on a canvas. Used only for the report page's decorative header globe (the four Grand Slam venues, nothing player-related); the dashboard has no globe. |
 | `js/land.js` | Hand-drawn coarse world outline used only to place the header globe's dots (works offline). |
 | `js/report.js` | Draws the report's charts (and the surface-split court diagram) from the JSON embedded in `index.html`. |
-| `js/dashboard.js` | Loads the CSV in the browser, applies the year filter, and recomputes every number, chart, and table. |
+| `js/dashboard.js` | Loads the CSV in the browser, applies the global filters (year, player, tournament, surface, tier), and recomputes every number, chart, and table. |
 | `scripts/build_site.py` | Reads the data, computes **every number in the report**, writes `data/report_data.json`, and renders `index.html` from the template. |
 | `scripts/report_template.html` | The report's text with `{{placeholders}}` for numbers. Edit the wording here. |
 | `data/atp_matches.csv` | The match data (see above). |
@@ -46,15 +46,13 @@ The only other file that feeds the site is `data/player_name_aliases.csv` (see b
 
 * **Head to head** sits first on the page, above the filter, because it's the one section the filter below doesn't touch: pick two players (a swap button flips them; the same player can't be picked twice) to see their overall record, their record against each other by surface, every match they've played against each other (newest first), and a side-by-side comparison of their career numbers (win rate, wins, losses, Grand Slam titles, win rate by surface) with whichever player is ahead on each row highlighted. It always uses every match in the dataset, deliberately ignoring the filter below it. Neither player is pre-selected; search to populate it.
 * **Player win/loss averages** comes right after, also above the filter: search for a player to see average wins and average losses per season and per tournament, plus the average ATP ranking of the opponents beaten and lost to. Unlike Head to head, this one *does* use the year filter below. No player is pre-selected.
-* **Filter by year(s)** is the only filter on the page: a row of chips, one per season, all selected by default. Toggle any combination on or off; the selection applies to the summary numbers and every visualization below except Head to head (always the full dataset). **Reset all filters** re-selects every year and clears the win/loss player, the head-to-head players, and the tournament spotlight.
-* **Win rate by player / Win rate by year:** the top players by win rate (minimum 20 matches in the selected years), and the same top five players' win rate trend across the selected years.
-* **Surface breakdown:** a donut chart of how many (and what share) of the selected matches were played on each surface (Hard, Clay, Grass, Carpet), counted straight from the CSV's `Surface` column.
-* **Tournaments and matches by year:** two bar charts, distinct tournament names and match rows per selected year, showing how tour volume has changed (the 2020 dip, and the partial 2026 season, are both visible here).
-* **Upset rate by ranking gap:** for every match with a listed ATP ranking on both sides, buckets by the better-ranked (favorite) player's own ranking tier -- Top 10, 11-49, or 50+ -- and shows how often that favorite lost. About 0.04% of matches are excluded for a missing ranking.
-* **Tournament spotlight:** search any tournament to rank its players by win rate, wins, appearances, finals reached, or titles, computed only from matches recorded under that tournament's name in the selected years. Six tournament names (see *Known data limits*) were each used for two distinct real ATP events in some shared year; the panel flags this when it applies.
-* **The numbers behind the charts:** a full sortable table of every player's matches, wins, losses, win rate, titles, finals, tournaments, best-of-five share, and average ATP ranking, for the selected years.
-
-There is no separate "measure" or "breakdown" switch; the year filter is the only control that changes what the charts, table, and tournament spotlight show.
+* **Global filters** narrow everything below by five variables: **Year (from–to)**, **Player** (type to search; keeps only matches that player won or lost), **Tournament** (type to search), **Surface**, and **Tier** (event level). All five combine (AND), and all apply to the summary numbers, both charts, the table, the surface/upset/spotlight cards, and Win/Loss averages -- except Head to head, which always uses the full dataset regardless of these filters. **Reset all filters** clears all five plus the win/loss player, the head-to-head players, and the tournament spotlight.
+* **Summary numbers:** matches in the current view, distinct players, distinct tournaments, and the average ATP ranking of both players across those matches -- all four update live with the filters above.
+* **Measure** and **Break down by** are a pair of switches (not filters -- they don't narrow the data, they change how it's displayed): Measure picks the statistic (matches, wins, win rate, titles, finals, distinct players, distinct tournaments, best-of-five share, or average ATP ranking); Break down by picks what groups the bars, line series, and table rows into (year, tier, surface, court, round, best-of, tournament, or player). Together they drive the bar chart, the line-over-years chart, and the table below.
+* **Surface breakdown:** a donut chart of how many (and what share) of the currently filtered matches were played on each surface (Hard, Clay, Grass, Carpet), counted straight from the CSV's `Surface` column.
+* **Upset rate by ranking gap:** for every filtered match with a listed ATP ranking on both sides, buckets by the better-ranked (favorite) player's own ranking tier -- Top 10, 11-49, or 50+ -- and shows how often that favorite lost. About 0.04% of matches are excluded for a missing ranking.
+* **Tournament spotlight:** search any tournament to rank its players by win rate (minimum 5 matches there), computed only from matches recorded under that tournament's name that also pass the global filters. Six tournament names (see *Known data limits*) were each used for two distinct real ATP events in some shared year; the panel flags this when it applies.
+* **The numbers behind the charts:** a full sortable table, one row per group under the current Break-down-by choice, with matches, wins/losses or players/tournaments, win rate, titles, finals, best-of-five share, and average ATP ranking, for the current filters.
 
 ## Reproducing the report numbers
 

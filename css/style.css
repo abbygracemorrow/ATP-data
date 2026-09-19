@@ -165,8 +165,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;bac
 .scope-line{font-family:var(--font-display);font-size:var(--fs-small);color:var(--ink-soft);margin:0 0 12px}
 .scope-line span{color:var(--ink);font-weight:600}
 .filters-box{background:#fdf3f5;border-color:var(--pink)}
-.year-chip-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.year-chip-grid .chip[aria-pressed="false"]{background:var(--white);color:var(--ink-soft);opacity:.55}
+.filter-grid-all{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px 16px;align-items:end;margin-top:14px}
 .filter-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid rgba(43,69,48,.15)}
 .field label{display:block;font-family:var(--font-display);font-weight:500;font-size:var(--fs-label);margin-bottom:4px;color:var(--ink-soft)}
 .field select,.field input{width:100%;font-family:var(--font-display);font-size:.96rem;color:var(--ink);background:var(--white);border:var(--line);border-radius:var(--r-sm);padding:7px 10px;height:40px;transition:border-color var(--ease),box-shadow var(--ease)}
