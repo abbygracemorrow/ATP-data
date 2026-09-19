@@ -12,7 +12,7 @@
 <body>
 <nav class="site-nav" aria-label="Main">
   <div class="wrap">
-    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="#e5ee9f" stroke="#2b4530" stroke-width="2"/><path d="M4.5 10c6 2 6 10 0 12M27.5 10c-6 2-6 10 0 12" fill="none" stroke="#fdfdfb" stroke-width="2.2" stroke-linecap="round"/></svg><span>Slam Study <span class="long">&middot; ATP 2000&ndash;2026</span></span></a>
+    <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="#e5ee9f" stroke="#2b4530" stroke-width="2"/><path d="M4.5 10c6 2 6 10 0 12M27.5 10c-6 2-6 10 0 12" fill="none" stroke="#fdfdfb" stroke-width="2.2" stroke-linecap="round"/></svg><span>ATP 2000&ndash;2026</span></a>
     <div class="nav-links"><a href="index.html">Report</a><a href="dashboard.html" aria-current="page">Dashboard</a></div>
   </div>
 </nav>
@@ -23,6 +23,7 @@
     <p>Filter the ATP matches, then choose what to measure and how to break it down. All four charts, the globe, the summary numbers, the leaderboard, and the table update together. Start with <b>Grand Slams only</b> to match the report.</p>
   </div>
 </header>
+<div class="court-strip" aria-hidden="true"></div>
 
 <main class="wrap" style="padding-top:26px;padding-bottom:60px">
   <div id="load" class="load-msg">Loading matches&hellip;</div>
@@ -46,7 +47,7 @@
     </section>
 
     <section class="dash-grid" aria-label="Player win and loss averages" style="margin-bottom:24px">
-      <div class="card wide" style="--accent:var(--pink)">
+      <div class="card wide" style="--accent:var(--sage)">
         <div class="panel-head">
           <h3>Player win/loss averages</h3>
           <div class="field"><label for="wl-player">Choose a player (type to search)</label><input id="wl-player" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>

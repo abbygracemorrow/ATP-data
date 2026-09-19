@@ -296,7 +296,7 @@
   function csv() {
     const esc = v => { const s = v == null ? '' : String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
     const lines = [tableCols.map(c => esc(c[1])).join(',')].concat(renderTable.rows.map(r => r.cells.map((v, i) => esc(tableCols[i][4] && v != null ? tableCols[i][4](v) : v)).join(',')));
-    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' })); a.download = `slam-study-${dimKey}.csv`; a.click(); URL.revokeObjectURL(a.href);
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' })); a.download = `grand-slams-${dimKey}.csv`; a.click(); URL.revokeObjectURL(a.href);
   }
 
   /* ---------- "Additional Filters" badge ---------- */

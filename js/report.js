@@ -59,7 +59,7 @@
   function globes() {
     heroGlobe = new SlamGlobe($('hero-globe'), { venues: R.venues, countries: [], lon: 130, lat: 20, step: 3.1 });
     storyGlobe = new SlamGlobe($('story-globe'), { venues: R.venues, countries: R.countries, lon: -30, lat: 30, tip: $('story-tip'), tipHtml, spin: false, labelTop: 3 });
-    $('slam-chips').innerHTML = SL.map(s => `<button class="chip" type="button" aria-pressed="true" data-slam="${s}"><i class="dot" style="background:${SLAM_COLOR[s]}"></i>${R.slam_names[s]}</button>`).join('');
+    $('slam-chips').innerHTML = SL.map(s => `<button class="chip" type="button" aria-pressed="true" data-slam="${s}">${Charts.courtIconSvg(s, 18, { label: R.slam_names[s] })}${R.slam_names[s]}</button>`).join('');
     $('slam-chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; const s = b.dataset.slam;
       if (on.has(s) && on.size > 1) on.delete(s); else on.add(s); b.setAttribute('aria-pressed', on.has(s)); storyGlobe.setSlams(on); list(); });
     $('venue-btns').innerHTML = ['<button class="chip" type="button" data-go="world">Whole globe</button>', '<button class="chip" type="button" data-go="europe">Zoom to Europe</button>']

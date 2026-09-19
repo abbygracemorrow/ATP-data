@@ -47,7 +47,7 @@ a{color:var(--ink);text-decoration-color:var(--pink);text-decoration-thickness:2
 .stat b,.kpi b,.h2h-side b,.wl-tile b,table.data td,.wl-table td,.cmp-table td,svg .val{font-variant-numeric:tabular-nums}
 
 /* ---------- navigation (shared) ---------- */
-.site-nav{position:sticky;top:0;z-index:50;background:var(--white);border-bottom:var(--line)}
+.site-nav{position:sticky;top:0;z-index:50;background:var(--white);border-bottom:1px solid var(--dust);box-shadow:0 3px 0 -2px var(--dust)}
 .site-nav .wrap{display:flex;align-items:center;gap:20px;min-height:60px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:600;font-size:1.15rem;text-decoration:none}
 .brand svg{width:30px;height:30px;flex:none}
@@ -90,7 +90,7 @@ a{color:var(--ink);text-decoration-color:var(--pink);text-decoration-thickness:2
 .finding:nth-of-type(3n+1) .card{--accent:var(--pink)}
 .finding:nth-of-type(3n+2) .card{--accent:var(--sage)}
 .finding:nth-of-type(3n) .card{--accent:var(--lime-mid)}
-.card h3{font-size:var(--fs-card-title);font-weight:600;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--dust);color:var(--ink)}
+.card h3{font-size:var(--fs-card-title);font-weight:600;font-variant-caps:small-caps;letter-spacing:.03em;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--dust);color:var(--ink)}
 .chart{width:100%;min-height:120px}
 .chart svg{display:block;width:100%;height:auto;overflow:visible}
 .chart-note{font-size:var(--fs-small);color:var(--ink-soft);margin:12px 0 0;line-height:1.45}
@@ -253,7 +253,6 @@ table.data th[aria-sort="ascending"]::after{content:" \25B4"}
   .h2h-header{grid-template-columns:minmax(0,1fr);justify-items:center}
   .finding{padding:52px 0}
   .small-multiples{grid-template-columns:minmax(0,1fr)}
-  .brand span.long{display:none}
   .filter-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .filter-grid .more-wrap{grid-column:1/-1}
 }
