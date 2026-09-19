@@ -19,7 +19,7 @@
   (function courtGallery() {
     const el = $('court-gallery'); if (!el) return;
     el.innerHTML = ['AO', 'RG', 'W', 'USO'].map(s =>
-      `<div class="court-gallery-item">${Charts.courtIconSvg(s, 64, { label: SLAM_NAMES[s] })}<span>${SLAM_NAMES[s]}</span></div>`).join('');
+      `<div class="court-gallery-item">${Charts.courtIconSvg(s, 64, { label: SLAM_NAMES[s] })}</div>`).join('');
   })();
 
   /* ---------- CSV ---------- */
