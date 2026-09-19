@@ -226,6 +226,36 @@
     return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${esc(o.label || slam)}" style="vertical-align:-4px;margin-right:6px">${courtIcon(slam, w, h)}</svg>`;
   }
 
+  /* one big stylized court, split into horizontal bands sized by each slice's share of the total --
+     used for a "surface split" diagram. slices: [{label, value, color, tip}] */
+  function surfaceCourt(el, slices, o = {}) {
+    ensureTip();
+    const w = o.w || Math.min(420, width(el, 260)), h = o.h || Math.round(w * 1.25);
+    const px = w * .1, py = h * .05, cw = w - px * 2, ch = h - py * 2, singleIn = cw * .09;
+    const netY = py + ch * .42, svcTop = py + ch * .18, svcBot = py + ch * .82;
+    const total = slices.reduce((a, s) => a + s.value, 0) || 1;
+    let y = py, bands = '';
+    slices.filter(s => s.value > 0).forEach(s => {
+      const bh = ch * (s.value / total), mid = y + bh / 2, big = bh > 34;
+      bands += `<g${tipAttr(s.tip || `<b>${esc(s.label)}</b><br>${int(s.value)} matches (${pct(s.value / total)})`)}>` +
+        `<rect x="${px}" y="${y}" width="${cw}" height="${bh}" fill="${s.color}"/>` +
+        (big ? `<text x="${px + cw / 2}" y="${mid - 3}" text-anchor="middle" style="font-weight:700;font-size:16px;fill:#fff">${esc(s.label)}</text>` +
+          `<text x="${px + cw / 2}" y="${mid + 16}" text-anchor="middle" style="font-size:12px;fill:#fff">${esc(pct(s.value / total))}</text>`
+          : `<text x="${px + cw / 2}" y="${mid + 4}" text-anchor="middle" style="font-weight:700;font-size:12.5px;fill:#fff">${esc(s.label)} · ${esc(pct(s.value / total))}</text>`) +
+        `</g>`;
+      y += bh;
+    });
+    const lines = `<rect x="${px}" y="${py}" width="${cw}" height="${ch}" fill="none" stroke="#fff" stroke-width="2.2"/>` +
+      `<rect x="${px + singleIn}" y="${py}" width="${cw - singleIn * 2}" height="${ch}" fill="none" stroke="#fff" stroke-width="1.5"/>` +
+      `<line x1="${px}" y1="${svcTop}" x2="${px + cw}" y2="${svcTop}" stroke="#fff" stroke-width="1.5"/>` +
+      `<line x1="${px}" y1="${svcBot}" x2="${px + cw}" y2="${svcBot}" stroke="#fff" stroke-width="1.5"/>` +
+      `<line x1="${px + cw / 2}" y1="${svcTop}" x2="${px + cw / 2}" y2="${svcBot}" stroke="#fff" stroke-width="1.5"/>` +
+      `<line x1="${px}" y1="${netY}" x2="${px + cw}" y2="${netY}" stroke="#fff" stroke-width="2"/>` +
+      `<rect x="1" y="1" width="${w - 2}" height="${h - 2}" rx="4" fill="none" stroke="${C.ink}" stroke-width="2.2"/>`;
+    el.innerHTML = wrap(w, h, o.label || 'Surface split', bands + lines);
+    if (o.legend !== false) legend(el, slices.map(s => ({ label: `${s.label} — ${int(s.value)} (${pct(s.value / total)})`, color: s.color })));
+  }
+
   /* checklist grid: who has won which Slam. rows [{name, AO,RG,W,USO, career}] */
   function titleGrid(el, rows, slams, names) {
     ensureTip(); const W = width(el), lw = Math.min(150, W * .3), rh = 40, top = 80, H = top + rows.length * rh + 4, cw = (W - lw - 8) / slams.length;
@@ -274,5 +304,5 @@
     if (o.legend !== false) legend(el, slices.map(s => ({ label: `${s.label} — ${int(s.value)} (${total ? pct(s.value / total) : '0%'})`, color: s.color })));
   }
 
-  g.Charts = { C, SLAM_COLOR, SERIES, esc, int, pct, clip, niceTicks, mix, legend, barH, barV, stackedH, pairsV, line, scatter, heatmap, titleGrid, vsRing, donut, courtIcon, courtIconSvg, ensureTip, empty };
+  g.Charts = { C, SLAM_COLOR, SERIES, esc, int, pct, clip, niceTicks, mix, legend, barH, barV, stackedH, pairsV, line, scatter, heatmap, titleGrid, vsRing, donut, courtIcon, courtIconSvg, surfaceCourt, ensureTip, empty };
 })(window);

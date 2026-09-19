@@ -49,33 +49,22 @@
     if (!$('c-finals-legend').children.length) Charts.legend($('c-finals-legend').parentNode, []), $('c-finals-legend').innerHTML = `<span><i style="background:${C.sage}"></i>Final won</span><span><i style="background:${C.pink}"></i>Final lost</span><span>Label = titles / finals</span>`;
   }
 
-  /* ---- globes ---- */
-  let heroGlobe, storyGlobe; const on = new Set(SL);
-  function tipHtml(it) {
-    if (it.venue) { const n = R.titles.reduce((a, t) => a + t[it.slam], 0); return `<b>${it.city}</b><br>${it.name}<br>${n} titles decided here in the data`; }
-    const per = SL.filter(s => it.by_slam[s]).map(s => `${R.slam_names[s]} ${it.by_slam[s]}`).join(' \u00b7 ');
-    return `<b>${it.country}</b> \u00b7 ${it.titles} titles<br>${per}<br>` + it.champions.map(c => `${c.name} (${c.titles})`).join(', ');
-  }
-  function globes() {
-    heroGlobe = new SlamGlobe($('hero-globe'), { venues: R.venues, countries: [], lon: 130, lat: 20, step: 3.1 });
-    storyGlobe = new SlamGlobe($('story-globe'), { venues: R.venues, countries: R.countries, lon: -30, lat: 30, tip: $('story-tip'), tipHtml, spin: false, labelTop: 3 });
-    $('slam-chips').innerHTML = SL.map(s => `<button class="chip" type="button" aria-pressed="true" data-slam="${s}">${Charts.courtIconSvg(s, 18, { label: R.slam_names[s] })}${R.slam_names[s]}</button>`).join('');
-    $('slam-chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; const s = b.dataset.slam;
-      if (on.has(s) && on.size > 1) on.delete(s); else on.add(s); b.setAttribute('aria-pressed', on.has(s)); storyGlobe.setSlams(on); list(); });
-    $('venue-btns').innerHTML = ['<button class="chip" type="button" data-go="world">Whole globe</button>', '<button class="chip" type="button" data-go="europe">Zoom to Europe</button>']
-      .concat(R.venues.filter(v => v.slam === 'AO' || v.slam === 'USO').map(v => `<button class="chip" type="button" data-go="${v.slam}">Go to ${v.city}</button>`)).join('');
-    $('venue-btns').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; const g = b.dataset.go;
-      if (g === 'world') storyGlobe.focusOn(-30, 30, 1); else if (g === 'europe') storyGlobe.focusOn(9, 46, 2.9);
-      else { const v = R.venues.find(x => x.slam === g); storyGlobe.focusOn(v.lon - 10, v.lat * .5, 1.5); } });
-    list();
-  }
-  function list() {
-    const rows = R.countries.map(c => ({ c: c.country, n: SL.reduce((a, s) => a + (on.has(s) ? c.by_slam[s] : 0), 0) })).filter(r => r.n).sort((a, b) => b.n - a.n);
-    $('country-list').innerHTML = rows.map(r => `<li><span>${r.c}</span><b>${r.n}</b></li>`).join('');
+  /* the hero globe is purely decorative -- it shows the four real Grand Slam venues (countries: [])
+     and makes no claim about players, so it stays; the old story globe drew arcs from a champion's
+     home country, which isn't in this data set, and has been replaced by surfaceSplit() below. */
+  let heroGlobe;
+  function heroGlobeInit() { heroGlobe = new SlamGlobe($('hero-globe'), { venues: R.venues, countries: [], lon: 130, lat: 20, step: 3.1 }); }
+
+  const SURFACE_COLOR = { Hard: '#4EA0D9', Clay: '#E67E22', Grass: '#5B9950' };
+  function surfaceSplit() {
+    Charts.surfaceCourt($('surface-split'), R.surfaces.map(s => ({
+      label: s.surface, value: s.matches, color: SURFACE_COLOR[s.surface] || C.dust,
+      tip: `<b>${s.surface}</b><br>${s.matches.toLocaleString('en-US')} matches (${pct1(s.pct)})<br>${s.tournaments.join(', ')}`
+    })), { label: 'Grand Slam matches by surface' });
   }
 
   function all() { Charts.barH; Charts.titleGrid($('c-career'), R.slam_grid, SL, R.slam_names); titles(); bySlam(); grid();
-    rateChart('c-bo5', R.bo5_top, 'r5', 'n5', .6, .95); rateChart('c-bo3', R.bo3_top, 'r3', 'n3', .6, .85); gap(); streaks(); finals(); rank(); }
-  all(); globes();
+    rateChart('c-bo5', R.bo5_top, 'r5', 'n5', .6, .95); rateChart('c-bo3', R.bo3_top, 'r3', 'n3', .6, .85); gap(); streaks(); finals(); rank(); surfaceSplit(); }
+  all(); heroGlobeInit();
   let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(all, 150); });
 })();

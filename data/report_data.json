@@ -3136,293 +3136,30 @@
   "champ_n": 105,
   "champ_top10": 97
  },
- "countries": [
+ "surfaces": [
   {
-   "country": "Spain",
-   "lat": 40.0,
-   "lon": -3.7,
-   "titles": 30,
-   "by_slam": {
-    "AO": 3,
-    "RG": 18,
-    "W": 4,
-    "USO": 5
-   },
-   "champions": [
-    {
-     "name": "R. Nadal",
-     "titles": 21
-    },
-    {
-     "name": "C. Alcaraz",
-     "titles": 7
-    },
-    {
-     "name": "A. Costa",
-     "titles": 1
-    },
-    {
-     "name": "J.C. Ferrero",
-     "titles": 1
-    }
+   "surface": "Hard",
+   "matches": 6399,
+   "pct": 0.4972,
+   "tournaments": [
+    "Australian Open",
+    "US Open"
    ]
   },
   {
-   "country": "Serbia",
-   "lat": 44.0,
-   "lon": 20.9,
-   "titles": 24,
-   "by_slam": {
-    "AO": 10,
-    "RG": 3,
-    "W": 7,
-    "USO": 4
-   },
-   "champions": [
-    {
-     "name": "N. Djokovic",
-     "titles": 24
-    }
+   "surface": "Clay",
+   "matches": 3289,
+   "pct": 0.2555,
+   "tournaments": [
+    "French Open"
    ]
   },
   {
-   "country": "Switzerland",
-   "lat": 46.8,
-   "lon": 8.2,
-   "titles": 23,
-   "by_slam": {
-    "AO": 7,
-    "RG": 2,
-    "W": 8,
-    "USO": 6
-   },
-   "champions": [
-    {
-     "name": "R. Federer",
-     "titles": 20
-    },
-    {
-     "name": "S. Wawrinka",
-     "titles": 3
-    }
-   ]
-  },
-  {
-   "country": "United States",
-   "lat": 39.5,
-   "lon": -98.5,
-   "titles": 6,
-   "by_slam": {
-    "AO": 3,
-    "RG": 0,
-    "W": 1,
-    "USO": 2
-   },
-   "champions": [
-    {
-     "name": "A. Agassi",
-     "titles": 3
-    },
-    {
-     "name": "P. Sampras",
-     "titles": 2
-    },
-    {
-     "name": "A. Roddick",
-     "titles": 1
-    }
-   ]
-  },
-  {
-   "country": "Italy",
-   "lat": 42.8,
-   "lon": 12.6,
-   "titles": 5,
-   "by_slam": {
-    "AO": 2,
-    "RG": 0,
-    "W": 2,
-    "USO": 1
-   },
-   "champions": [
-    {
-     "name": "J. Sinner",
-     "titles": 5
-    }
-   ]
-  },
-  {
-   "country": "Russia",
-   "lat": 55.7,
-   "lon": 37.6,
-   "titles": 3,
-   "by_slam": {
-    "AO": 1,
-    "RG": 0,
-    "W": 0,
-    "USO": 2
-   },
-   "champions": [
-    {
-     "name": "M. Safin",
-     "titles": 2
-    },
-    {
-     "name": "D. Medvedev",
-     "titles": 1
-    }
-   ]
-  },
-  {
-   "country": "United Kingdom",
-   "lat": 54.0,
-   "lon": -2.0,
-   "titles": 3,
-   "by_slam": {
-    "AO": 0,
-    "RG": 0,
-    "W": 2,
-    "USO": 1
-   },
-   "champions": [
-    {
-     "name": "A. Murray",
-     "titles": 3
-    }
-   ]
-  },
-  {
-   "country": "Argentina",
-   "lat": -34.0,
-   "lon": -64.0,
-   "titles": 2,
-   "by_slam": {
-    "AO": 0,
-    "RG": 1,
-    "W": 0,
-    "USO": 1
-   },
-   "champions": [
-    {
-     "name": "J.M. Del Potro",
-     "titles": 1
-    },
-    {
-     "name": "G. Gaudio",
-     "titles": 1
-    }
-   ]
-  },
-  {
-   "country": "Australia",
-   "lat": -25.5,
-   "lon": 134.0,
-   "titles": 2,
-   "by_slam": {
-    "AO": 0,
-    "RG": 0,
-    "W": 1,
-    "USO": 1
-   },
-   "champions": [
-    {
-     "name": "L. Hewitt",
-     "titles": 2
-    }
-   ]
-  },
-  {
-   "country": "Brazil",
-   "lat": -10.0,
-   "lon": -52.0,
-   "titles": 2,
-   "by_slam": {
-    "AO": 0,
-    "RG": 2,
-    "W": 0,
-    "USO": 0
-   },
-   "champions": [
-    {
-     "name": "G. Kuerten",
-     "titles": 2
-    }
-   ]
-  },
-  {
-   "country": "Croatia",
-   "lat": 45.1,
-   "lon": 15.2,
-   "titles": 2,
-   "by_slam": {
-    "AO": 0,
-    "RG": 0,
-    "W": 1,
-    "USO": 1
-   },
-   "champions": [
-    {
-     "name": "M. Cilic",
-     "titles": 1
-    },
-    {
-     "name": "G. Ivanisevic",
-     "titles": 1
-    }
-   ]
-  },
-  {
-   "country": "Austria",
-   "lat": 47.5,
-   "lon": 14.5,
-   "titles": 1,
-   "by_slam": {
-    "AO": 0,
-    "RG": 0,
-    "W": 0,
-    "USO": 1
-   },
-   "champions": [
-    {
-     "name": "D. Thiem",
-     "titles": 1
-    }
-   ]
-  },
-  {
-   "country": "Germany",
-   "lat": 51.0,
-   "lon": 10.4,
-   "titles": 1,
-   "by_slam": {
-    "AO": 0,
-    "RG": 1,
-    "W": 0,
-    "USO": 0
-   },
-   "champions": [
-    {
-     "name": "A. Zverev",
-     "titles": 1
-    }
-   ]
-  },
-  {
-   "country": "Sweden",
-   "lat": 62.0,
-   "lon": 15.0,
-   "titles": 1,
-   "by_slam": {
-    "AO": 1,
-    "RG": 0,
-    "W": 0,
-    "USO": 0
-   },
-   "champions": [
-    {
-     "name": "T. Johansson",
-     "titles": 1
-    }
+   "surface": "Grass",
+   "matches": 3183,
+   "pct": 0.2473,
+   "tournaments": [
+    "Wimbledon"
    ]
   }
  ],
@@ -3500,9 +3237,12 @@
   "rk_champ_top10": 97,
   "rk_champ_top10_pct": "92%",
   "missing_finals": 1,
-  "top3c_titles": 77,
-  "top3c_pct": "73%",
-  "n_countries": 14,
+  "surf_hard_n": "6,399",
+  "surf_hard_pct": "49.7%",
+  "surf_clay_n": "3,289",
+  "surf_clay_pct": "25.6%",
+  "surf_grass_n": "3,183",
+  "surf_grass_pct": "24.7%",
   "rows_raw": "68,635",
   "rows_total": "68,635",
   "slam_matches": "12,871",
@@ -3646,15 +3386,6 @@
   "medvedev_ftitles": 1,
   "medvedev_flost": 4,
   "medvedev_conv": "20%",
-  "c0_name": "Spain",
-  "c0_n": 30,
-  "c1_name": "Serbia",
-  "c1_n": 24,
-  "c2_name": "Switzerland",
-  "c2_n": 23,
-  "c3_name": "United States",
-  "c3_n": 6,
-  "c0_champs": 4,
   "sinner_streak_end": "French Open 2025",
   "sinner_streak_start": "US Open 2024",
   "author": "Abby Morrow",
@@ -3703,10 +3434,6 @@
   "st0_sn": "Djokovic",
   "st1_sn": "Nadal",
   "st2_sn": "Federer",
-  "c0_sn": "Spain",
-  "c1_sn": "Serbia",
-  "c2_sn": "Switzerland",
-  "c3_sn": "United States",
   "alcaraz_sn": "Alcaraz",
   "murray_sn": "Murray",
   "djokovic_sn": "Djokovic",
