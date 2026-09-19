@@ -217,19 +217,17 @@
       { xlabel: XM.label(ps === 'player' ? 'p' : 'm'), ylabel: mLabel, xfmt: XM.fmt, yfmt: M.pct ? v => Math.round(v * 100) + '%' : M.fmt, label: 'Scatter plot', ymin: M.pct ? 0 : undefined, ymax: M.pct && measure === 'winrate' ? 1 : undefined });
     $('n-scatter').textContent = `Each dot is one ${dim.label.toLowerCase()} group${sc.length >= 400 ? ' (the 400 with the most matches)' : ''}. Hover a dot for details.`;
 
-    // ---- chart 4: heat map
-    $('t-heat').textContent = dimKey === 'year' ? `${mLabel} by period and surface` : `${mLabel} by ${dim.label.toLowerCase()} and period`;
-    let rowLabels, colLabels, cell;
-    if (dimKey === 'year') {
-      rowLabels = PERIODS; colLabels = surfNames.slice(); const ns = surfNames.length;
-      const A4 = agg(sel, 5 * ns, i => period(year[i]) * ns + surf[i], ps, need); cell = (r, c) => (A4.n[r * ns + c] >= (M.rate ? MIN_CELL : 1) ? M.get(A4, r * ns + c) : null);
-    } else {
-      const top = (dim.natural ? cats : ranked).slice(0, 10), rank = new Map(top.map((g, r) => [g, r])); rowLabels = top.map(g => dim.name(g)); colLabels = PERIODS;
-      const A4 = agg(sel, Math.max(1, top.length) * 5, (i, p) => { const r = rank.get(dim.player ? p : dim.key(i)); return r === undefined ? -1 : r * 5 + period(year[i]); }, ps, need);
-      cell = (r, c) => (A4.n[r * 5 + c] >= (M.rate ? MIN_CELL : 1) ? M.get(A4, r * 5 + c) : null);
-    }
-    Charts.heatmap($('ch-heat'), rowLabels, colLabels, rowLabels.map((_, r) => colLabels.map((_, c) => cell(r, c))), { fmt: M.fmt, label: 'Heat map' });
-    $('n-heat').textContent = (M.rate ? `Darker cells are higher values. Dashed cells have fewer than ${MIN_CELL} matches.` : 'Darker cells are higher values. Dashed cells have no matches.') + (M.asc ? ' A higher ranking number is a lower rank.' : '');
+    // ---- chart 4: wins against average opponent ranking, by player (always player-based,
+    // independent of Measure / Break down by -- a fixed companion to the leaderboard above)
+    $('t-rank').textContent = 'Wins against average opponent ranking, by player';
+    const AP = agg(sel, plNames.length, (i, p) => p, 'player', { tn: false });
+    let rankPts = []; for (let p = 0; p < plNames.length; p++) if (AP.n[p] >= MIN_RATE && AP.rc[p]) rankPts.push({ p, wins: AP.w[p], n: AP.n[p], avgrank: AP.rs[p] / AP.rc[p] });
+    rankPts.sort((a, b) => b.wins - a.wins); const rankTotal = rankPts.length; rankPts = rankPts.slice(0, 300);
+    const rankLabelSet = new Set(rankPts.slice(0, 6).map(o => o.p).concat(rankPts.slice().sort((a, b) => a.avgrank - b.avgrank).slice(0, 3).map(o => o.p)));
+    Charts.scatter($('ch-rank'), rankPts.map(o => ({ x: o.wins, y: o.avgrank, label: plDisp[o.p], show: rankLabelSet.has(o.p) && rankPts.length <= 300, color: C.pink, r: 5.5,
+      tip: `<b>${Charts.esc(plDisp[o.p])}</b><br>Wins: ${int(o.wins)}<br>Average opponent ranking: ${o.avgrank.toFixed(1)}<br>${int(o.n)} matches` })),
+      { xlabel: 'Wins', ylabel: 'Average ATP ranking of opponents', xfmt: int, yfmt: v => v.toFixed(1), label: 'Wins against average opponent ranking' });
+    $('n-rank').textContent = `Each dot is one player with at least ${MIN_RATE} matches in this view${rankTotal > 300 ? ' (the 300 with the most wins)' : ''}. Lower on the vertical axis means tougher average opponents. Hover a dot for details.`;
 
     globeUpdate();
     table(A, cats, ps, dim);
