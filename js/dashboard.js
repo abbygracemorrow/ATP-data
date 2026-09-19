@@ -311,12 +311,11 @@
      sides of the world); flagged rather than silently split, since the file gives no way to tell them apart. */
   const COLLISION_TOURS = new Set(['AAPT Championships', 'BNP Paribas', 'European Open', 'Heineken Open', 'Qatar Open', 'TATA Open']);
   const DOM_METRIC = { label: 'win rate (min. 5 matches here)', get: p => (p.n >= 5 ? p.w / p.n : null), fmt: v => (v * 100).toFixed(1) + '%' };
-  let domTour = -1;
   function domUpdate() {
     const box = $('dom-body');
-    if (domTour < 0) { box.innerHTML = '<div class="empty">Search for a tournament above to see who has performed best there.</div>'; return; }
-    const name = tourNames[domTour], rows = sel.filter(i => tour[i] === domTour);
-    if (!rows.length) { box.innerHTML = `<div class="empty">No matches recorded for ${Charts.esc(name)} in the selected year(s).</div>`; return; }
+    if (F.tour < 0) { box.innerHTML = '<div class="empty">Pick a tournament in the Tournament global filter above to see who has performed best there.</div>'; return; }
+    const name = tourNames[F.tour], rows = sel;   // sel is already restricted to F.tour by matchesFilters, plus every other global filter
+    if (!rows.length) { box.innerHTML = `<div class="empty">No matches recorded for ${Charts.esc(name)} under the current filters.</div>`; return; }
     const nP = plNames.length, n = new Uint32Array(nP), w = new Uint32Array(nP), tit = new Uint32Array(nP), fin = new Uint32Array(nP);
     for (const i of rows) {
       const a = win[i], b = los[i], isFinal = round[i] === FINAL;
@@ -479,8 +478,6 @@
     $('m-dim').addEventListener('change', () => { dimKey = $('m-dim').value; schedule(); });
     $('m-measure').addEventListener('change', () => { measure = $('m-measure').value; schedule(); });
     reset();
-    { const el = $('dom-tour'), apply = () => { const v = el.value.trim(); if (!v) { domTour = -1; el.style.borderColor = ''; return true; } const k = tourIndex.get(v.toLowerCase()); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } domTour = k; el.style.borderColor = ''; return true; };
-      el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; domTour = -1; el.style.borderColor = ''; } schedule(); }); }
     { const el = $('wl-player'), apply = () => { const v = el.value.trim(); if (!v) { wlPlayer = -1; el.style.borderColor = ''; return true; } const k = plIndex.get(v); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } wlPlayer = k; el.style.borderColor = ''; return true; };
       el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; wlPlayer = -1; el.style.borderColor = ''; } schedule(); }); }
     { const applyH2H = which => { const el = $(which === 1 ? 'h2h-p1' : 'h2h-p2'), other = which === 1 ? h2hP2 : h2hP1, v = el.value.trim();
@@ -501,14 +498,13 @@
   }
   function reset() {
     F = DEF(); measure = 'winrate'; dimKey = 'player'; sortSpec = null; showAll = false;
-    wlPlayer = -1; h2hP1 = -1; h2hP2 = -1; domTour = -1;
+    wlPlayer = -1; h2hP1 = -1; h2hP2 = -1;
     setYearRange(Y0, Y1);
     $('f-player').value = ''; $('f-player').style.borderColor = '';
     $('f-tour').value = ''; $('f-tour').style.borderColor = '';
     $('f-surface').value = '-1'; $('f-tier').value = '-1';
     $('m-dim').value = dimKey;
     $('wl-player').value = ''; $('wl-player').style.borderColor = '';
-    $('dom-tour').value = ''; $('dom-tour').style.borderColor = '';
     h2hSetInputs(); $('h2h-p1').style.borderColor = ''; $('h2h-p2').style.borderColor = '';
   }
 
@@ -521,7 +517,7 @@
       $('load').hidden = true; $('app').hidden = false; setup();
       update();
       window.__dash = { get state() { return { years: [...F.years].sort((a, b) => a - b), player: F.player, tour: F.tour, surf: F.surf, tier: F.tier, measure, dimKey, n: sel.length, N }; }, get wl() { return wlResult; },
-        get dom() { return domTour < 0 ? null : { tournament: tourNames[domTour] }; },
+        get dom() { return F.tour < 0 ? null : { tournament: tourNames[F.tour] }; },
         get h2h() { if (h2hP1 < 0 || h2hP2 < 0 || h2hP1 === h2hP2) return null; const m = h2hMatches(h2hP1, h2hP2); return { p1: plNames[h2hP1], p2: plNames[h2hP2], n: m.length, w1: m.filter(i => win[i] === h2hP1).length, w2: m.filter(i => win[i] === h2hP2).length }; } };
     } catch (e) { $('load').textContent = e.message; }
   })();
