@@ -193,16 +193,24 @@
     el.innerHTML = wrap(W, H, o.label || 'Heat map', s);
   }
 
-  /* a small flat top-down court icon for a Slam: colored surround, a slightly darker court
-     rectangle with the sideline/service/center lines, grass-mowing stripes for Wimbledon, and a
-     ball dot -- built from the same SLAM_COLOR palette used everywhere else, no image assets */
+  /* colors for the court icons only, taken directly from the "GRAND SLAM" reference poster the
+     user provided -- deliberately its own palette, not SLAM_COLOR/the site's sage-pink-lime theme */
+  const COURT_COLORS = {
+    AO: { bg: '#4EA0D9', court: '#2D6E8E' },
+    RG: { bg: '#E67E22', court: '#C36A1B' },
+    USO: { bg: '#6FBE44', court: '#3E8FCB' },
+    W: { bg: '#5B9950', a: '#5FA050', b: '#4C8A40' },
+  };
+  /* a small flat top-down court icon for a Slam: colored surround, a differently-colored court
+     rectangle with the sideline/service/center lines, grass-mowing stripes for Wimbledon, a black
+     frame, and a ball dot -- inline SVG, no image assets */
   function courtIcon(slam, w, h) {
-    const bg = SLAM_COLOR[slam], court = mix(bg, '#000000', .16);
+    const cc = COURT_COLORS[slam], bg = cc.bg, court = cc.court || cc.a;
     const px = w * .13, py = h * .08, cw = w - px * 2, ch = h - py * 2, singleIn = cw * .09;
     const netY = py + ch * .42, svcTop = py + ch * .18, svcBot = py + ch * .82;
-    let grass = '';
-    if (slam === 'W') { const n = 5, sw = w / n; for (let i = 0; i < n; i += 2) grass += `<rect x="${i * sw}" y="0" width="${sw}" height="${h}" fill="rgba(255,255,255,.09)"/>`; }
-    return `<rect x="0" y="0" width="${w}" height="${h}" rx="3" fill="${bg}"/>${grass}` +
+    let base = `<rect x="0" y="0" width="${w}" height="${h}" rx="3" fill="${bg}"/>`;
+    if (slam === 'W') { const n = 5, sw = w / n; for (let i = 0; i < n; i++) base += `<rect x="${i * sw}" y="0" width="${sw}" height="${h}" fill="${i % 2 ? cc.b : cc.a}"/>`; }
+    return base +
       `<rect x="${px}" y="${py}" width="${cw}" height="${ch}" fill="${court}"/>` +
       `<rect x="${px}" y="${py}" width="${cw}" height="${ch}" fill="none" stroke="#fff" stroke-width="1.3"/>` +
       `<rect x="${px + singleIn}" y="${py}" width="${cw - singleIn * 2}" height="${ch}" fill="none" stroke="#fff" stroke-width=".9"/>` +
@@ -210,7 +218,8 @@
       `<line x1="${px}" y1="${svcBot}" x2="${px + cw}" y2="${svcBot}" stroke="#fff" stroke-width=".9"/>` +
       `<line x1="${px + cw / 2}" y1="${svcTop}" x2="${px + cw / 2}" y2="${svcBot}" stroke="#fff" stroke-width=".9"/>` +
       `<line x1="${px}" y1="${netY}" x2="${px + cw}" y2="${netY}" stroke="#fff" stroke-width="1.1"/>` +
-      `<circle cx="${px + cw * .74}" cy="${py + ch * .9}" r="${w * .05}" fill="${C.ball}" stroke="${C.ink}" stroke-width=".6"/>`;
+      `<circle cx="${px + cw * .74}" cy="${py + ch * .9}" r="${w * .055}" fill="#dde14a" stroke="#000" stroke-width=".6"/>` +
+      `<rect x="1" y="1" width="${w - 2}" height="${h - 2}" rx="2.5" fill="none" stroke="#000" stroke-width="1.6"/>`;
   }
   function courtIconSvg(slam, size, o = {}) {
     const w = size, h = Math.round(size * 1.3);
