@@ -71,8 +71,8 @@
      <div class="wrap">
       <section class="controls filters-box" aria-label="Filter by year">
       <h3 class="dash-section-h">Filter by year(s)</h3>
-      <p class="scope-line">Select one or more seasons to narrow every statistic, chart, and table below. Applies everywhere on this page except Head to Head (always the full dataset) and Win/Loss averages (its own player picker, but the year selection still applies to it).</p>
-      <div class="year-chip-grid" id="year-chips" role="group" aria-label="Years"></div>
+      <p class="scope-line">Pick a year range to narrow every statistic, chart, and table below. Applies everywhere on this page except Head to Head (always the full dataset) and Win/Loss averages (its own player picker, but the year selection still applies to it).</p>
+      <div class="field"><label for="f-from">Year (from &ndash; to)</label><div class="range"><select id="f-from" aria-label="From year" title="Keep only matches played in this range of seasons"></select><select id="f-to" aria-label="To year" title="Keep only matches played in this range of seasons"></select></div></div>
       <div class="filter-actions">
         <button class="btn" id="btn-reset" type="button">Reset all filters</button>
       </div>
@@ -95,16 +95,6 @@
       </div>
 
       <div class="card wide">
-        <h3>Tournaments and matches by year</h3>
-        <p class="chart-note" style="margin-top:-6px"><b>What:</b> how many distinct tournaments were held, and how many matches were played, in each selected year. <b>How:</b> distinct tournament names and row counts from the CSV, grouped by year; a tournament counts once per year no matter how many rounds it has. <b>Why:</b> shows how the volume of recorded tour activity changed over time.</p>
-        <div class="small-multiples">
-          <div><h4>Tournaments per year</h4><div class="chart" id="ch-yr-tourn"></div></div>
-          <div><h4>Matches per year</h4><div class="chart" id="ch-yr-matches"></div></div>
-        </div>
-        <p class="chart-note" id="n-yr"></p>
-      </div>
-
-      <div class="card wide">
         <h3>Upset rate by ranking gap</h3>
         <p class="chart-note" style="margin-top:-6px"><b>What:</b> how often the lower-ranked player beats the higher-ranked (favored) player, grouped by the favorite's own ranking tier. <b>How:</b> for every match with a listed ATP ranking for both players, the better-ranked player is the favorite; an upset is a match the favorite lost. Rate = upsets &divide; matches with valid rankings in that tier. <b>Why:</b> shows whether upsets are more common against lower-ranked favorites than against the very best players.</p>
         <div class="chart" id="ch-upset"></div>
@@ -113,11 +103,8 @@
 
       <div class="card wide">
         <h3>Tournament spotlight</h3>
-        <p class="chart-note" style="margin-top:-6px"><b>What:</b> the strongest performer at one tournament, by a metric you choose. <b>How:</b> computed only from matches recorded under the selected tournament name, within the selected year(s). <b>Why:</b> reveals who has actually dominated a specific event, rather than the tour as a whole.</p>
-        <div class="panel-head">
-          <div class="field"><label for="dom-tour">Tournament (type to search)</label><input id="dom-tour" list="dl-tours" placeholder="Search for a tournament" autocomplete="off"></div>
-          <div class="field"><label for="dom-metric">Rank players by</label><select id="dom-metric"></select></div>
-        </div>
+        <p class="chart-note" style="margin-top:-6px"><b>What:</b> the strongest performer at one tournament, by win rate. <b>How:</b> computed only from matches recorded under the selected tournament name, within the selected year(s). <b>Why:</b> reveals who has actually dominated a specific event, rather than the tour as a whole.</p>
+        <div class="field"><label for="dom-tour">Tournament (type to search)</label><input id="dom-tour" list="dl-tours" placeholder="Search for a tournament" autocomplete="off"></div>
         <div id="dom-body" aria-live="polite"></div>
       </div>
 

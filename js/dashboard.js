@@ -193,7 +193,7 @@
     $('n-line').textContent = M.rate ? `Rates are shown only when a group played at least ${MIN_CELL} matches in that year; gaps mean fewer.` : 'Gaps mean the group had no matches in that year.';
 
     table(A, cats, ps, dim);
-    surfaceUpdate(); yearVolumeUpdate(); upsetUpdate(); domUpdate();
+    surfaceUpdate(); upsetUpdate(); domUpdate();
     wlUpdate(); h2hUpdate();
   }
 
@@ -261,18 +261,6 @@
     $('n-surface').textContent = sel.length ? `${int(sel.length)} matches with a recorded surface in this view.` : 'No matches in this view.';
   }
 
-  /* ---------- distinct tournaments and matches per year, for the selected years ---------- */
-  function yearVolumeUpdate() {
-    const ys = [...F.years].sort((a, b) => a - b);
-    const tSets = new Map(), mCounts = new Map();
-    for (const i of sel) { const y = year[i]; if (!tSets.has(y)) tSets.set(y, new Set()); tSets.get(y).add(tour[i]); mCounts.set(y, (mCounts.get(y) || 0) + 1); }
-    const tRows = ys.map(y => ({ label: String(y), value: tSets.has(y) ? tSets.get(y).size : 0 }));
-    const mRows = ys.map(y => ({ label: String(y), value: mCounts.get(y) || 0 }));
-    Charts.barV($('ch-yr-tourn'), tRows, { color: C.sage, label: 'Tournaments per year', fmt: int });
-    Charts.barV($('ch-yr-matches'), mRows, { color: C.foliage, label: 'Matches per year', fmt: int });
-    $('n-yr').textContent = `${int(ys.length)} year${ys.length === 1 ? '' : 's'} shown. A tournament counts once per year it appears in, however many rounds it has; about 0.6% of tournament-year combinations in the full dataset share a name with a second, distinct event held the same year (see About the data), which can very slightly undercount unique tournaments for those specific years.`;
-  }
-
   /* ---------- upset rate: how often the better-ranked (favorite) player loses, by the favorite's rank tier ----------
      Excludes matches where either player's ranking is unlisted (about 0.04% of matches). */
   function upsetUpdate() {
@@ -303,14 +291,8 @@
      (found while auditing the CSV -- e.g. two separate "Heineken Open" events, weeks apart, on opposite
      sides of the world); flagged rather than silently split, since the file gives no way to tell them apart. */
   const COLLISION_TOURS = new Set(['AAPT Championships', 'BNP Paribas', 'European Open', 'Heineken Open', 'Qatar Open', 'TATA Open']);
-  const DOM_METRICS = {
-    winrate: { label: 'win rate (min. 5 matches here)', get: p => (p.n >= 5 ? p.w / p.n : null), fmt: v => (v * 100).toFixed(1) + '%' },
-    wins: { label: 'match wins', get: p => (p.w > 0 ? p.w : null), fmt: int },
-    matches: { label: 'match appearances', get: p => (p.n > 0 ? p.n : null), fmt: int },
-    finals: { label: 'finals reached', get: p => (p.fin > 0 ? p.fin : null), fmt: int },
-    titles: { label: 'titles', get: p => (p.tit > 0 ? p.tit : null), fmt: int }
-  };
-  let domTour = -1, domMetric = 'winrate';
+  const DOM_METRIC = { label: 'win rate (min. 5 matches here)', get: p => (p.n >= 5 ? p.w / p.n : null), fmt: v => (v * 100).toFixed(1) + '%' };
+  let domTour = -1;
   function domUpdate() {
     const box = $('dom-body');
     if (domTour < 0) { box.innerHTML = '<div class="empty">Search for a tournament above to see who has performed best there.</div>'; return; }
@@ -322,7 +304,7 @@
       n[a]++; w[a]++; n[b]++;
       if (isFinal) { fin[a]++; fin[b]++; tit[a]++; }
     }
-    const M = DOM_METRICS[domMetric], list = [];
+    const M = DOM_METRIC, list = [];
     for (let p = 0; p < nP; p++) if (n[p]) { const o = { id: p, n: n[p], w: w[p], tit: tit[p], fin: fin[p] }; o.v = M.get(o); if (o.v != null) list.push(o); }
     list.sort((a, b) => b.v - a.v || b.w - a.w || plNames[a.id].localeCompare(plNames[b.id]));
     if (!list.length) { box.innerHTML = `<div class="empty">No player has enough matches to rank by ${M.label} at ${Charts.esc(name)} in this view.</div>`; return; }
@@ -456,19 +438,17 @@
   }
 
   /* ---------- controls ---------- */
-  function yearChipsRender() {
-    document.querySelectorAll('#year-chips .chip').forEach(b => b.setAttribute('aria-pressed', String(F.years.has(+b.dataset.year))));
+  function setYearRange(from, to) {
+    F.years = new Set(Array.from({ length: to - from + 1 }, (_, k) => from + k));
+    $('f-from').value = from; $('f-to').value = to;
   }
   function setup() {
-    $('year-chips').innerHTML = allYears.map(y => `<button type="button" class="chip" data-year="${y}" aria-pressed="true">${y}</button>`).join('');
-    $('year-chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; const y = +b.dataset.year;
-      if (F.years.has(y)) { if (F.years.size > 1) F.years.delete(y); } else F.years.add(y);
-      yearChipsRender(); schedule(); });
+    $('f-from').innerHTML = allYears.map(y => `<option>${y}</option>`).join(''); $('f-to').innerHTML = allYears.map(y => `<option>${y}</option>`).join('');
+    $('f-from').addEventListener('change', () => { const from = +$('f-from').value; setYearRange(from, Math.max(from, +$('f-to').value)); schedule(); });
+    $('f-to').addEventListener('change', () => { const to = +$('f-to').value; setYearRange(Math.min(to, +$('f-from').value), to); schedule(); });
     $('dl-players').innerHTML = plNames.map((_, i) => i).sort((a, b) => plMatches[b] - plMatches[a]).map(i => `<option value="${Charts.esc(plDisp[i])}">`).join('');
     $('dl-tours').innerHTML = tourNames.slice().sort().map(t => `<option value="${Charts.esc(t)}">`).join(''); tourNames.forEach((t, i) => tourIndex.set(t.toLowerCase(), i));
-    $('dom-metric').innerHTML = Object.keys(DOM_METRICS).map(k => `<option value="${k}">${DOM_METRICS[k].label.replace(/ \(.*\)/, '')}</option>`).join('');
     reset();
-    $('dom-metric').addEventListener('change', () => { domMetric = $('dom-metric').value; schedule(); });
     { const el = $('dom-tour'), apply = () => { const v = el.value.trim(); if (!v) { domTour = -1; el.style.borderColor = ''; return true; } const k = tourIndex.get(v.toLowerCase()); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } domTour = k; el.style.borderColor = ''; return true; };
       el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; domTour = -1; el.style.borderColor = ''; } schedule(); }); }
     { const el = $('wl-player'), apply = () => { const v = el.value.trim(); if (!v) { wlPlayer = -1; el.style.borderColor = ''; return true; } const k = plIndex.get(v); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } wlPlayer = k; el.style.borderColor = ''; return true; };
@@ -491,10 +471,10 @@
   }
   function reset() {
     F = DEF(); measure = 'winrate'; dimKey = 'player'; sortSpec = null; showAll = false;
-    wlPlayer = -1; h2hP1 = -1; h2hP2 = -1; domTour = -1; domMetric = 'winrate';
-    yearChipsRender();
+    wlPlayer = -1; h2hP1 = -1; h2hP2 = -1; domTour = -1;
+    setYearRange(Y0, Y1);
     $('wl-player').value = ''; $('wl-player').style.borderColor = '';
-    $('dom-tour').value = ''; $('dom-tour').style.borderColor = ''; $('dom-metric').value = domMetric;
+    $('dom-tour').value = ''; $('dom-tour').style.borderColor = '';
     h2hSetInputs(); $('h2h-p1').style.borderColor = ''; $('h2h-p2').style.borderColor = '';
   }
 
@@ -507,7 +487,7 @@
       $('load').hidden = true; $('app').hidden = false; setup();
       update();
       window.__dash = { get state() { return { years: [...F.years].sort((a, b) => a - b), measure, dimKey, n: sel.length, N }; }, get wl() { return wlResult; },
-        get dom() { return domTour < 0 ? null : { tournament: tourNames[domTour], metric: domMetric }; },
+        get dom() { return domTour < 0 ? null : { tournament: tourNames[domTour] }; },
         get h2h() { if (h2hP1 < 0 || h2hP2 < 0 || h2hP1 === h2hP2) return null; const m = h2hMatches(h2hP1, h2hP2); return { p1: plNames[h2hP1], p2: plNames[h2hP2], n: m.length, w1: m.filter(i => win[i] === h2hP1).length, w2: m.filter(i => win[i] === h2hP2).length }; } };
     } catch (e) { $('load').textContent = e.message; }
   })();
