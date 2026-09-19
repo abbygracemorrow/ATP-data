@@ -18,9 +18,11 @@
 </nav>
 
 <header class="dash-head">
-  <div class="wrap">
-    <h1>Explore every match</h1>
-    <p>Filter the ATP matches, then choose what to measure and how to break it down. All four charts, the globe, the summary numbers, the leaderboard, and the table update together. Start with <b>Grand Slams only</b> to match the report.</p>
+  <div class="wrap dash-head-row">
+    <div class="dash-head-text">
+      <h1>Explore every match</h1>
+      <p>Filter the ATP matches, then choose what to measure and how to break it down. All four charts, the globe, the summary numbers, the leaderboard, and the table update together. Start with <b>Grand Slams only</b> to match the report.</p>
+    </div>
     <div class="court-gallery" id="court-gallery" aria-hidden="true"></div>
   </div>
 </header>
@@ -34,7 +36,7 @@
      <div class="wrap">
       <section class="dash-grid">
         <div class="card wide" style="--accent:var(--pink-deep)">
-          <h3>Head to head</h3>
+          <h3 class="dash-section-h">Head to head</h3>
           <p class="chart-note" style="margin-top:-6px">Head to head compares two players directly: their record against each other &mdash; by surface, tier, and round, and every match they've played &mdash; plus how their overall careers compare, side by side. Player 1 is always on the left, Player 2 on the right.</p>
           <p class="scope-line">Always uses every match in the dataset &mdash; the filters below don't apply to this section.</p>
           <div class="h2h-header">
@@ -56,7 +58,7 @@
       <section class="dash-grid">
         <div class="card wide" style="--accent:var(--sage)">
           <div class="panel-head">
-            <h3>Player win/loss averages</h3>
+            <h3 class="dash-section-h">Player win/loss averages</h3>
             <div class="field"><label for="wl-player">Choose a player (type to search)</label><input id="wl-player" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
           </div>
           <div id="wl-body" aria-live="polite"></div>
@@ -67,29 +69,23 @@
 
     <section class="dash-band">
      <div class="wrap">
-      <section class="controls" aria-label="Global filters">
-      <p class="scope-cap">Global filters &mdash; apply everywhere below except Head to Head, which always uses the full dataset</p>
-      <div class="filter-grid">
-        <div class="field"><label for="f-from">Year (from &ndash; to)</label><div class="range"><select id="f-from" aria-label="From year"></select><select id="f-to" aria-label="To year"></select></div></div>
-        <div class="field"><label for="f-tour">Tournament (type to search)</label><input id="f-tour" list="dl-tours" placeholder="All tournaments" autocomplete="off"><datalist id="dl-tours"></datalist></div>
-        <div class="field more-wrap"><button type="button" class="more-btn" id="more-btn" aria-expanded="false" aria-controls="more-panel"><span>Additional Filters<span class="badge" id="more-badge" aria-live="polite"></span></span><span class="caret" aria-hidden="true">&#9662;</span></button></div>
+      <section class="controls filters-box" aria-label="Global filters">
+      <h3 class="dash-section-h">Global filters</h3>
+      <p class="scope-line">Combine any of these to narrow down the matches analyzed everywhere below &mdash; for example, Tier = Grand Slam and Surface = Grass isolates every Wimbledon-era match. Applies to the summary numbers, charts, table, and globe below; Head to Head always uses the full dataset, and Win/Loss averages and the Leaderboard use their own player picker instead.</p>
+      <div class="filter-grid-all">
+        <div class="field"><label for="f-from">Year (from &ndash; to)</label><div class="range"><select id="f-from" aria-label="From year" title="Keep only matches played in this range of seasons"></select><select id="f-to" aria-label="To year" title="Keep only matches played in this range of seasons"></select></div></div>
+        <div class="field"><label for="f-tour">Tournament (type to search)</label><input id="f-tour" list="dl-tours" placeholder="All tournaments" autocomplete="off" title="Narrow to one specific tournament, e.g. only the Australian Open"><datalist id="dl-tours"></datalist></div>
+        <div class="field"><label for="f-tier">Tier (event level)</label><select id="f-tier" title="Event level, from the four Grand Slams down to smaller regular-season events"></select></div>
+        <div class="field"><label for="f-surface">Surface</label><select id="f-surface" title="Court surface the match was played on: hard, clay, grass, or carpet"></select></div>
+        <div class="field"><label for="f-court">Court (indoor/outdoor)</label><select id="f-court" title="Whether the match was played indoors or outdoors"></select></div>
+        <div class="field"><label for="f-round">Round</label><select id="f-round" title="Stage of the tournament, from the first round to the final"></select></div>
+        <div class="field"><label for="f-bo">Best of</label><select id="f-bo" title="Best-of-3 or best-of-5 sets — most men's Grand Slam and Davis Cup matches are best-of-5, almost everything else is best-of-3"></select></div>
+        <div class="field"><label for="f-player">Player (type to search)</label><input id="f-player" list="dl-players" placeholder="All players" autocomplete="off" title="Keep only matches this player won or lost"><datalist id="dl-players"></datalist></div>
+      </div>
+      <div class="filter-actions">
+        <button class="btn" id="btn-slams" type="button" title="Shortcut for Tier = Grand Slam">Grand Slams only</button>
         <button class="btn" id="btn-reset" type="button">Reset all filters</button>
       </div>
-      <div class="more-panel" id="more-panel" hidden>
-        <div class="field"><label for="f-tier">Tier</label><select id="f-tier"></select></div>
-        <div class="field"><label for="f-surface">Surface</label><select id="f-surface"></select></div>
-        <div class="field"><label for="f-court">Court</label><select id="f-court"></select></div>
-        <div class="field"><label for="f-round">Round</label><select id="f-round"></select></div>
-        <div class="field"><label for="f-bo">Best of</label><select id="f-bo"></select></div>
-      </div>
-    </section>
-
-    <section class="controls scope-player" aria-label="Player filter">
-      <div class="scope-player-row">
-        <div class="field"><label for="f-player">Player (type to search)</label><input id="f-player" list="dl-players" placeholder="All players" autocomplete="off"><datalist id="dl-players"></datalist></div>
-        <button class="btn" id="btn-slams" type="button">Grand Slams only</button>
-      </div>
-      <p class="scope-cap">Applies to: the summary numbers, the four charts, the table, and the globe below &mdash; <b>not</b> Win/Loss averages, the Leaderboard, or Head to Head, which each have their own player picker.</p>
     </section>
     <p class="view-line" id="view-line" aria-live="polite"></p>
 
@@ -98,10 +94,11 @@
     <section class="controls" aria-label="Chart display controls">
       <p class="scope-cap">Applies to: the four charts and the table below</p>
       <div class="ctl-row" style="margin-top:0;padding-top:0;border-top:none">
-        <div class="field" style="min-width:210px"><label for="m-measure">Measure</label><select id="m-measure"></select></div>
-        <div class="field" style="min-width:210px"><label for="m-dim">Break down by</label><select id="m-dim"></select></div>
+        <div class="field" style="min-width:210px"><label for="m-measure">Measure</label><select id="m-measure" title="The statistic charted and tabulated below"></select></div>
+        <div class="field" style="min-width:210px"><label for="m-dim">Break down by</label><select id="m-dim" title="How to group the matches in this view into the bars, lines, and rows below"></select></div>
       </div>
       <p class="scope-line" style="margin-top:10px">Filters applied: <span id="charts-scope"></span></p>
+      <p class="scope-line" id="dim-note" style="margin-top:6px;color:var(--pink-deep);display:none"></p>
     </section>
 
     <section class="dash-grid" aria-label="Charts">
