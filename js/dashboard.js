@@ -509,15 +509,10 @@
     $('tbl').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('th')) e.target.click(); });
     let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(schedule, 150); });
   }
-  /* shown by default (and restored by Reset) so the head-to-head visual has something to display
-     before anyone has typed anything -- the two players with the most meetings in this data */
-  const H2H_DEFAULT = ['Djokovic N.', 'Nadal R.'];
-  const WL_DEFAULT = 'Shelton B.';   // shown by default so the panel isn't empty; anyone can pick another player
   function reset() {
     F = DEF(); measure = 'matches'; dimKey = 'tier'; sortSpec = null; showAll = false; lbMeasure = 'wins'; lbTop = 10;
-    wlPlayer = plIndex.get(disp(WL_DEFAULT)) ?? -1;
-    h2hP1 = plIndex.get(disp(H2H_DEFAULT[0])) ?? -1; h2hP2 = plIndex.get(disp(H2H_DEFAULT[1])) ?? -1;
-    $('wl-player').value = wlPlayer >= 0 ? plDisp[wlPlayer] : ''; $('wl-player').style.borderColor = ''; $('lb-measure').value = lbMeasure; $('lb-top').value = String(lbTop);
+    wlPlayer = -1; h2hP1 = -1; h2hP2 = -1;
+    $('wl-player').value = ''; $('wl-player').style.borderColor = ''; $('lb-measure').value = lbMeasure; $('lb-top').value = String(lbTop);
     $('f-from').value = F.from; $('f-to').value = F.to; $('f-player').value = ''; $('f-tour').value = ''; $('f-player').style.borderColor = ''; $('f-tour').style.borderColor = '';
     ['f-tier', 'f-surface', 'f-court', 'f-round', 'f-bo'].forEach(id => $(id).value = '-1'); $('m-dim').value = dimKey;
     h2hSetInputs(); $('h2h-p1').style.borderColor = ''; $('h2h-p2').style.borderColor = '';
