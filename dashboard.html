@@ -28,8 +28,24 @@
   <div id="load" class="load-msg">Loading matches&hellip;</div>
 
   <div id="app" hidden>
+    <section class="dash-grid" aria-label="Head to head" style="margin-bottom:24px">
+      <div class="card wide" style="--accent:var(--pink-deep)">
+        <div class="panel-head">
+          <h3>Head to head</h3>
+          <div class="h2h-ctl">
+            <div class="field"><label for="h2h-p1">Player 1 (type to search)</label><input id="h2h-p1" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+            <button class="btn alt h2h-swap" id="h2h-swap" type="button" title="Swap players" aria-label="Swap the two players">&#8646;</button>
+            <div class="field"><label for="h2h-p2">Player 2 (type to search)</label><input id="h2h-p2" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+          </div>
+        </div>
+        <p class="chart-note" style="margin-top:-6px">Head to head compares two players directly: their record against each other &mdash; by surface, tier, and round, and every match they've played &mdash; plus how their overall careers compare, side by side. Player 1 is always on the left, Player 2 on the right.</p>
+        <p class="scope-line">Always uses every match in the dataset &mdash; the filters below don't apply to this section.</p>
+        <div id="h2h-body" aria-live="polite"></div>
+      </div>
+    </section>
+
     <section class="controls" aria-label="Global filters">
-      <p class="scope-cap">Global filters &mdash; apply to every section on this page</p>
+      <p class="scope-cap">Global filters &mdash; apply everywhere below except Head to Head, which always uses the full dataset</p>
       <div class="filter-grid">
         <div class="field"><label for="f-from">Year (from &ndash; to)</label><div class="range"><select id="f-from" aria-label="From year"></select><select id="f-to" aria-label="To year"></select></div></div>
         <div class="field"><label for="f-tour">Tournament (type to search)</label><input id="f-tour" list="dl-tours" placeholder="All tournaments" autocomplete="off"><datalist id="dl-tours"></datalist></div>
@@ -64,22 +80,6 @@
         </div>
         <p class="scope-line">Global filters applied: <span id="wl-scope"></span></p>
         <div id="wl-body" aria-live="polite"></div>
-      </div>
-    </section>
-
-    <section class="dash-grid" aria-label="Head to head" style="margin-bottom:24px">
-      <div class="card wide" style="--accent:var(--pink-deep)">
-        <div class="panel-head">
-          <h3>Head to head</h3>
-          <div class="h2h-ctl">
-            <div class="field"><label for="h2h-p1">Player 1 (type to search)</label><input id="h2h-p1" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
-            <button class="btn alt h2h-swap" id="h2h-swap" type="button" title="Swap players" aria-label="Swap the two players">&#8646;</button>
-            <div class="field"><label for="h2h-p2">Player 2 (type to search)</label><input id="h2h-p2" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
-          </div>
-        </div>
-        <p class="chart-note" style="margin-top:-6px">Head to head compares two players directly: their record against each other &mdash; by surface, tier, and round, and every match they've played &mdash; plus how their overall careers compare, side by side. Player 1 is always on the left, Player 2 on the right.</p>
-        <p class="scope-line">Global filters applied: <span id="h2h-scope"></span></p>
-        <div id="h2h-body" aria-live="polite"></div>
       </div>
     </section>
 

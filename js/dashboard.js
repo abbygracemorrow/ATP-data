@@ -84,11 +84,11 @@
     }
     return out;
   }
-  /* every match between two specific players, honoring every filter above */
+  /* every match between two specific players, across the whole dataset -- head to head deliberately
+     ignores every filter above (year, tournament, tier, surface, court, round, best-of, and player) */
   function h2hMatches(p1, p2) {
     const out = [];
     for (let i = 0; i < N; i++) {
-      if (!matchesFilters(i)) continue;
       const w = win[i], l = los[i];
       if ((w === p1 && l === p2) || (w === p2 && l === p1)) out.push(i);
     }
@@ -234,7 +234,7 @@
     $('charts-scope').textContent = filterParts(true).join(' \u00b7 ') || noFilters;
     $('wl-scope').textContent = filterParts(false).join(' \u00b7 ') || noFilters;
     $('lb-scope').textContent = filterParts(false).join(' \u00b7 ') || noFilters;
-    $('h2h-scope').textContent = filterParts(false).join(' \u00b7 ') || noFilters;
+    // head to head intentionally ignores every filter above, so it has no scope line to update here
   }
 
   /* ---------- summary numbers ---------- */
@@ -358,14 +358,16 @@
     });
     return rows;
   }
+  /* also ignores every filter above -- see h2hMatches */
   function h2hPlayerStats(p) {
-    const rows = select(p); let w = 0, l = 0, gs = 0; const bySurf = {};
-    for (const i of rows) {
-      const won = win[i] === p; if (won) w++; else l++;
+    let n = 0, w = 0, l = 0, gs = 0; const bySurf = {};
+    for (let i = 0; i < N; i++) {
+      if (win[i] !== p && los[i] !== p) continue;
+      n++; const won = win[i] === p; if (won) w++; else l++;
       if (series[i] && round[i] === FINAL && won) gs++;
       const sn = surfNames[surf[i]]; const o = bySurf[sn] || (bySurf[sn] = { n: 0, w: 0 }); o.n++; if (won) o.w++;
     }
-    return { n: rows.length, w, l, pct: rows.length ? w / rows.length : null, gs, bySurf };
+    return { n, w, l, pct: n ? w / n : null, gs, bySurf };
   }
   function h2hUpdate() {
     const box = $('h2h-body');
