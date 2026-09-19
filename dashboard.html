@@ -25,43 +25,52 @@
 </header>
 <div class="court-strip" aria-hidden="true"></div>
 
-<main class="wrap" style="padding-top:26px;padding-bottom:60px">
-  <div id="load" class="load-msg">Loading matches&hellip;</div>
+<main style="padding-bottom:60px">
+  <div class="wrap"><div id="load" class="load-msg" style="padding-top:26px">Loading matches&hellip;</div></div>
 
   <div id="app" hidden>
-    <section class="dash-grid" aria-label="Head to head" style="margin-bottom:24px">
-      <div class="card wide" style="--accent:var(--pink-deep)">
-        <h3>Head to head</h3>
-        <p class="chart-note" style="margin-top:-6px">Head to head compares two players directly: their record against each other &mdash; by surface, tier, and round, and every match they've played &mdash; plus how their overall careers compare, side by side. Player 1 is always on the left, Player 2 on the right.</p>
-        <p class="scope-line">Always uses every match in the dataset &mdash; the filters below don't apply to this section.</p>
-        <div class="h2h-header">
-          <div class="field"><label for="h2h-p1">Player 1 (type to search)</label><input id="h2h-p1" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
-          <button class="btn alt h2h-swap" id="h2h-swap" type="button" title="Swap players" aria-label="Swap the two players">&#8646;</button>
-          <div class="field"><label for="h2h-p2">Player 2 (type to search)</label><input id="h2h-p2" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
-          <div class="h2h-side" id="h2h-side1"></div>
-          <div class="chart" id="h2h-ring"></div>
-          <div class="h2h-side" id="h2h-side2"></div>
+    <section class="dash-band" aria-label="Head to head" style="padding-top:26px">
+     <div class="wrap">
+      <section class="dash-grid">
+        <div class="card wide" style="--accent:var(--pink-deep)">
+          <h3>Head to head</h3>
+          <p class="chart-note" style="margin-top:-6px">Head to head compares two players directly: their record against each other &mdash; by surface, tier, and round, and every match they've played &mdash; plus how their overall careers compare, side by side. Player 1 is always on the left, Player 2 on the right.</p>
+          <p class="scope-line">Always uses every match in the dataset &mdash; the filters below don't apply to this section.</p>
+          <div class="h2h-header">
+            <div class="field"><label for="h2h-p1">Player 1 (type to search)</label><input id="h2h-p1" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+            <button class="btn alt h2h-swap" id="h2h-swap" type="button" title="Swap players" aria-label="Swap the two players">&#8646;</button>
+            <div class="field"><label for="h2h-p2">Player 2 (type to search)</label><input id="h2h-p2" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+            <div class="h2h-side" id="h2h-side1"></div>
+            <div class="chart" id="h2h-ring"></div>
+            <div class="h2h-side" id="h2h-side2"></div>
+          </div>
+          <div id="h2h-body" aria-live="polite"></div>
         </div>
-        <div id="h2h-body" aria-live="polite"></div>
-      </div>
+      </section>
+     </div>
     </section>
 
-    <div class="court-strip pink section-divider" aria-hidden="true"></div>
+    <div class="court-strip pink" aria-hidden="true"></div>
 
-    <section class="dash-grid" aria-label="Player win and loss averages" style="margin-bottom:24px">
-      <div class="card wide" style="--accent:var(--sage)">
-        <div class="panel-head">
-          <h3>Player win/loss averages</h3>
-          <div class="field"><label for="wl-player">Choose a player (type to search)</label><input id="wl-player" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+    <section class="dash-band alt" aria-label="Player win and loss averages">
+     <div class="wrap">
+      <section class="dash-grid">
+        <div class="card wide" style="--accent:var(--sage)">
+          <div class="panel-head">
+            <h3>Player win/loss averages</h3>
+            <div class="field"><label for="wl-player">Choose a player (type to search)</label><input id="wl-player" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+          </div>
+          <div id="wl-body" aria-live="polite"></div>
         </div>
-        <p class="scope-line">Global filters applied: <span id="wl-scope"></span></p>
-        <div id="wl-body" aria-live="polite"></div>
-      </div>
+      </section>
+     </div>
     </section>
 
-    <div class="court-strip pink section-divider" aria-hidden="true"></div>
+    <div class="court-strip pink" aria-hidden="true"></div>
 
-    <section class="controls" aria-label="Global filters">
+    <section class="dash-band">
+     <div class="wrap">
+      <section class="controls" aria-label="Global filters">
       <p class="scope-cap">Global filters &mdash; apply everywhere below except Head to Head, which always uses the full dataset</p>
       <div class="filter-grid">
         <div class="field"><label for="f-from">Year (from &ndash; to)</label><div class="range"><select id="f-from" aria-label="From year"></select><select id="f-to" aria-label="To year"></select></div></div>
@@ -127,6 +136,8 @@
         <div class="tbl-wrap"><table class="data" id="tbl"></table></div>
         <div class="tbl-foot"><span id="tbl-info"></span><span><button class="btn alt" id="btn-more" type="button">Show all rows</button> <button class="btn" id="btn-csv" type="button">Download this table (CSV)</button></span></div>
       </div>
+    </section>
+     </div>
     </section>
   </div>
 </main>
