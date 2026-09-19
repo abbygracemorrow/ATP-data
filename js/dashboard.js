@@ -437,7 +437,7 @@
   }
 
   /* ---------- leaderboard: players ranked on the current filters (the Player filter is ignored) ---------- */
-  let lbMeasure = 'wins', lbTop = 10, lbFull = [];
+  let lbMeasure = 'wins', lbTop = 5, lbFull = [];
   const LB = {
     wins: { label: 'total wins', get: p => p.w },
     winrate: { label: 'win rate', get: p => (p.n >= MIN_RATE ? p.w / p.n : null), note: `Win rate needs at least ${MIN_RATE} matches.` },
@@ -510,7 +510,7 @@
     let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(schedule, 150); });
   }
   function reset() {
-    F = DEF(); measure = 'matches'; dimKey = 'tier'; sortSpec = null; showAll = false; lbMeasure = 'wins'; lbTop = 10;
+    F = DEF(); measure = 'matches'; dimKey = 'tier'; sortSpec = null; showAll = false; lbMeasure = 'wins'; lbTop = 5;
     wlPlayer = -1; h2hP1 = -1; h2hP2 = -1;
     $('wl-player').value = ''; $('wl-player').style.borderColor = ''; $('lb-measure').value = lbMeasure; $('lb-top').value = String(lbTop);
     $('f-from').value = F.from; $('f-to').value = F.to; $('f-player').value = ''; $('f-tour').value = ''; $('f-player').style.borderColor = ''; $('f-tour').style.borderColor = '';
