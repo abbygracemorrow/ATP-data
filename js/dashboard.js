@@ -116,6 +116,14 @@
     player: { label: 'Player', n: () => plNames.length, name: k => plDisp[k], key: null, player: true }
   };
   const perspective = () => (F.player >= 0 || dimKey === 'player' ? 'player' : 'match');
+  /* a breakdown is trivial (every group but one is empty) when its dimension is already pinned to a
+     single value by a global filter -- e.g. "Break down by Tier" while Tier is filtered to Grand Slam */
+  const DIM_FILTER_KEY = { tier: 'tier', surface: 'surf', court: 'court', round: 'round', bo: 'bo', tournament: 'tour', player: 'player' };
+  function dimIsTrivial() {
+    if (dimKey === 'year') return F.from === F.to;
+    const fk = DIM_FILTER_KEY[dimKey];
+    return fk != null && F[fk] >= 0;
+  }
   const MEAS = {
     matches: { label: () => 'Matches', get: (A, g) => A.n[g], fmt: int, p: 'mp' },
     wins: { label: () => 'Wins', get: (A, g) => A.w[g], fmt: int, p: 'p' },
@@ -242,6 +250,9 @@
     $('charts-scope').textContent = filterParts(true).join(' \u00b7 ') || noFilters;
     $('lb-scope').textContent = filterParts(false).join(' \u00b7 ') || noFilters;
     // head to head intentionally ignores every filter above, so it has no scope line to update here
+    const note = $('dim-note'), dim = DIMS[dimKey];
+    if (dimIsTrivial()) { note.textContent = `You've filtered to a single ${dim.label.toLowerCase()}, so breaking down by ${dim.label.toLowerCase()} only shows that one group below. Pick a different breakdown to compare groups, or widen this filter.`; note.style.display = ''; }
+    else note.style.display = 'none';
   }
 
   /* ---------- summary numbers ---------- */
@@ -489,7 +500,9 @@
         el.addEventListener('change', () => { if (!applyH2H(which)) { el.value = ''; if (which === 1) h2hP1 = -1; else h2hP2 = -1; el.style.borderColor = ''; } schedule(); }); });
       $('h2h-swap').addEventListener('click', () => { const t = h2hP1; h2hP1 = h2hP2; h2hP2 = t; h2hSetInputs(); schedule(); }); }
     $('btn-reset').addEventListener('click', () => { reset(); schedule(); });
-    $('btn-slams').addEventListener('click', () => { F.tier = 0; $('f-tier').value = '0'; schedule(); });
+    $('btn-slams').addEventListener('click', () => { F.tier = 0; $('f-tier').value = '0';
+      if (dimKey === 'tier') { dimKey = 'surface'; $('m-dim').value = 'surface'; sortSpec = null; } // Tier is now fixed, so breaking down by Tier would be a single bar
+      schedule(); });
     $('btn-more').addEventListener('click', () => { showAll = !showAll; renderTable(DIMS[dimKey]); });
     $('btn-csv').addEventListener('click', csv);
     $('tbl').addEventListener('click', e => { const th = e.target.closest('th'); if (!th) return; const c = +th.dataset.col; sortSpec = { dim: sortSpec.dim, col: c, dir: sortSpec.col === c ? -sortSpec.dir : (c === 0 ? 1 : -1) }; renderTable(DIMS[dimKey]); });
