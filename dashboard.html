@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard | Who owns the Grand Slams?</title>
-<meta name="description" content="Filter 68,000+ ATP matches by year, player, tournament, tier, surface, court, round, and best-of, compare a player's average wins and losses, see a leaderboard, and switch the charts between measures and breakdowns.">
+<meta name="description" content="Filter 68,000+ ATP matches by year and tournament, compare two players head to head, see a player's average wins and losses, and browse a win-rate leaderboard.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -21,7 +21,7 @@
   <div class="wrap dash-head-row">
     <div class="dash-head-text">
       <h1>Explore every match</h1>
-      <p>Filter the ATP matches, then choose what to measure and how to break it down. All four charts, the globe, the summary numbers, the leaderboard, and the table update together. Start with <b>Grand Slams only</b> to match the report.</p>
+      <p>Filter the ATP matches by year or tournament, and see how it changes the win rates, the wins-vs-ranking chart, the globe, the summary numbers, the leaderboard, and the table below, all at once.</p>
     </div>
     <div class="court-gallery" id="court-gallery" aria-hidden="true"></div>
   </div>
@@ -71,13 +71,12 @@
      <div class="wrap">
       <section class="controls filters-box" aria-label="Filter by tournament">
       <h3 class="dash-section-h">Filter by tournament</h3>
-      <p class="scope-line">Narrow every match analyzed below to a year range and/or one tournament. Applies to the summary numbers, charts, table, and globe below; Head to Head always uses the full dataset, and Win/Loss averages and the Leaderboard use their own player picker instead. Use "Break down by" further down to split the view by tier, surface, court, round, best of, tournament, or player instead of filtering to just one.</p>
+      <p class="scope-line">Narrow every match analyzed below to a year range and/or one tournament. Applies to the summary numbers, charts, table, and globe below; Head to Head always uses the full dataset, and Win/Loss averages and the Leaderboard use their own player picker instead.</p>
       <div class="filter-grid-all">
         <div class="field"><label for="f-from">Year (from &ndash; to)</label><div class="range"><select id="f-from" aria-label="From year" title="Keep only matches played in this range of seasons"></select><select id="f-to" aria-label="To year" title="Keep only matches played in this range of seasons"></select></div></div>
         <div class="field"><label for="f-tour">Tournament (type to search)</label><input id="f-tour" list="dl-tours" placeholder="All tournaments" autocomplete="off" title="Narrow to one specific tournament, e.g. only the Australian Open"><datalist id="dl-tours"></datalist><datalist id="dl-players"></datalist></div>
       </div>
       <div class="filter-actions">
-        <button class="btn" id="btn-slams" type="button" title="Shortcut for only Grand Slam matches">Grand Slams only</button>
         <button class="btn" id="btn-reset" type="button">Reset all filters</button>
       </div>
     </section>
@@ -85,15 +84,6 @@
 
     <section class="kpis" id="kpis" aria-label="Summary numbers"></section>
 
-    <section class="controls" aria-label="Chart display controls">
-      <p class="scope-cap">Applies to: the four charts and the table below</p>
-      <div class="ctl-row" style="margin-top:0;padding-top:0;border-top:none">
-        <div class="field" style="min-width:210px"><label for="m-measure">Measure</label><select id="m-measure" title="The statistic charted and tabulated below"></select></div>
-        <div class="field" style="min-width:210px"><label for="m-dim">Break down by</label><select id="m-dim" title="How to group the matches in this view into the bars, lines, and rows below"></select></div>
-      </div>
-      <p class="scope-line" style="margin-top:10px">Filters applied: <span id="charts-scope"></span></p>
-      <p class="scope-line" id="dim-note" style="margin-top:6px;color:var(--pink-deep);display:none"></p>
-    </section>
 
     <section class="dash-grid" aria-label="Charts">
       <div class="card"><h3 id="t-bar"></h3><div class="chart" id="ch-bar"></div><p class="chart-note" id="n-bar"></p></div>
@@ -116,7 +106,7 @@
         <h3>Where the Grand Slam champions in this view come from</h3>
         <div class="dash-globe">
           <div class="globe-box"><canvas id="dash-globe" width="700" height="660" aria-label="Globe with arcs from champions' home countries to the Grand Slam venues"></canvas><div class="globe-tip" id="dash-tip"></div></div>
-          <div><p id="globe-summary" style="margin-top:0"></p><ul class="country-list" id="globe-list"></ul><p class="chart-note">Uses every filter above. Only Grand Slam finals have a champion country, so set Tier (under Additional Filters) to Grand Slam or All to see arcs. With a player selected, it shows the finals that player played, including ones they lost. Drag the globe to rotate it.</p></div>
+          <div><p id="globe-summary" style="margin-top:0"></p><ul class="country-list" id="globe-list"></ul><p class="chart-note">Always looks at Grand Slam finals only, narrowed by the year range and tournament above. Drag the globe to rotate it.</p></div>
         </div>
       </div>
       <div class="card wide">
