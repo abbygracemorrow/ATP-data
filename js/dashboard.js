@@ -14,6 +14,14 @@
     { slam: 'W', name: 'Wimbledon', city: 'London', lat: 51.43, lon: -0.21 }, { slam: 'USO', name: 'US Open', city: 'New York', lat: 40.75, lon: -73.85 }];
   const disp = n => n.replace(/^(.*) ([A-Z.]+)$/, '$2 $1');
 
+  /* decorative row of enlarged court icons in the header, purely for looks -- shows immediately,
+     doesn't wait on the CSV load */
+  (function courtGallery() {
+    const el = $('court-gallery'); if (!el) return;
+    el.innerHTML = ['AO', 'RG', 'W', 'USO'].map(s =>
+      `<div class="court-gallery-item">${Charts.courtIconSvg(s, 64, { label: SLAM_NAMES[s] })}<span>${SLAM_NAMES[s]}</span></div>`).join('');
+  })();
+
   /* ---------- CSV ---------- */
   function parseCSV(text) {
     const lines = text.split(/\r?\n/), head = lines[0].split(','), out = [];
