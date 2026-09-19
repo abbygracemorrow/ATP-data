@@ -225,7 +225,7 @@
 
     globeUpdate();
     table(A, cats, ps, dim);
-    badge(); wlUpdate(); lbUpdate(); h2hUpdate(); scopeLines();
+    wlUpdate(); lbUpdate(); h2hUpdate(); scopeLines();
   }
 
   /* filter parts shared by the top view-line and every section's "filters applied" caption.
@@ -304,12 +304,6 @@
     const esc = v => { const s = v == null ? '' : String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
     const lines = [tableCols.map(c => esc(c[1])).join(',')].concat(renderTable.rows.map(r => r.cells.map((v, i) => esc(tableCols[i][4] && v != null ? tableCols[i][4](v) : v)).join(',')));
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' })); a.download = `grand-slams-${dimKey}.csv`; a.click(); URL.revokeObjectURL(a.href);
-  }
-
-  /* ---------- "Additional Filters" badge ---------- */
-  function badge() {
-    const k = [F.tier, F.surf, F.court, F.round, F.bo].filter(v => v >= 0).length, b = $('more-badge');
-    b.textContent = k ? `${k} on` : ''; b.classList.toggle('on', k > 0);
   }
 
   /* ---------- win/loss averages for one player ----------
@@ -498,9 +492,6 @@
         el.addEventListener('input', () => { if (applyH2H(which)) schedule(); });
         el.addEventListener('change', () => { if (!applyH2H(which)) { el.value = ''; if (which === 1) h2hP1 = -1; else h2hP2 = -1; el.style.borderColor = ''; } schedule(); }); });
       $('h2h-swap').addEventListener('click', () => { const t = h2hP1; h2hP1 = h2hP2; h2hP2 = t; h2hSetInputs(); schedule(); }); }
-    const moreBtn = $('more-btn'), morePanel = $('more-panel'), toggleMore = open => { morePanel.hidden = !open; moreBtn.setAttribute('aria-expanded', String(open)); };
-    moreBtn.addEventListener('click', () => toggleMore(morePanel.hidden));
-    morePanel.addEventListener('keydown', e => { if (e.key === 'Escape') { toggleMore(false); moreBtn.focus(); } });
     $('btn-reset').addEventListener('click', () => { reset(); schedule(); });
     $('btn-slams').addEventListener('click', () => { F.tier = 0; $('f-tier').value = '0'; schedule(); });
     $('btn-more').addEventListener('click', () => { showAll = !showAll; renderTable(DIMS[dimKey]); });
