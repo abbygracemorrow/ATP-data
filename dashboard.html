@@ -63,6 +63,20 @@
       </div>
     </section>
 
+    <section class="dash-grid" aria-label="Head to head" style="margin-bottom:24px">
+      <div class="card wide" style="--accent:var(--pink-deep)">
+        <div class="panel-head">
+          <h3>Head to head</h3>
+          <div class="h2h-ctl">
+            <div class="field"><label for="h2h-p1">Player 1 (type to search)</label><input id="h2h-p1" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+            <button class="btn alt h2h-swap" id="h2h-swap" type="button" title="Swap players" aria-label="Swap the two players">&#8646;</button>
+            <div class="field"><label for="h2h-p2">Player 2 (type to search)</label><input id="h2h-p2" list="dl-players" placeholder="Search for a player" autocomplete="off"></div>
+          </div>
+        </div>
+        <div id="h2h-body" aria-live="polite"></div>
+      </div>
+    </section>
+
     <section class="dash-grid" aria-label="Charts">
       <div class="card"><h3 id="t-bar"></h3><div class="chart" id="ch-bar"></div><p class="chart-note" id="n-bar"></p></div>
       <div class="card"><h3 id="t-line"></h3><div class="chart" id="ch-line"></div><p class="chart-note" id="n-line"></p></div>

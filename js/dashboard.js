@@ -34,7 +34,7 @@
   }
 
   /* ---------- data (column arrays) ---------- */
-  let N, year, tour, tier, court, surf, round, bo, win, los, rw, rl, series, tourNames = [], courtNames = [], surfNames = [], plNames = [], plDisp = [], plIndex = new Map(), plMatches;
+  let N, year, tour, tier, court, surf, round, bo, win, los, rw, rl, series, score, dateStr, tourNames = [], courtNames = [], surfNames = [], plNames = [], plDisp = [], plIndex = new Map(), plMatches;
   let Y0, Y1, NY, FINAL, GS = 0, countryOf = new Map(), countryPos = new Map();
 
   function build(main) {
@@ -43,11 +43,13 @@
     year = new Uint16Array(N); tour = new Uint16Array(N); tier = new Uint8Array(N); court = new Uint8Array(N); surf = new Uint8Array(N); round = new Uint8Array(N);
     bo = new Uint8Array(N); win = new Uint16Array(N); los = new Uint16Array(N); series = new Uint8Array(N);
     rw = new Uint16Array(N); rl = new Uint16Array(N);   // ATP ranking of the winner and of the loser (0 = not listed)
+    score = new Array(N); dateStr = new Array(N);       // kept as plain strings, only used by the head-to-head match table
     const tMap = new Map(), cMap = new Map(), sMap = new Map(), pMap = new Map(), rMap = new Map(ROUNDS.map((r, i) => [r, i]));
     const id = (m, arr, v) => { let k = m.get(v); if (k === undefined) { k = arr.length; arr.push(v); m.set(v, k); } return k; };
     for (let i = 0; i < N; i++) {
       const r = rows[i];
-      year[i] = +r[h.Date].slice(0, 4); tour[i] = id(tMap, tourNames, r[h.Tournament]); tier[i] = TIER_OF[r[h.Series]] ?? 3;
+      year[i] = +r[h.Date].slice(0, 4); dateStr[i] = r[h.Date]; score[i] = r[h.Score];
+      tour[i] = id(tMap, tourNames, r[h.Tournament]); tier[i] = TIER_OF[r[h.Series]] ?? 3;
       court[i] = id(cMap, courtNames, r[h.Court]); surf[i] = id(sMap, surfNames, r[h.Surface]);
       let rk = rMap.get(r[h.Round]); if (rk === undefined) { rk = ROUNDS.length; ROUNDS.push(r[h.Round]); rMap.set(r[h.Round], rk); } round[i] = rk;
       bo[i] = +r[h['Best of']]; const p1 = id(pMap, plNames, r[h.Player_1]), p2 = id(pMap, plNames, r[h.Player_2]);
@@ -65,15 +67,29 @@
   let F, measure = 'matches', dimKey = 'tier', sortSpec = null, showAll = false;
   const tourIndex = new Map();
 
+  function matchesFilters(i) {
+    const y = year[i]; if (y < F.from || y > F.to) return false;
+    if (F.tier >= 0 && tier[i] !== F.tier) return false; if (F.tour >= 0 && tour[i] !== F.tour) return false;
+    if (F.surf >= 0 && surf[i] !== F.surf) return false; if (F.court >= 0 && court[i] !== F.court) return false;
+    if (F.round >= 0 && round[i] !== F.round) return false; if (F.bo >= 0 && bo[i] !== F.bo) return false;
+    return true;
+  }
   function select(pl = F.player) {
     const out = [];
     for (let i = 0; i < N; i++) {
-      const y = year[i]; if (y < F.from || y > F.to) continue;
-      if (F.tier >= 0 && tier[i] !== F.tier) continue; if (F.tour >= 0 && tour[i] !== F.tour) continue;
-      if (F.surf >= 0 && surf[i] !== F.surf) continue; if (F.court >= 0 && court[i] !== F.court) continue;
-      if (F.round >= 0 && round[i] !== F.round) continue; if (F.bo >= 0 && bo[i] !== F.bo) continue;
+      if (!matchesFilters(i)) continue;
       if (pl >= 0 && win[i] !== pl && los[i] !== pl) continue;
       out.push(i);
+    }
+    return out;
+  }
+  /* every match between two specific players, honoring every filter above */
+  function h2hMatches(p1, p2) {
+    const out = [];
+    for (let i = 0; i < N; i++) {
+      if (!matchesFilters(i)) continue;
+      const w = win[i], l = los[i];
+      if ((w === p1 && l === p2) || (w === p2 && l === p1)) out.push(i);
     }
     return out;
   }
@@ -200,7 +216,7 @@
 
     globeUpdate();
     table(A, cats, ps, dim);
-    badge(); wlUpdate(); lbUpdate();
+    badge(); wlUpdate(); lbUpdate(); h2hUpdate();
   }
 
   /* ---------- summary numbers ---------- */
@@ -315,6 +331,85 @@
     Charts.pairsV($('wl-chart'), seasons.map(y => String(Y0 + y)), seasons.map(y => yw[y]), seasons.map(y => yl[y]), { nameA: 'Wins', nameB: 'Losses', colorA: C.sage, colorB: C.pink, avgA: R.avgWinsSeason, avgB: R.avgLossesSeason, label: `${name}: wins and losses per season` });
   }
 
+  /* ---------- head to head ----------
+     Uses every filter above (year, tournament, tier, surface, court, round, best-of). The "against each
+     other" numbers use h2hMatches (only matches between the two); the side-by-side comparison uses each
+     player's own select(p), i.e. every one of their matches that passes the filters, not just meetings
+     between the two of them. */
+  let h2hP1 = -1, h2hP2 = -1;
+  function h2hSetInputs() { $('h2h-p1').value = h2hP1 >= 0 ? plDisp[h2hP1] : ''; $('h2h-p2').value = h2hP2 >= 0 ? plDisp[h2hP2] : ''; }
+  function h2hBreakdown(meets, p1, p2, n1, n2, names, keyFn) {
+    const rows = [];
+    names.forEach((name, k) => {
+      let a = 0, b = 0; meets.forEach(i => { if (keyFn(i) !== k) return; if (win[i] === p1) a++; else b++; });
+      if (a + b) rows.push({ label: name, total: a + b, parts: [
+        { value: a, color: C.sage, tip: `<b>${Charts.esc(name)}</b><br>${Charts.esc(n1)}: ${a}` },
+        { value: b, color: C.pink, tip: `<b>${Charts.esc(name)}</b><br>${Charts.esc(n2)}: ${b}` }] });
+    });
+    return rows;
+  }
+  function h2hPlayerStats(p) {
+    const rows = select(p); let w = 0, l = 0, gs = 0; const bySurf = {};
+    for (const i of rows) {
+      const won = win[i] === p; if (won) w++; else l++;
+      if (series[i] && round[i] === FINAL && won) gs++;
+      const sn = surfNames[surf[i]]; const o = bySurf[sn] || (bySurf[sn] = { n: 0, w: 0 }); o.n++; if (won) o.w++;
+    }
+    return { n: rows.length, w, l, pct: rows.length ? w / rows.length : null, gs, bySurf };
+  }
+  function h2hUpdate() {
+    const box = $('h2h-body');
+    if (h2hP1 < 0 || h2hP2 < 0) { box.innerHTML = '<div class="empty">Search for two players above to compare their head-to-head record and career numbers. The comparison uses the filters above, so you can look at just Grand Slams or just clay.</div>'; return; }
+    if (h2hP1 === h2hP2) { box.innerHTML = '<div class="empty">Pick two different players to compare.</div>'; return; }
+    const p1 = h2hP1, p2 = h2hP2, n1 = plDisp[p1], n2 = plDisp[p2];
+    const meets = h2hMatches(p1, p2).slice().sort((a, b) => dateStr[b].localeCompare(dateStr[a])); // newest first
+    const w1 = meets.filter(i => win[i] === p1).length, w2 = meets.length - w1;
+
+    let resultsHtml;
+    if (!meets.length) {
+      resultsHtml = `<div class="empty">${Charts.esc(n1)} and ${Charts.esc(n2)} haven't met in this data.</div>`;
+    } else {
+      const tblRows = meets.map(i => `<tr><td>${dateStr[i]}</td><td>${Charts.esc(tourNames[tour[i]])}</td><td>${Charts.esc(surfNames[surf[i]])}</td><td>${Charts.esc(ROUNDS[round[i]])}</td><td>${Charts.esc(score[i] || '–')}</td><td>${Charts.esc(plDisp[win[i]])}</td></tr>`).join('');
+      resultsHtml = `<p class="view-line" style="margin:0 0 12px">Overall record: <b>${int(w1)}–${int(w2)}</b> (${Charts.esc(n1)}–${Charts.esc(n2)}) in ${int(meets.length)} match${meets.length > 1 ? 'es' : ''}</p>
+        <div class="chart" id="h2h-overall"></div>
+        <div class="h2h-record">
+          <div><h4>By surface</h4><div class="chart" id="h2h-surface"></div></div>
+          <div><h4>By tier</h4><div class="chart" id="h2h-tier"></div></div>
+          <div><h4>By round</h4><div class="chart" id="h2h-round"></div></div>
+        </div>
+        <h4 style="margin-top:20px">Every match between them</h4>
+        <div class="tbl-wrap"><table class="data"><thead><tr><th>Date</th><th>Tournament</th><th>Surface</th><th>Round</th><th>Score</th><th>Winner</th></tr></thead><tbody>${tblRows}</tbody></table></div>`;
+    }
+
+    // ---- side-by-side comparison (every match each has played, not just against each other) ----
+    const s1 = h2hPlayerStats(p1), s2 = h2hPlayerStats(p2);
+    const rate = (n, w) => (n >= MIN_RATE ? w / n : null), pctFmt = v => (v == null ? '–' : (v * 100).toFixed(1) + '%');
+    const cmpRow = (label, v1, v2, fmt, higherBetter = true) => {
+      const better = v1 == null || v2 == null || v1 === v2 ? 0 : (higherBetter ? (v1 > v2 ? 1 : -1) : (v1 < v2 ? 1 : -1));
+      return `<tr><td>${label}</td><td class="${better === 1 ? 'better' : ''}">${fmt(v1)}</td><td class="${better === -1 ? 'better' : ''}">${fmt(v2)}</td></tr>`;
+    };
+    let cmpRows = cmpRow('Career win rate', rate(s1.n, s1.w), rate(s2.n, s2.w), pctFmt)
+      + cmpRow('Wins', s1.w, s2.w, int) + cmpRow('Losses', s1.l, s2.l, int, false)
+      + cmpRow('Grand Slam titles', s1.gs, s2.gs, int);
+    surfNames.forEach(sn => {
+      const o1 = s1.bySurf[sn], o2 = s2.bySurf[sn]; if (!o1 && !o2) return;
+      cmpRows += cmpRow(`Win rate on ${sn}`, rate(o1 ? o1.n : 0, o1 ? o1.w : 0), rate(o2 ? o2.n : 0, o2 ? o2.w : 0), pctFmt);
+    });
+    const cmpHtml = `<h4 style="margin-top:24px">Side by side (all matches, not just against each other)</h4>
+      <table class="cmp-table"><thead><tr><th></th><th>${Charts.esc(n1)}</th><th>${Charts.esc(n2)}</th></tr></thead><tbody>${cmpRows}</tbody></table>
+      <p class="wl-def">Win rates need at least ${MIN_RATE} matches (overall or on that surface). The highlighted cell is whichever player is ahead on that row; a tie or a missing rate highlights neither.</p>`;
+
+    box.innerHTML = resultsHtml + cmpHtml;
+    if (meets.length) {
+      Charts.stackedH($('h2h-overall'), [{ label: 'Overall', total: meets.length, parts: [
+        { value: w1, color: C.sage, tip: `<b>${Charts.esc(n1)}</b>: ${w1} win${w1 === 1 ? '' : 's'}` },
+        { value: w2, color: C.pink, tip: `<b>${Charts.esc(n2)}</b>: ${w2} win${w2 === 1 ? '' : 's'}` }] }], { label: 'Overall head-to-head record' });
+      Charts.stackedH($('h2h-surface'), h2hBreakdown(meets, p1, p2, n1, n2, surfNames, i => surf[i]), { label: 'Head-to-head record by surface' });
+      Charts.stackedH($('h2h-tier'), h2hBreakdown(meets, p1, p2, n1, n2, TIERS, i => tier[i]), { label: 'Head-to-head record by tier' });
+      Charts.stackedH($('h2h-round'), h2hBreakdown(meets, p1, p2, n1, n2, ROUNDS, i => round[i]), { label: 'Head-to-head record by round' });
+    }
+  }
+
   /* ---------- leaderboard: players ranked on the current filters (the Player filter is ignored) ---------- */
   let lbMeasure = 'wins', lbTop = 10, lbFull = [];
   const LB = {
@@ -369,7 +464,15 @@
     $('f-player').addEventListener('change', () => { if (F.player >= 0) { wlPlayer = F.player; $('wl-player').value = plDisp[F.player]; $('wl-player').style.borderColor = ''; schedule(); } });
     { const el = $('wl-player'), apply = () => { const v = el.value.trim(); if (!v) { wlPlayer = -1; el.style.borderColor = ''; return true; } const k = plIndex.get(v); if (k === undefined) { el.style.borderColor = C.pinkDeep; return false; } wlPlayer = k; el.style.borderColor = ''; return true; };
       el.addEventListener('input', () => { if (apply()) schedule(); }); el.addEventListener('change', () => { if (!apply()) { el.value = ''; wlPlayer = -1; el.style.borderColor = ''; } schedule(); }); }
-    $('lb-measure').addEventListener('change', () => { lbMeasure = $('lb-measure').value; schedule(); }); $('lb-top').addEventListener('change', () => { lbTop = +$('lb-top').value; schedule(); });
+    { const applyH2H = which => { const el = $(which === 1 ? 'h2h-p1' : 'h2h-p2'), other = which === 1 ? h2hP2 : h2hP1, v = el.value.trim();
+        if (!v) { if (which === 1) h2hP1 = -1; else h2hP2 = -1; el.style.borderColor = ''; return true; }
+        const k = plIndex.get(v);
+        if (k === undefined || k === other) { el.style.borderColor = C.pinkDeep; return false; }   // undefined name, or the same player already picked on the other side
+        if (which === 1) h2hP1 = k; else h2hP2 = k; el.style.borderColor = ''; return true; };
+      [1, 2].forEach(which => { const el = $(which === 1 ? 'h2h-p1' : 'h2h-p2');
+        el.addEventListener('input', () => { if (applyH2H(which)) schedule(); });
+        el.addEventListener('change', () => { if (!applyH2H(which)) { el.value = ''; if (which === 1) h2hP1 = -1; else h2hP2 = -1; el.style.borderColor = ''; } schedule(); }); });
+      $('h2h-swap').addEventListener('click', () => { const t = h2hP1; h2hP1 = h2hP2; h2hP2 = t; h2hSetInputs(); schedule(); }); }
     const moreBtn = $('more-btn'), morePanel = $('more-panel'), toggleMore = open => { morePanel.hidden = !open; moreBtn.setAttribute('aria-expanded', String(open)); };
     moreBtn.addEventListener('click', () => toggleMore(morePanel.hidden));
     morePanel.addEventListener('keydown', e => { if (e.key === 'Escape') { toggleMore(false); moreBtn.focus(); } });
@@ -382,10 +485,11 @@
     let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(schedule, 150); });
   }
   function reset() {
-    F = DEF(); measure = 'matches'; dimKey = 'tier'; sortSpec = null; showAll = false; wlPlayer = -1; lbMeasure = 'wins'; lbTop = 10;
+    F = DEF(); measure = 'matches'; dimKey = 'tier'; sortSpec = null; showAll = false; wlPlayer = -1; lbMeasure = 'wins'; lbTop = 10; h2hP1 = -1; h2hP2 = -1;
     $('wl-player').value = ''; $('wl-player').style.borderColor = ''; $('lb-measure').value = lbMeasure; $('lb-top').value = String(lbTop);
     $('f-from').value = F.from; $('f-to').value = F.to; $('f-player').value = ''; $('f-tour').value = ''; $('f-player').style.borderColor = ''; $('f-tour').style.borderColor = '';
     ['f-tier', 'f-surface', 'f-court', 'f-round', 'f-bo'].forEach(id => $(id).value = '-1'); $('m-dim').value = dimKey;
+    h2hSetInputs(); $('h2h-p1').style.borderColor = ''; $('h2h-p2').style.borderColor = '';
   }
 
   /* ---------- start ---------- */
@@ -397,7 +501,8 @@
       $('load').hidden = true; $('app').hidden = false; setup();
       globe = new SlamGlobe($('dash-globe'), { venues: VENUES, countries: [], lon: -30, lat: 30, tip: $('dash-tip'), tipHtml, spin: false, aspect: .94, labelTop: 3 });
       update();
-      window.__dash = { get state() { return { F, measure, dimKey, n: sel.length, N }; }, get wl() { return wlResult; }, get lb() { return lbFull.map(o => ({ rank: o.rank, player: plNames[o.id], wins: o.w, losses: o.l, matches: o.n, titles: o.tit, value: o.v })); } };
+      window.__dash = { get state() { return { F, measure, dimKey, n: sel.length, N }; }, get wl() { return wlResult; }, get lb() { return lbFull.map(o => ({ rank: o.rank, player: plNames[o.id], wins: o.w, losses: o.l, matches: o.n, titles: o.tit, value: o.v })); },
+        get h2h() { if (h2hP1 < 0 || h2hP2 < 0 || h2hP1 === h2hP2) return null; const m = h2hMatches(h2hP1, h2hP2); return { p1: plNames[h2hP1], p2: plNames[h2hP2], n: m.length, w1: m.filter(i => win[i] === h2hP1).length, w2: m.filter(i => win[i] === h2hP2).length }; } };
     } catch (e) { $('load').textContent = e.message; }
   })();
 })();
