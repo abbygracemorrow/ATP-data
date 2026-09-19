@@ -359,7 +359,7 @@
   }
   function h2hUpdate() {
     const box = $('h2h-body');
-    if (h2hP1 < 0 || h2hP2 < 0) { box.innerHTML = '<div class="empty">Search for two players above to compare their head-to-head record and career numbers. The comparison uses the filters above, so you can look at just Grand Slams or just clay.</div>'; return; }
+    if (h2hP1 < 0 || h2hP2 < 0) { box.innerHTML = '<div class="empty">Search for two players above to see their comparison.</div>'; return; }
     if (h2hP1 === h2hP2) { box.innerHTML = '<div class="empty">Pick two different players to compare.</div>'; return; }
     const p1 = h2hP1, p2 = h2hP2, n1 = plDisp[p1], n2 = plDisp[p2];
     const meets = h2hMatches(p1, p2).slice().sort((a, b) => dateStr[b].localeCompare(dateStr[a])); // newest first
@@ -370,8 +370,11 @@
       resultsHtml = `<div class="empty">${Charts.esc(n1)} and ${Charts.esc(n2)} haven't met in this data.</div>`;
     } else {
       const tblRows = meets.map(i => `<tr><td>${dateStr[i]}</td><td>${Charts.esc(tourNames[tour[i]])}</td><td>${Charts.esc(surfNames[surf[i]])}</td><td>${Charts.esc(ROUNDS[round[i]])}</td><td>${Charts.esc(score[i] || '–')}</td><td>${Charts.esc(plDisp[win[i]])}</td></tr>`).join('');
-      resultsHtml = `<p class="view-line" style="margin:0 0 12px">Overall record: <b>${int(w1)}–${int(w2)}</b> (${Charts.esc(n1)}–${Charts.esc(n2)}) in ${int(meets.length)} match${meets.length > 1 ? 'es' : ''}</p>
-        <div class="chart" id="h2h-overall"></div>
+      resultsHtml = `<div class="h2h-vs">
+          <div class="h2h-side"><b>${int(w1)}</b><span class="h2h-chip p1">${Charts.esc(n1)}</span></div>
+          <div class="chart" id="h2h-ring"></div>
+          <div class="h2h-side"><b>${int(w2)}</b><span class="h2h-chip p2">${Charts.esc(n2)}</span></div>
+        </div>
         <div class="h2h-record">
           <div><h4>By surface</h4><div class="chart" id="h2h-surface"></div></div>
           <div><h4>By tier</h4><div class="chart" id="h2h-tier"></div></div>
@@ -401,9 +404,8 @@
 
     box.innerHTML = resultsHtml + cmpHtml;
     if (meets.length) {
-      Charts.stackedH($('h2h-overall'), [{ label: 'Overall', total: meets.length, parts: [
-        { value: w1, color: C.sage, tip: `<b>${Charts.esc(n1)}</b>: ${w1} win${w1 === 1 ? '' : 's'}` },
-        { value: w2, color: C.pink, tip: `<b>${Charts.esc(n2)}</b>: ${w2} win${w2 === 1 ? '' : 's'}` }] }], { label: 'Overall head-to-head record' });
+      Charts.vsRing($('h2h-ring'), w1, w2, { colorA: C.sage, colorB: C.pink, centerTop: 'H2H', centerBottom: `${int(meets.length)} match${meets.length > 1 ? 'es' : ''}`,
+        label: `Head-to-head record: ${Charts.esc(n1)} ${w1}, ${Charts.esc(n2)} ${w2}` });
       Charts.stackedH($('h2h-surface'), h2hBreakdown(meets, p1, p2, n1, n2, surfNames, i => surf[i]), { label: 'Head-to-head record by surface' });
       Charts.stackedH($('h2h-tier'), h2hBreakdown(meets, p1, p2, n1, n2, TIERS, i => tier[i]), { label: 'Head-to-head record by tier' });
       Charts.stackedH($('h2h-round'), h2hBreakdown(meets, p1, p2, n1, n2, ROUNDS, i => round[i]), { label: 'Head-to-head record by round' });
