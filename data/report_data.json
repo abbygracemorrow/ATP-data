@@ -1,16 +1,16 @@
 {
  "meta": {
-  "rows_raw": 68636,
-  "rows_total": 68636,
+  "rows_raw": 68637,
+  "rows_total": 68637,
   "columns": 13,
   "first_year": 2000,
   "last_year": 2026,
-  "last_date": "2026-08-29",
+  "last_date": "2026-09-13",
   "seasons": 27,
   "players": 1713,
   "tournaments": 268,
-  "slam_matches": 12872,
-  "slam_titles": 106,
+  "slam_matches": 12873,
+  "slam_titles": 107,
   "champions": 23
  },
  "titles": [
@@ -125,6 +125,16 @@
    "USO": 1
   },
   {
+   "player": "Zverev A.",
+   "name": "A. Zverev",
+   "total": 2,
+   "n_slams": 2,
+   "AO": 0,
+   "RG": 1,
+   "W": 0,
+   "USO": 1
+  },
+  {
    "player": "Kuerten G.",
    "name": "G. Kuerten",
    "total": 2,
@@ -233,16 +243,6 @@
    "RG": 0,
    "W": 0,
    "USO": 1
-  },
-  {
-   "player": "Zverev A.",
-   "name": "A. Zverev",
-   "total": 1,
-   "n_slams": 1,
-   "AO": 0,
-   "RG": 1,
-   "W": 0,
-   "USO": 0
   }
  ],
  "career": [
@@ -387,6 +387,17 @@
    "AO": 0,
    "RG": 0,
    "W": 1,
+   "USO": 1,
+   "career": false
+  },
+  {
+   "player": "Zverev A.",
+   "name": "A. Zverev",
+   "total": 2,
+   "n_slams": 2,
+   "AO": 0,
+   "RG": 1,
+   "W": 0,
    "USO": 1,
    "career": false
   }
@@ -1031,7 +1042,10 @@
     "player": "Sinner J.",
     "name": "J. Sinner"
    },
-   "USO": null
+   "USO": {
+    "player": "Zverev A.",
+    "name": "A. Zverev"
+   }
   }
  ],
  "eras": [
@@ -1065,15 +1079,15 @@
   },
   {
    "period": "2020-26",
-   "titles": 26,
+   "titles": 27,
    "big3": 11,
    "next_gen": 12,
    "distinct": 7
   }
  ],
  "bo": {
-  "bo5_matches": 12946,
-  "bo5_slam_share": 0.9925073381739533,
+  "bo5_matches": 12947,
+  "bo5_slam_share": 0.9925079168919441,
   "min_bo5": 50,
   "min_bo3": 200,
   "min_bo3_gap": 100
@@ -1154,9 +1168,9 @@
   {
    "player": "Zverev A.",
    "name": "A. Zverev",
-   "n5": 168,
-   "w5": 128,
-   "r5": 0.7619,
+   "n5": 169,
+   "w5": 129,
+   "r5": 0.7633,
    "n3": 564,
    "r3": 0.6897
   },
@@ -1294,8 +1308,8 @@
    "n3": 564,
    "w3": 389,
    "r3": 0.6897,
-   "n5": 168,
-   "r5": 0.7619
+   "n5": 169,
+   "r5": 0.7633
   }
  ],
  "gap_points": [
@@ -1399,6 +1413,15 @@
    "gap": 0.0918
   },
   {
+   "player": "Shelton B.",
+   "name": "B. Shelton",
+   "n3": 175,
+   "r3": 0.5886,
+   "n5": 50,
+   "r5": 0.68,
+   "gap": 0.0914
+  },
+  {
    "player": "Musetti L.",
    "name": "L. Musetti",
    "n3": 250,
@@ -1453,6 +1476,15 @@
    "gap": 0.0736
   },
   {
+   "player": "Zverev A.",
+   "name": "A. Zverev",
+   "n3": 564,
+   "r3": 0.6897,
+   "n5": 169,
+   "r5": 0.7633,
+   "gap": 0.0736
+  },
+  {
    "player": "Djokovic N.",
    "name": "N. Djokovic",
    "n3": 842,
@@ -1469,15 +1501,6 @@
    "n5": 181,
    "r5": 0.6077,
    "gap": 0.0723
-  },
-  {
-   "player": "Zverev A.",
-   "name": "A. Zverev",
-   "n3": 564,
-   "r3": 0.6897,
-   "n5": 168,
-   "r5": 0.7619,
-   "gap": 0.0722
   },
   {
    "player": "Philippoussis M.",
@@ -2976,7 +2999,7 @@
    "player": "Zverev A.",
    "name": "A. Zverev",
    "length": 13,
-   "active": 0,
+   "active": 1,
    "start": "French Open 2026",
    "end": "Wimbledon 2026"
   },
@@ -3047,6 +3070,14 @@
    "conv": 0.7143
   },
   {
+   "player": "Zverev A.",
+   "name": "A. Zverev",
+   "finals": 6,
+   "titles": 2,
+   "lost": 4,
+   "conv": 0.3333
+  },
+  {
    "player": "Medvedev D.",
    "name": "D. Medvedev",
    "finals": 6,
@@ -3069,23 +3100,15 @@
    "titles": 1,
    "lost": 4,
    "conv": 0.2
-  },
-  {
-   "player": "Zverev A.",
-   "name": "A. Zverev",
-   "finals": 5,
-   "titles": 1,
-   "lost": 4,
-   "conv": 0.2
   }
  ],
  "rank_gap": [
   {
    "label": "1\u20139 places",
-   "n": 8800,
-   "fav_wins": 4819,
-   "rate": 0.5476,
-   "slam_rate": 0.5771,
+   "n": 8801,
+   "fav_wins": 4820,
+   "rate": 0.5477,
+   "slam_rate": 0.5774,
    "other_rate": 0.542
   },
   {
@@ -3130,20 +3153,20 @@
   }
  ],
  "rank": {
-  "matches": 68609,
+  "matches": 68610,
   "excluded": 27,
   "fav_rate": 0.6532,
   "slam_rate": 0.7153,
   "other_rate": 0.6388,
-  "champ_avg": 4.9,
-  "champ_n": 106,
-  "champ_top10": 98
+  "champ_avg": 4.8,
+  "champ_n": 107,
+  "champ_top10": 99
  },
  "surfaces": [
   {
    "surface": "Hard",
-   "matches": 6400,
-   "pct": 0.4972,
+   "matches": 6401,
+   "pct": 0.497242290064476,
    "tournaments": [
     "Australian Open",
     "US Open"
@@ -3152,7 +3175,7 @@
   {
    "surface": "Clay",
    "matches": 3289,
-   "pct": 0.2555,
+   "pct": 0.2554959993785442,
    "tournaments": [
     "French Open"
    ]
@@ -3160,7 +3183,7 @@
   {
    "surface": "Grass",
    "matches": 3183,
-   "pct": 0.2473,
+   "pct": 0.24726171055697974,
    "tournaments": [
     "Wimbledon"
    ]
@@ -3213,54 +3236,54 @@
   "era0_titles": 20,
   "era0_distinct": 12,
   "era4_big3": 11,
-  "era4_titles": 26,
+  "era4_titles": 27,
   "era4_next": 12,
-  "era4_other": 3,
+  "era4_other": 4,
   "era1_distinct": 5,
   "era1_big3": 18,
   "era1_titles": 20,
-  "gap_n": 165,
-  "gap_pos": 86,
+  "gap_n": 166,
+  "gap_pos": 87,
   "gap_neg": 79,
-  "gap_median": "+0.5",
+  "gap_median": "+0.6",
   "gap_up_champs": 2,
   "bo5_share": "18.9%",
   "bo5_slam_share": "99.3%",
-  "n_q5": 166,
+  "n_q5": 167,
   "n_q3": 192,
-  "rk_n": "68,609",
+  "rk_n": "68,610",
   "rk_excluded": 27,
   "rk_all": "65.3%",
   "rk_slam": "71.5%",
   "rk_other": "63.9%",
   "rk_first": "54.8%",
   "rk_last": "76.9%",
-  "rk_champ_avg": "4.9",
-  "rk_champ_n": 106,
-  "rk_champ_top10": 98,
-  "rk_champ_top10_pct": "92%",
+  "rk_champ_avg": "4.8",
+  "rk_champ_n": 107,
+  "rk_champ_top10": 99,
+  "rk_champ_top10_pct": "93%",
   "missing_finals": 0,
-  "surf_hard_n": "6,400",
+  "surf_hard_n": "6,401",
   "surf_hard_pct": "49.7%",
   "surf_clay_n": "3,289",
-  "surf_clay_pct": "25.6%",
+  "surf_clay_pct": "25.5%",
   "surf_grass_n": "3,183",
   "surf_grass_pct": "24.7%",
-  "rows_raw": "68,636",
-  "rows_total": "68,636",
-  "slam_matches": "12,872",
-  "slam_titles": 106,
+  "rows_raw": "68,637",
+  "rows_total": "68,637",
+  "slam_matches": "12,873",
+  "slam_titles": 107,
   "champions": 23,
   "first_year": 2000,
   "last_year": 2026,
-  "last_date": "August 29, 2026",
+  "last_date": "September 13, 2026",
   "seasons": 27,
   "players": "1,713",
   "tournaments": 268,
   "career_n": 4,
   "top3_titles": 66,
-  "top3_pct": "62.3%",
-  "bo5_matches": "12,946",
+  "top3_pct": "61.7%",
+  "bo5_matches": "12,947",
   "career_names": "R. Federer, R. Nadal, N. Djokovic, and C. Alcaraz",
   "career_lastname": "C. Alcaraz",
   "career0_name": "R. Federer",
@@ -3307,7 +3330,7 @@
   "lead_W_total": 26,
   "lead_USO_name": "R. Federer",
   "lead_USO_n": 5,
-  "lead_USO_total": 26,
+  "lead_USO_total": 27,
   "b5_0_name": "N. Djokovic",
   "b5_0_r": "88.5%",
   "b5_0_n": 445,
@@ -3400,11 +3423,11 @@
   "b3_gap_pts": "0.6",
   "gu2_gap_floor": 12,
   "gu_champ_list": "Safin and Wawrinka",
-  "slam_editions": 106,
-  "slam_expected": "13,462",
-  "slam_missing": "590",
-  "slam_missing_pct": "4.4%",
-  "slam_min_draw": 113,
+  "slam_editions": 107,
+  "slam_expected": "13,589",
+  "slam_missing": "716",
+  "slam_missing_pct": "5.3%",
+  "slam_min_draw": 1,
   "slam_max_draw": 126,
   "career_sn_list": "Federer, Nadal, Djokovic, and Alcaraz",
   "p1_wins": "50.0%",

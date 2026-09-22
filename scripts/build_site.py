@@ -253,7 +253,7 @@ for s, tours in SURFACE_SLAMS.items():
 surfaces = []
 for s, tours in SURFACE_SLAMS.items():
     n = int((gs["Surface"] == s).sum())
-    surfaces.append(dict(surface=s, matches=n, pct=round(n / len(gs), 4), tournaments=tours))
+    surfaces.append(dict(surface=s, matches=n, pct=n / len(gs), tournaments=tours))
 assert sum(s["matches"] for s in surfaces) == len(gs), "surface split must cover every Grand Slam match"
 R["surfaces"] = surfaces
 R["venues"] = [dict(slam="AO", name="Australian Open", city="Melbourne", lat=-37.82, lon=144.98),
