@@ -1,7 +1,7 @@
 {
  "meta": {
-  "rows_raw": 68635,
-  "rows_total": 68635,
+  "rows_raw": 68636,
+  "rows_total": 68636,
   "columns": 13,
   "first_year": 2000,
   "last_year": 2026,
@@ -9,8 +9,8 @@
   "seasons": 27,
   "players": 1713,
   "tournaments": 268,
-  "slam_matches": 12871,
-  "slam_titles": 105,
+  "slam_matches": 12872,
+  "slam_titles": 106,
   "champions": 23
  },
  "titles": [
@@ -27,12 +27,12 @@
   {
    "player": "Nadal R.",
    "name": "R. Nadal",
-   "total": 21,
+   "total": 22,
    "n_slams": 4,
    "AO": 2,
    "RG": 14,
    "W": 2,
-   "USO": 3
+   "USO": 4
   },
   {
    "player": "Federer R.",
@@ -260,7 +260,7 @@
    "completed": "2010-09-12",
    "completed_year": 2010,
    "completed_at": "US Open",
-   "titles": 21
+   "titles": 22
   },
   {
    "player": "Djokovic N.",
@@ -294,12 +294,12 @@
   {
    "player": "Nadal R.",
    "name": "R. Nadal",
-   "total": 21,
+   "total": 22,
    "n_slams": 4,
    "AO": 2,
    "RG": 14,
    "W": 2,
-   "USO": 3,
+   "USO": 4,
    "career": true
   },
   {
@@ -506,7 +506,7 @@
    {
     "player": "Nadal R.",
     "name": "R. Nadal",
-    "titles": 3
+    "titles": 4
    },
    {
     "player": "Alcaraz C.",
@@ -901,7 +901,10 @@
     "player": "Djokovic N.",
     "name": "N. Djokovic"
    },
-   "USO": null
+   "USO": {
+    "player": "Nadal R.",
+    "name": "R. Nadal"
+   }
   },
   {
    "year": 2020,
@@ -1055,8 +1058,8 @@
   },
   {
    "period": "2015-19",
-   "titles": 19,
-   "big3": 16,
+   "titles": 20,
+   "big3": 17,
    "next_gen": 0,
    "distinct": 5
   },
@@ -1069,8 +1072,8 @@
   }
  ],
  "bo": {
-  "bo5_matches": 12945,
-  "bo5_slam_share": 0.9925067593665508,
+  "bo5_matches": 12946,
+  "bo5_slam_share": 0.9925073381739533,
   "min_bo5": 50,
   "min_bo3": 200,
   "min_bo3_gap": 100
@@ -1088,9 +1091,9 @@
   {
    "player": "Nadal R.",
    "name": "R. Nadal",
-   "n5": 352,
-   "w5": 310,
-   "r5": 0.8807,
+   "n5": 353,
+   "w5": 311,
+   "r5": 0.881,
    "n3": 867,
    "r3": 0.8074
   },
@@ -1210,8 +1213,8 @@
    "n3": 867,
    "w3": 700,
    "r3": 0.8074,
-   "n5": 352,
-   "r5": 0.8807
+   "n5": 353,
+   "r5": 0.881
   },
   {
    "player": "Sinner J.",
@@ -1282,8 +1285,8 @@
    "n3": 469,
    "w3": 325,
    "r3": 0.693,
-   "n5": 122,
-   "r5": 0.7213
+   "n5": 123,
+   "r5": 0.7154
   },
   {
    "player": "Zverev A.",
@@ -1445,9 +1448,9 @@
    "name": "R. Nadal",
    "n3": 867,
    "r3": 0.8074,
-   "n5": 352,
-   "r5": 0.8807,
-   "gap": 0.0733
+   "n5": 353,
+   "r5": 0.881,
+   "gap": 0.0736
   },
   {
    "player": "Djokovic N.",
@@ -1801,15 +1804,6 @@
    "gap": 0.0302
   },
   {
-   "player": "Medvedev D.",
-   "name": "D. Medvedev",
-   "n3": 469,
-   "r3": 0.693,
-   "n5": 122,
-   "r5": 0.7213,
-   "gap": 0.0283
-  },
-  {
    "player": "Andreev I.",
    "name": "I. Andreev",
    "n3": 353,
@@ -1835,6 +1829,15 @@
    "n5": 54,
    "r5": 0.3889,
    "gap": 0.0238
+  },
+  {
+   "player": "Medvedev D.",
+   "name": "D. Medvedev",
+   "n3": 469,
+   "r3": 0.693,
+   "n5": 123,
+   "r5": 0.7154,
+   "gap": 0.0225
   },
   {
    "player": "Tipsarevic J.",
@@ -3014,10 +3017,10 @@
   {
    "player": "Nadal R.",
    "name": "R. Nadal",
-   "finals": 29,
-   "titles": 21,
+   "finals": 30,
+   "titles": 22,
    "lost": 8,
-   "conv": 0.7241
+   "conv": 0.7333
   },
   {
    "player": "Murray A.",
@@ -3044,20 +3047,20 @@
    "conv": 0.7143
   },
   {
+   "player": "Medvedev D.",
+   "name": "D. Medvedev",
+   "finals": 6,
+   "titles": 1,
+   "lost": 5,
+   "conv": 0.1667
+  },
+  {
    "player": "Agassi A.",
    "name": "A. Agassi",
    "finals": 5,
    "titles": 3,
    "lost": 2,
    "conv": 0.6
-  },
-  {
-   "player": "Medvedev D.",
-   "name": "D. Medvedev",
-   "finals": 5,
-   "titles": 1,
-   "lost": 4,
-   "conv": 0.2
   },
   {
    "player": "Roddick A.",
@@ -3079,10 +3082,10 @@
  "rank_gap": [
   {
    "label": "1\u20139 places",
-   "n": 8799,
-   "fav_wins": 4818,
+   "n": 8800,
+   "fav_wins": 4819,
    "rate": 0.5476,
-   "slam_rate": 0.5768,
+   "slam_rate": 0.5771,
    "other_rate": 0.542
   },
   {
@@ -3127,19 +3130,19 @@
   }
  ],
  "rank": {
-  "matches": 68608,
+  "matches": 68609,
   "excluded": 27,
   "fav_rate": 0.6532,
   "slam_rate": 0.7153,
   "other_rate": 0.6388,
   "champ_avg": 4.9,
-  "champ_n": 105,
-  "champ_top10": 97
+  "champ_n": 106,
+  "champ_top10": 98
  },
  "surfaces": [
   {
    "surface": "Hard",
-   "matches": 6399,
+   "matches": 6400,
    "pct": 0.4972,
    "tournaments": [
     "Australian Open",
@@ -3203,8 +3206,8 @@
   "nadal_rg_w": 109,
   "nadal_rg_l": 4,
   "nadal_rg_pct": "96.5%",
-  "peak_big3": 50,
-  "peak_titles": 59,
+  "peak_big3": 51,
+  "peak_titles": 60,
   "peak_pct": "85%",
   "era0_big3": 4,
   "era0_titles": 20,
@@ -3225,7 +3228,7 @@
   "bo5_slam_share": "99.3%",
   "n_q5": 166,
   "n_q3": 192,
-  "rk_n": "68,608",
+  "rk_n": "68,609",
   "rk_excluded": 27,
   "rk_all": "65.3%",
   "rk_slam": "71.5%",
@@ -3233,20 +3236,20 @@
   "rk_first": "54.8%",
   "rk_last": "76.9%",
   "rk_champ_avg": "4.9",
-  "rk_champ_n": 105,
-  "rk_champ_top10": 97,
+  "rk_champ_n": 106,
+  "rk_champ_top10": 98,
   "rk_champ_top10_pct": "92%",
-  "missing_finals": 1,
-  "surf_hard_n": "6,399",
+  "missing_finals": 0,
+  "surf_hard_n": "6,400",
   "surf_hard_pct": "49.7%",
   "surf_clay_n": "3,289",
   "surf_clay_pct": "25.6%",
   "surf_grass_n": "3,183",
   "surf_grass_pct": "24.7%",
-  "rows_raw": "68,635",
-  "rows_total": "68,635",
-  "slam_matches": "12,871",
-  "slam_titles": 105,
+  "rows_raw": "68,636",
+  "rows_total": "68,636",
+  "slam_matches": "12,872",
+  "slam_titles": 106,
   "champions": 23,
   "first_year": 2000,
   "last_year": 2026,
@@ -3255,9 +3258,9 @@
   "players": "1,713",
   "tournaments": 268,
   "career_n": 4,
-  "top3_titles": 65,
-  "top3_pct": "61.9%",
-  "bo5_matches": "12,945",
+  "top3_titles": 66,
+  "top3_pct": "62.3%",
+  "bo5_matches": "12,946",
   "career_names": "R. Federer, R. Nadal, N. Djokovic, and C. Alcaraz",
   "career_lastname": "C. Alcaraz",
   "career0_name": "R. Federer",
@@ -3267,7 +3270,7 @@
   "career1_name": "R. Nadal",
   "career1_year": 2010,
   "career1_at": "US Open",
-  "career1_titles": 21,
+  "career1_titles": 22,
   "career2_name": "N. Djokovic",
   "career2_year": 2016,
   "career2_at": "Roland Garros",
@@ -3279,7 +3282,7 @@
   "t0_name": "N. Djokovic",
   "t0_total": 24,
   "t1_name": "R. Nadal",
-  "t1_total": 21,
+  "t1_total": 22,
   "t2_name": "R. Federer",
   "t2_total": 20,
   "t3_name": "C. Alcaraz",
@@ -3304,7 +3307,7 @@
   "lead_W_total": 26,
   "lead_USO_name": "R. Federer",
   "lead_USO_n": 5,
-  "lead_USO_total": 25,
+  "lead_USO_total": 26,
   "b5_0_name": "N. Djokovic",
   "b5_0_r": "88.5%",
   "b5_0_n": 445,
@@ -3313,7 +3316,7 @@
   "b3_0_n": 957,
   "b5_1_name": "R. Nadal",
   "b5_1_r": "88.1%",
-  "b5_1_n": 352,
+  "b5_1_n": 353,
   "b3_1_name": "N. Djokovic",
   "b3_1_r": "81.2%",
   "b3_1_n": 842,
@@ -3374,18 +3377,18 @@
   "djokovic_ftitles": 24,
   "djokovic_flost": 14,
   "djokovic_conv": "63%",
-  "nadal_finals": 29,
-  "nadal_ftitles": 21,
+  "nadal_finals": 30,
+  "nadal_ftitles": 22,
   "nadal_flost": 8,
-  "nadal_conv": "72%",
+  "nadal_conv": "73%",
   "federer_finals": 31,
   "federer_ftitles": 20,
   "federer_flost": 11,
   "federer_conv": "65%",
-  "medvedev_finals": 5,
+  "medvedev_finals": 6,
   "medvedev_ftitles": 1,
-  "medvedev_flost": 4,
-  "medvedev_conv": "20%",
+  "medvedev_flost": 5,
+  "medvedev_conv": "17%",
   "sinner_streak_end": "French Open 2025",
   "sinner_streak_start": "US Open 2024",
   "author": "Abby Morrow",
@@ -3399,7 +3402,7 @@
   "gu_champ_list": "Safin and Wawrinka",
   "slam_editions": 106,
   "slam_expected": "13,462",
-  "slam_missing": "591",
+  "slam_missing": "590",
   "slam_missing_pct": "4.4%",
   "slam_min_draw": 113,
   "slam_max_draw": 126,

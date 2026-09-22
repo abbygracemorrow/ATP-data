@@ -4,7 +4,7 @@ build_site.py  -  reproduces every number in the report from the raw data.
 
   python3 scripts/build_site.py
 
-Reads   data/atp_matches.csv          (the match file, never edited)
+Reads   data/atp_matches.csv          (the match file; no existing value is edited, one row was hand-added)
         scripts/report_template.html  (the report text, with {{placeholders}})
 Writes  data/report_data.json         (every number and chart series)
         index.html                    (the report page)
@@ -234,10 +234,12 @@ T["rk_champ_top10_pct"] = pct(R["rank"]["champ_top10"] / R["rank"]["champ_n"], 0
 assert all(gap_rows[i]["rate"] < gap_rows[i + 1]["rate"] for i in range(len(gap_rows) - 1)), "favorite edge should grow with the gap"
 assert all(r["slam_rate"] > r["other_rate"] for r in gap_rows), "the template says the Slam edge holds at every gap size"
 
-# a final is missing from the file when a Slam tournament has data but no "The Final" row
+# a final is missing from the file when a Slam tournament has data but no "The Final" row -- the one
+# instance of this (the 2019 US Open) was fixed by hand-adding that final's row (see build_site.py's
+# caller docs / the report's "About the data" section), so none should remain
 _fin_ed = set(zip(fin.Tournament, fin.Year)); _all_ed = set(zip(gs.Tournament, gs.Year))
 missing_finals = sorted(_all_ed - _fin_ed)
-assert missing_finals == [("US Open", 2019)], f"the template names the missing 2019 US Open final; found {missing_finals}"
+assert missing_finals == [], f"every Slam edition should have a recorded final now; found missing {missing_finals}"
 T["missing_finals"] = len(missing_finals)
 
 # ---------------------------------------------------------------- surface split (Grand Slam matches only)

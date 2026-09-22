@@ -142,15 +142,23 @@
         vis.push({ c, p, r, n, hot }); this.hits.push({ x: p.x, y: p.y, r, item: c }); }
       ctx.font = '600 13px Inter, "Segoe UI", sans-serif';
       const vp = []; for (const v of this.venues) { if (!this.slams.has(v.slam)) continue; const p = this.proj(v.lon, v.lat); if (p.c < .05) continue; vp.push({ v, p }); }
-      for (const { v, p } of vp) this._label(v.city, p.x + 14, p.y - 9, true);
+      // venue labels always render (never silently dropped), but two venues close together on screen
+      // (e.g. London and Wimbledon's near-neighbor Paris) can otherwise overlap at the default offset --
+      // try a few alternate placements first, and only fall back to forcing the default spot if every
+      // candidate collides with an already-placed venue label
+      for (const { v, p } of vp) {
+        const w = ctx.measureText(v.city).width;
+        const candidates = [[p.x + 14, p.y - 9], [p.x + 14, p.y + 20], [p.x - 14 - w, p.y - 9], [p.x - 14 - w, p.y + 20], [p.x + 14, p.y - 24], [p.x - 14 - w, p.y - 24]];
+        if (!candidates.some(([x, y]) => this._label(v.city, x, y, false))) this._label(v.city, p.x + 14, p.y - 9, true);
+      }
       vis.sort((a, b) => (b.hot - a.hot) || (b.n - a.n));
       vis.forEach((m, i) => { if (m.hot || many || i < this.labelTop) this._label(m.c.country, m.p.x + m.r + 5, m.p.y + 4.5, m.hot); });
       for (const { v, p } of vp) { this._star(p.x, p.y, 11, SLAM_COLOR[v.slam]); this.hits.push({ x: p.x, y: p.y, r: 12, item: Object.assign({ venue: true }, v) }); }
     }
     _poly(fn, n) { const ctx = this.ctx; let open = false; ctx.beginPath(); for (let i = 0; i < n; i++) { const p = fn(i); if (p.c < 0) { open = false; continue; } if (open) ctx.lineTo(p.x, p.y); else ctx.moveTo(p.x, p.y); open = true; } ctx.stroke(); }
     _label(t, x, y, force) { const ctx = this.ctx, w = ctx.measureText(t).width, b = [x - 2, y - 13, w + 4, 17];
-      if (!force && this.boxes.some(o => b[0] < o[0] + o[2] && b[0] + b[2] > o[0] && b[1] < o[1] + o[3] && b[1] + b[3] > o[1])) return;
-      this.boxes.push(b); ctx.lineJoin = 'round'; ctx.lineWidth = 4; ctx.strokeStyle = '#fff'; ctx.strokeText(t, x, y); ctx.fillStyle = COL.ink; ctx.fillText(t, x, y); }
+      if (!force && this.boxes.some(o => b[0] < o[0] + o[2] && b[0] + b[2] > o[0] && b[1] < o[1] + o[3] && b[1] + b[3] > o[1])) return false;
+      this.boxes.push(b); ctx.lineJoin = 'round'; ctx.lineWidth = 4; ctx.strokeStyle = '#fff'; ctx.strokeText(t, x, y); ctx.fillStyle = COL.ink; ctx.fillText(t, x, y); return true; }
     _star(x, y, r, col) { const ctx = this.ctx; ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; ctx[i ? 'lineTo' : 'moveTo'](x + rr * Math.cos(a), y + rr * Math.sin(a)); }
       ctx.closePath(); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = COL.ink; ctx.lineWidth = 2; ctx.stroke(); }
   }
