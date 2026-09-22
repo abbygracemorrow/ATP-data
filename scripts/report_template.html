@@ -208,16 +208,16 @@
     <div class="data-grid">
       <div>
         <h3>Source and what one row is</h3>
-        <p>The data is the <a href="https://www.kaggle.com/datasets/dissfya/atp-tennis-2000-2023daily-pull">ATP Tennis 2000&ndash;2023 Daily Pull</a> by dissfya on Kaggle &mdash; a dataset the uploader refreshes daily, so this copy runs past the &ldquo;2023&rdquo; in its name: {{rows_total}} ATP men's tour matches from {{first_year}} through {{last_date}}, with {{players}} players and {{tournaments}} tournaments. I kept 13 of its columns and changed no existing values; the one exception is a single hand-added row, sourced and explained below.</p>
+        <p>The data is the <a href="https://www.kaggle.com/datasets/dissfya/atp-tennis-2000-2023daily-pull">ATP Tennis 2000&ndash;2023 Daily Pull</a> by dissfya on Kaggle &mdash; a dataset the uploader refreshes daily, so this copy runs past the &ldquo;2023&rdquo; in its name: {{rows_total}} ATP men's tour matches from {{first_year}} through {{last_date}}, with {{players}} players and {{tournaments}} tournaments. I kept 13 of its columns and changed no existing values; the two exceptions are hand-added rows, sourced and explained below.</p>
         <p>One row is one main-draw match, with the tournament, date, series, court, surface, round, best-of format, the two players, the winner, both players' ATP rankings, and the score. The loser is the other player. The order of <code>Player_1</code> and <code>Player_2</code> carries no information (Player_1 wins {{p1_wins}} of matches), so no statistic depends on it, and the score is not used.</p>
       </div>
       <div>
         <h3>Rows dropped and rows missing</h3>
         <ul>
           <li>No rows were dropped. The ranking finding leaves out {{rk_excluded}} matches where a ranking is not listed or both players have the same ranking.</li>
-          <li>A full Slam draw has 127 matches. The file still has {{slam_missing}} fewer than the {{slam_expected}} expected ({{slam_missing_pct}}), almost all of them early rounds; those are left &ldquo;as recorded,&rdquo; not adjusted.</li>
-          <li>One match was missing outright, not just uncounted: the 2019 US Open final. I added that single row by hand &mdash; Nadal d. Medvedev, 7&ndash;5, 6&ndash;3, 5&ndash;7, 4&ndash;6, 6&ndash;4, from the official ATP Tour match record &mdash; so Nadal's {{t1_total}} titles above include it. It is the only row in the file that didn't come from the Kaggle download; every other number in this report still comes only from that download.</li>
-          <li>Wimbledon was cancelled in 2020, and the {{last_year}} US Open had not started when this copy of the Kaggle dataset was pulled, on {{last_date}}.</li>
+          <li>A full Slam draw has 127 matches. The file still has {{slam_missing}} fewer than the {{slam_expected}} expected ({{slam_missing_pct}}) &mdash; almost all of it scattered early-round gaps, plus one edition (the {{last_year}} US Open, below) that stops after its final; those are left &ldquo;as recorded,&rdquo; not adjusted.</li>
+          <li>Two matches were missing outright, not just uncounted, so I added both by hand from the official ATP Tour match record rather than leave a Grand Slam final unrecorded: the 2019 US Open final &mdash; Nadal d. Medvedev, 7&ndash;5, 6&ndash;3, 5&ndash;7, 4&ndash;6, 6&ndash;4, which is why Nadal's {{t1_total}} titles above include that one &mdash; and the {{last_year}} US Open final, Zverev d. Shelton, 6&ndash;3, 7&ndash;6, 5&ndash;7, 6&ndash;2. Those two rows are the only ones in the file that didn't come from the Kaggle download; every other number in this report still comes only from that download.</li>
+          <li>Wimbledon was cancelled in 2020. This copy of the Kaggle &ldquo;Daily Pull&rdquo; dataset was pulled on August 29, 2026, before the rest of the {{last_year}} US Open was played &mdash; only its final (added by hand, above) is recorded here.</li>
         </ul>
       </div>
       <div>
