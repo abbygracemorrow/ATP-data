@@ -13,15 +13,15 @@ Neither page shows or claims any player nationality or geographic origin: the so
 ## Where the data came from
 
 `data/atp_matches.csv` is a thirteen-column subset of the **ATP Tennis 2000-2023 Daily Pull** data set by dissfya on Kaggle:
-<https://www.kaggle.com/datasets/dissfya/atp-tennis-2000-2023daily-pull>
+<https://www.kaggle.com/datasets/dissfya/atp-tennis-2000-2023daily-pull>. The uploader refreshes that dataset daily, which is why this copy runs past the "2023" in its name.
 
-It has 68,635 rows (one main-draw ATP match each) from January 3, 2000 to August 29, 2026, with the columns
+It has 68,636 rows (one main-draw ATP match each) from January 3, 2000 to August 29, 2026, with the columns
 `Tournament, Date, Series, Court, Surface, Round, Best of, Player_1, Player_2, Winner, Rank_1, Rank_2, Score`.
-`Rank_1` and `Rank_2` are the two players' ATP rankings (1 is the best; 0 or -1 means not listed). I did not change any value in this file, and every number on both pages is computed from it.
+`Rank_1` and `Rank_2` are the two players' ATP rankings (1 is the best; 0 or -1 means not listed). I did not change any existing value in this file. The one exception is a single hand-added row, cited under *Known data limits* below.
 
 The only other file that feeds the site is `data/player_name_aliases.csv` (see below), which is not part of the match data.
 
-**Player-name cleanup.** The same player is sometimes spelled multiple ways in the source file &mdash; trailing spaces (`"Nadal R. "`), inconsistent capitalization, punctuation (`"Herbert P.H"` vs. `"Herbert P-H."`), or a compound surname used only some of the time (`"Nadal-Parera R."` next to `"Nadal R."`). Left alone, this silently splits one player's matches across two or more entries everywhere &mdash; the player list, the leaderboard, win/loss averages, and head-to-head. `data/player_name_aliases.csv` maps every such spelling variant to one canonical form; `scripts/build_site.py` and `js/dashboard.js` both apply it when the data loads, so `data/atp_matches.csv` itself is never touched (the "changed no values" promise above is about that file specifically). Only variants I could confirm were the same real person were merged; cases where a shared surname and initial could plausibly be two different players (for example, two different Kuznetsovs, or two different Zhangs, who really are distinct ATP players) were left alone.
+**Player-name cleanup.** The same player is sometimes spelled multiple ways in the source file &mdash; trailing spaces (`"Nadal R. "`), inconsistent capitalization, punctuation (`"Herbert P.H"` vs. `"Herbert P-H."`), or a compound surname used only some of the time (`"Nadal-Parera R."` next to `"Nadal R."`). Left alone, this silently splits one player's matches across two or more entries everywhere &mdash; the player list, the leaderboard, win/loss averages, and head-to-head. `data/player_name_aliases.csv` maps every such spelling variant to one canonical form; `scripts/build_site.py` and `js/dashboard.js` both apply it when the data loads, so `data/atp_matches.csv` itself is never touched by the alias mapping (the "no existing value changed" promise above is about that file specifically; it's a separate thing from the one hand-added row noted under *Known data limits*). Only variants I could confirm were the same real person were merged; cases where a shared surname and initial could plausibly be two different players (for example, two different Kuznetsovs, or two different Zhangs, who really are distinct ATP players) were left alone.
 
 ## Files
 
@@ -87,10 +87,11 @@ Repository settings > Pages > "Deploy from a branch" > branch `main`, folder `/ 
 
 ## Known data limits
 
-* A full Slam draw has 127 matches, but the file is missing about 4.4% of Grand Slam matches, including the 2019 US Open final. Because of that, Nadal shows 21 titles here instead of 22. **I chose to leave the source file exactly as downloaded rather than add a correction row for the missing final**, so every title count, win rate, and streak on the report, the dashboard, and in `data/atp_matches.csv` itself is "as recorded" &mdash; not adjusted for this or any other known gap. The same gap applies dataset-wide, not just at Grand Slams: across all 1,715 tournament-year editions in the file, about 1.8% have no recorded "The Final" row, so the dashboard's Tournament spotlight can undercount titles and finals reached by the same margin.
+* A full Slam draw has 127 matches, and the file is still missing some Grand Slam matches (almost all early rounds), so every title count, win rate, and streak on the report and the dashboard is "as recorded" &mdash; not adjusted for that remaining gap. Dataset-wide, not just at Grand Slams: across all 1,715 tournament-year editions in the file, about 1.8% have no recorded "The Final" row, so the dashboard's Tournament spotlight can undercount titles and finals reached by the same margin.
+* One match was missing outright, not just uncounted: the 2019 US Open final. **I added that single row by hand**, sourced from the official ATP Tour match record: Nadal d. Medvedev, 7&ndash;5, 6&ndash;3, 5&ndash;7, 4&ndash;6, 6&ndash;4. It's the only row in `data/atp_matches.csv` that didn't come from the Kaggle download; every other number on both pages still comes only from that download.
 * Six tournament names &mdash; AAPT Championships, BNP Paribas, European Open, Heineken Open, Qatar Open, and TATA Open &mdash; were each used for two distinct, unrelated ATP events held weeks apart in the same year (found by checking for tournament-years with more than one recorded final). The file gives no way to tell them apart by name alone, so the dashboard's Tournament spotlight flags these six rather than silently splitting or merging them.
 * No column in the file gives a player's nationality, birthplace, or any other geographic information. Neither page shows or infers one.
-* Wimbledon 2020 was cancelled, and the 2026 US Open had not started when the data ends.
+* Wimbledon 2020 was cancelled, and the 2026 US Open had not started when this copy of the Kaggle "Daily Pull" dataset was pulled, on August 29, 2026.
 * The order of `Player_1` and `Player_2` carries no information (Player_1 wins 50.0% of matches).
 * The `Score` column is not used, and has no way to identify a retirement or walkover (no row contains "RET" or "W/O"), so every recorded match is treated as completed.
 

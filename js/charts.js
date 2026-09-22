@@ -206,18 +206,23 @@
      frame, and a ball dot -- inline SVG, no image assets */
   function courtIcon(slam, w, h) {
     const cc = COURT_COLORS[slam], bg = cc.bg, court = cc.court || cc.a;
-    const px = w * .13, py = h * .08, cw = w - px * 2, ch = h - py * 2, singleIn = cw * .09;
-    const netY = py + ch * .42, svcTop = py + ch * .18, svcBot = py + ch * .82;
+    const px = w * .13, py = h * .08, cw = w - px * 2, ch = h - py * 2;
+    // regulation doubles court: 78ft x 36ft; singles sidelines 4.5ft inside each doubles sideline;
+    // service lines 21ft from the net (39ft from each baseline, i.e. 18ft from each baseline); tick = a
+    // short center mark at the middle of each baseline
+    const singleIn = cw * (4.5 / 36), netY = py + ch * .5, svcTop = py + ch * (18 / 78), svcBot = py + ch * (60 / 78), tick = ch * .025;
     let base = `<rect x="0" y="0" width="${w}" height="${h}" rx="3" fill="${bg}"/>`;
     if (slam === 'W') { const n = 5, sw = w / n; for (let i = 0; i < n; i++) base += `<rect x="${i * sw}" y="0" width="${sw}" height="${h}" fill="${i % 2 ? cc.b : cc.a}"/>`; }
     return base +
       `<rect x="${px}" y="${py}" width="${cw}" height="${ch}" fill="${court}"/>` +
       `<rect x="${px}" y="${py}" width="${cw}" height="${ch}" fill="none" stroke="#fff" stroke-width="1.3"/>` +
       `<rect x="${px + singleIn}" y="${py}" width="${cw - singleIn * 2}" height="${ch}" fill="none" stroke="#fff" stroke-width=".9"/>` +
-      `<line x1="${px}" y1="${svcTop}" x2="${px + cw}" y2="${svcTop}" stroke="#fff" stroke-width=".9"/>` +
-      `<line x1="${px}" y1="${svcBot}" x2="${px + cw}" y2="${svcBot}" stroke="#fff" stroke-width=".9"/>` +
+      `<line x1="${px + singleIn}" y1="${svcTop}" x2="${px + cw - singleIn}" y2="${svcTop}" stroke="#fff" stroke-width=".9"/>` +
+      `<line x1="${px + singleIn}" y1="${svcBot}" x2="${px + cw - singleIn}" y2="${svcBot}" stroke="#fff" stroke-width=".9"/>` +
       `<line x1="${px + cw / 2}" y1="${svcTop}" x2="${px + cw / 2}" y2="${svcBot}" stroke="#fff" stroke-width=".9"/>` +
       `<line x1="${px}" y1="${netY}" x2="${px + cw}" y2="${netY}" stroke="#fff" stroke-width="1.1"/>` +
+      `<line x1="${px + cw / 2}" y1="${py}" x2="${px + cw / 2}" y2="${py + tick}" stroke="#fff" stroke-width=".9"/>` +
+      `<line x1="${px + cw / 2}" y1="${py + ch}" x2="${px + cw / 2}" y2="${py + ch - tick}" stroke="#fff" stroke-width=".9"/>` +
       `<circle cx="${px + cw * .74}" cy="${py + ch * .9}" r="${w * .055}" fill="#dde14a" stroke="#000" stroke-width=".6"/>` +
       `<rect x="1" y="1" width="${w - 2}" height="${h - 2}" rx="2.5" fill="none" stroke="#000" stroke-width="1.6"/>`;
   }
@@ -231,8 +236,11 @@
   function surfaceCourt(el, slices, o = {}) {
     ensureTip();
     const w = o.w || Math.min(420, width(el, 260)), h = o.h || Math.round(w * 1.25);
-    const px = w * .1, py = h * .05, cw = w - px * 2, ch = h - py * 2, singleIn = cw * .09;
-    const netY = py + ch * .42, svcTop = py + ch * .18, svcBot = py + ch * .82;
+    const px = w * .1, py = h * .05, cw = w - px * 2, ch = h - py * 2;
+    // regulation doubles court: 78ft x 36ft; singles sidelines 4.5ft inside each doubles sideline;
+    // service lines 21ft from the net (39ft from each baseline, i.e. 18ft from each baseline); tick = a
+    // short center mark at the middle of each baseline
+    const singleIn = cw * (4.5 / 36), netY = py + ch * .5, svcTop = py + ch * (18 / 78), svcBot = py + ch * (60 / 78), tick = ch * .025;
     const total = slices.reduce((a, s) => a + s.value, 0) || 1;
     let y = py, bands = '';
     slices.filter(s => s.value > 0).forEach(s => {
@@ -247,10 +255,12 @@
     });
     const lines = `<rect x="${px}" y="${py}" width="${cw}" height="${ch}" fill="none" stroke="#fff" stroke-width="2.2"/>` +
       `<rect x="${px + singleIn}" y="${py}" width="${cw - singleIn * 2}" height="${ch}" fill="none" stroke="#fff" stroke-width="1.5"/>` +
-      `<line x1="${px}" y1="${svcTop}" x2="${px + cw}" y2="${svcTop}" stroke="#fff" stroke-width="1.5"/>` +
-      `<line x1="${px}" y1="${svcBot}" x2="${px + cw}" y2="${svcBot}" stroke="#fff" stroke-width="1.5"/>` +
+      `<line x1="${px + singleIn}" y1="${svcTop}" x2="${px + cw - singleIn}" y2="${svcTop}" stroke="#fff" stroke-width="1.5"/>` +
+      `<line x1="${px + singleIn}" y1="${svcBot}" x2="${px + cw - singleIn}" y2="${svcBot}" stroke="#fff" stroke-width="1.5"/>` +
       `<line x1="${px + cw / 2}" y1="${svcTop}" x2="${px + cw / 2}" y2="${svcBot}" stroke="#fff" stroke-width="1.5"/>` +
       `<line x1="${px}" y1="${netY}" x2="${px + cw}" y2="${netY}" stroke="#fff" stroke-width="2"/>` +
+      `<line x1="${px + cw / 2}" y1="${py}" x2="${px + cw / 2}" y2="${py + tick}" stroke="#fff" stroke-width="1.5"/>` +
+      `<line x1="${px + cw / 2}" y1="${py + ch}" x2="${px + cw / 2}" y2="${py + ch - tick}" stroke="#fff" stroke-width="1.5"/>` +
       `<rect x="1" y="1" width="${w - 2}" height="${h - 2}" rx="4" fill="none" stroke="${C.ink}" stroke-width="2.2"/>`;
     el.innerHTML = wrap(w, h, o.label || 'Surface split', bands + lines);
     if (o.legend !== false) legend(el, slices.map(s => ({ label: `${s.label} — ${int(s.value)} (${pct(s.value / total)})`, color: s.color })));
